@@ -1,0 +1,25 @@
+/* Base */
+
+body {
+  padding-top: 47px;
+  padding-bottom: 70px;
+}
+
+/* Controls */
+
+.btn-space {
+  margin-right: 25px;
+}
+
+.nav-link,
+.pointer,
+#btnLogout,
+#btnLogin {
+  cursor: pointer;
+}
+
+/* InputGroupAddon Icon ensure all have same width */
+
+.input-group-text.icon {
+  min-width: 42px;
+}

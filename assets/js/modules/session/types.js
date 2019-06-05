@@ -1,0 +1,15 @@
+const INITIALIZE = "session/INITIALIZE"
+const SIGNED_IN = "session/SIGNED_IN"
+const SIGNIN_FAILED = "session/SIGNIN_FAILED"
+const SIGNED_OUT = "session/SIGNED_OUT"
+const RESET_ERROR = "session/RESET_ERROR"
+const UPDATE_ACCOUNT = "session/UPDATE_ACCOUNT"
+
+export default {
+  INITIALIZE,
+  SIGNED_IN,
+  SIGNIN_FAILED,
+  SIGNED_OUT,
+  RESET_ERROR,
+  UPDATE_ACCOUNT
+}

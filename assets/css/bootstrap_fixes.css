@@ -1,0 +1,9 @@
+/* navlinks should always have cursor:pointer class*/
+
+.nav-link {
+  cursor: pointer;
+}
+
+.dropdown-item {
+  background-color: white;
+}

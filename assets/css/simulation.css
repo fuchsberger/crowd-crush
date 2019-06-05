@@ -1,0 +1,115 @@
+#editor {
+  float: left;
+  position: relative;
+}
+
+#controls {
+  margin-left: 800px;
+}
+
+#simulation {
+  min-width: 780px;
+}
+
+.jumpControls {
+  max-width: 150px;
+}
+
+.video-wrapper {
+  text-align: center;
+  position: absolute;
+  top: 56px;
+  bottom: 55px;
+  left: 0;
+  right: 0;
+  padding: 0;
+  z-index: 100;
+}
+.video-wrapper.left {
+  right: 50%;
+  border-right: 1px #000000 solid;
+}
+.video-wrapper.right {
+  left: 50%;
+}
+
+#video-wrapper div { z-index: 101; }
+
+.overlay {
+  position: absolute;
+  left: 0;
+  top:0;
+  right:0;
+  bottom:0;
+}
+
+.overlay.edit {
+  cursor: crosshair;
+}
+
+.overlay.bg-dark {
+  background-color: RGBA(0, 0, 0, 0.5) !important;
+}
+
+.overlay.bg-light {
+  background-color: RGBA(255, 255, 255, 0.5) !important;
+}
+
+#interval-field {
+  width: 68px;
+}
+
+.marker {
+  background-color: #dbff00;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  position: absolute;
+  border-radius: 5px;
+  z-index: 2100;
+}
+.marker.static {
+  background-color:#000000;
+}
+
+.marker:hover {
+  background-color: #f4a341;
+}
+
+.marker.static:hover {
+  background-color: #237d00;
+}
+
+.marker.selected {
+  background-color: #f44b42;
+}
+
+.marker.static.selected {
+  background-color: #4542f4;
+}
+
+.marker.coordinate {
+  background-color: #6bf442;
+}
+
+.marker.coordinate:hover {
+  background-color: #a8d0ff;
+}
+
+.axisBox {
+  background-color: #000;
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 16px;
+  margin-left: -16px;
+  margin-top: -8px;
+  position: absolute;
+  border-radius: 6px;
+  z-index: 2100;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  padding: 0;
+}
