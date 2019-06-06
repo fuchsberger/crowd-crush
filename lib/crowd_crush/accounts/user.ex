@@ -1,34 +1,27 @@
 defmodule CrowdCrush.Accounts.User do
   use CrowdCrush, :schema
 
-  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
+  # @derive { Jason.Encoder, only: [:first_name, :last_name, :email ]}
 
-  @derive { Jason.Encoder, only: [:first_name, :last_name, :email ]}
+  alias CrowdCrush.Accounts.Credential
 
   schema "users" do
-    field :first_name, :string
-    field :last_name, :string
-    field :email, :string
-    field :encrypted_password, :string
-    field :current_password, :string, virtual: true
-    field :password, :string, virtual: true
+    field :name, :string
+    field :username, :string
+    has_one :credential, Credential
     timestamps()
   end
 
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:current_password, :first_name, :last_name, :email, :password])
-    |> validate_required([:first_name, :last_name, :email])
-    |> generate_encrypted_password
-    |> unique_constraint(:email, message: "Email already taken")
+  def registration_changeset(user, params) do
+    user
+    |> changeset(params)
+    |> cast_assoc(:credential, with: &Credential.changeset/2, required: true)
   end
 
-  defp generate_encrypted_password(current_changeset) do
-    case current_changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(current_changeset, :encrypted_password, hashpwsalt(password))
-      _ ->
-        current_changeset
-    end
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :username])
+    |> validate_required([:name, :username])
+    |> validate_length(:username, min: 3, max: 20)
   end
 end

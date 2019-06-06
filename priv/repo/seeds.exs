@@ -9,10 +9,12 @@ alias CrowdCrush.Repo
 alias CrowdCrush.Accounts.User
 
 %User{}
-|> User.changeset(%{
-  first_name: "Joe",
-  last_name: "Doe",
-  email: "joe@doe.com",
-  password: "password"
+|> User.registration_changeset(%{
+  name: "Alexander Fuchsberger",
+  username: "alex",
+  credential: %{
+    email: "admin@fuchsberger.us",
+    password: "password"
+  }
 })
 |> Repo.insert!

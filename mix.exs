@@ -45,8 +45,8 @@ defmodule CrowdCrush.Mixfile do
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       # additional dependenies
-      {:bcrypt_elixir, "~> 2.0"},
       {:comeonin, "~> 5.1"},
+      {:pbkdf2_elixir, "~> 1.0"},
       {:edeliver, "~> 1.6"},
       {:distillery, "~> 2.0"},
       {:csv, "~> 2.3"}

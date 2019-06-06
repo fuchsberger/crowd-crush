@@ -4,12 +4,22 @@ defmodule CrowdCrush.Repo.Migrations.Initialize do
   def change do
 
     create table(:users) do
-      add :first_name, :string, null: false
-      add :last_name, :string, null: false
-      add :email, :string, null: false
-      add :encrypted_password, :string, null: false
+      add :name, :string
+      add :username, :string, null: false
       timestamps()
     end
+
+    create unique_index(:users, [:username])
+
+    create table(:credentials) do
+      add :email, :string, null: false
+      add :password_hash, :string, null: false
+      add :user_id, references(:users, on_delete: :delete_all), null: false
+      timestamps()
+    end
+
+    create unique_index(:credentials, [:email])
+    create index(:credentials, [:user_id])
 
     create table(:videos) do
       add :aspectratio, :float, null: false
