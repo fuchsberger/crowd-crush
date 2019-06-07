@@ -6,8 +6,7 @@ defmodule CrowdCrushWeb.UserChannel do
 
   def join("user", _params, socket) do
     if Map.has_key?(socket.assigns, :current_user) do
-      user = View.render(UserView, "user.json", user: socket.assigns.current_user)
-      {:ok, %{user: user}, socket}
+      {:ok, %{username: socket.assigns.current_user.username}, socket}
     else
       {:error, %{ error: "Unauthorized." }}
     end

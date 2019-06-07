@@ -3,7 +3,6 @@ defmodule CrowdCrush.Accounts.User do
   alias CrowdCrush.Accounts.Credential
 
   schema "users" do
-    field :name, :string
     field :username, :string
     has_one :credential, Credential
     timestamps()
@@ -17,8 +16,8 @@ defmodule CrowdCrush.Accounts.User do
 
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :username])
-    |> validate_required([:name, :username])
+    |> cast(attrs, [:username])
+    |> validate_required([:username])
     |> validate_length(:username, min: 3, max: 20)
   end
 end

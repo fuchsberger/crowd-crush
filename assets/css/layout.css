@@ -14,9 +14,9 @@ body {
 }
 
 /* Login Form */
-#login-container .column { max-width: 400px; }
-#login-container .ui.bottom.attached.message { margin-bottom:0!important; }
-#login-container .list { margin-top: 5px; }
+.fullscreen .column { max-width: 400px; }
+.fullscreen .ui.bottom.attached.message { margin-bottom:0!important; }
+.fullscreen .list { margin-top: 5px; }
 
 
 /* Controls */

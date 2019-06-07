@@ -11,23 +11,23 @@ const item = (to, text, icon) => (
   </Menu.Item>
 )
 
-const Header = ({ location, history, signOut, user }) => (
+const Header = ({ location, history, signOut, username }) => (
   <Menu fixed='top' inverted pointing>
     <Menu.Item header>Crowd Crush</Menu.Item>
     {item('/about', 'About', 'info')}
     {item('/videos', 'Videos', 'video camera')}
-    {user && item('/video/add', 'Add Video', 'plus')}
-    {user && item('/users', 'Users', 'users')}
+    {username && item('/video/add', 'Add Video', 'plus')}
+    {username && item('/users', 'Users', 'users')}
 
     <Menu.Menu position='right'>
 
       {/* <Menu.Item>
         <Input icon='search' disabled placeholder='Search...' />
       </Menu.Item> */}
-      {!user && location.pathname != '/login' && item('/login', 'Login', 'power')}
+      {!username && location.pathname != '/login' && item('/login', 'Login', 'power')}
 
-      {user &&
-        <Dropdown item icon='caret down' text={user.username}>
+      {username &&
+        <Dropdown item icon='caret down' text={username}>
           <Dropdown.Menu>
             <Dropdown.Item as={Link} to="/settings">
               <Icon name='cog' />
@@ -44,6 +44,6 @@ const Header = ({ location, history, signOut, user }) => (
   </Menu>
 );
 
-const mapStateToProps = ({ session }) => ({ user: session.user });
+const mapStateToProps = ({ session }) => ({ username: session.username });
 const mapDispatchToProps = { signOut: Session.signOut }
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

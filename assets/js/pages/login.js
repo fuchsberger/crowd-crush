@@ -7,7 +7,7 @@ import { sessionOperations as Session } from '../modules/session'
 
 class Login extends Component {
 
-  state = { email: '', password: '', loading: false, submitted: false }
+  state = { email: '', password: '', submitted: false }
   validator = new Validator({ element: false })
 
   onInputChange = (e, { name, value }) => this.setState({ [name]: value })
@@ -26,11 +26,7 @@ class Login extends Component {
 
   render(){
 
-    const { error, location } = this.props
-    const { email, password, loading, submitted } = this.state
-
-    if (!error && location.state && location.state.error) error = location.state.error
-
+    const { email, password, submitted } = this.state
     const emailError = this.validator.message('email', email, 'required|email')
     const passwordError = this.validator.message('password', password, 'required')
 
@@ -38,18 +34,22 @@ class Login extends Component {
       <Container text textAlign='center'>
         <Grid id='login-container' className='fullscreen' textAlign='center' verticalAlign='middle'>
           <Grid.Column>
-            {/* <Message attached warning>
-              <Message.Header>This is a restricted area.</Message.Header>
-              <p>Please sign in, then try again.</p>
-            </Message> */}
-            <Message
-              attached
-              header='Welcome to our site!'
-              content='Please sign in to start describing videos.'
-            />
+            {this.props.error
+              ? <Message
+                  attached
+                  error
+                  header='An Error occured!'
+                  content='The given username / password combination is invalid.'
+                />
+              : <Message
+                  attached
+                  header='Welcome to our site!'
+                  content='Please sign in to start describing videos.'
+                />
+            }
             <Form
               className="attached fluid segment"
-              loading={error ? false : loading}
+              loading={this.props.loading}
               onSubmit={this.handleSubmit}
             >
               <Form.Input
@@ -99,6 +99,6 @@ class Login extends Component {
 }
 
 // connect and import from redux store; make dispatched actions available
-const mapStateToProps = ({ session }) => ({ error: session.error });
+const mapStateToProps = ({ session }) => ({ error: session.error, loading: session.loading });
 const mapDispatchToProps = { signIn: Session.signIn };
 export default connect( mapStateToProps, mapDispatchToProps )(Login);

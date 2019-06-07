@@ -2,7 +2,7 @@ defmodule CrowdCrushWeb.SessionsView do
   use CrowdCrushWeb, :view
 
   def render("show.json", %{user: u, user_token: token}) do
-    %{user: %{ name: u.name, username: u.username }, user_token: token}
+    %{username: u.username, user_token: token}
   end
 
   def render("error.json", _) do

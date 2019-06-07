@@ -46,8 +46,8 @@ const initialize = (signOut = false) => {
       const uChannel = Api.configUserChannel(socket, dispatch)
       if (uChannel.state != 'joined')
         uChannel.join()
-        .receive('ok', ({ user }) =>
-          dispatch(actions.signinSuccess(socket, pChannel, uChannel, user)));
+        .receive('ok', ({ username }) =>
+          dispatch(actions.signinSuccess(socket, pChannel, uChannel, username)));
     }
     else dispatch(actions.initialize(socket, pChannel, signOut))
   }
@@ -55,31 +55,24 @@ const initialize = (signOut = false) => {
 
 const signIn = (params, redirect) => {
   return ( dispatch ) => {
-    const data = { session: params };
-    Utils.httpPost('/login', data)
+    dispatch(actions.startOperation())
+
+    Utils.httpPost('/login', { session: params })
     .then((response) => {
       localStorage.setItem('user_token', response.user_token);
       dispatch(initialize())
       redirect('/videos')
     })
-    .catch((error) => {
-      error.response.json()
-      .then((errorJSON) => {
-        // dispatch(actions.signinFailed(errorJSON.error));
-      });
-    });
+    .catch(() => dispatch(actions.signinFailed()));
   };
 }
 
 const signOut = ( redirect ) => {
   return dispatch => {
-    Utils.httpDelete('/login')
-    .then((response) => {
-      console.log("logout", response)
-      localStorage.removeItem('user_token');
-      dispatch(initialize(true));
-      redirect('/login')
-    })
+    Utils.httpDelete('/login') // delete session on server as well
+    localStorage.removeItem('user_token')
+    dispatch(initialize(true))
+    redirect('/login')
   };
 };
 

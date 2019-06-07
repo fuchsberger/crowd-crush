@@ -20,13 +20,7 @@ const httpPost = (url, data) => {
   .then(parseJSON);
 }
 
-const httpDelete = (url) => {
-  return fetch(url, {
-    method: 'delete',
-    headers: buildHeaders(),
-  })
-  .then(checkStatus)
-}
+const httpDelete = (url) => fetch(url, { method: 'delete', headers: buildHeaders() })
 
 function buildHeaders() {
   return {

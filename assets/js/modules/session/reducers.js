@@ -2,10 +2,11 @@ import types from "./types"
 
 const initialState = {
   error: null,
+  loading: true,
   socket: null,
   publicChannel: null,
   userChannel: null,
-  user: null
+  username: null
 };
 
 /**
@@ -18,23 +19,25 @@ const initialState = {
 
 export default function reducer(state = initialState, {type, ...payload}) {
   switch (type) {
+    case types.START_OPERATION: return { ...state, loading: true }
+
     case types.INITIALIZE:
     case types.SIGNED_OUT:
       // payload contains: socket, publicChannel
-      return { ...initialState, ...payload }
+      return { ...initialState, ...payload, loading: false }
 
     case types.SIGNED_IN:
       // payload contains: socket, publicChannel, userChannel, user
-      return {...payload, error: null};
+      return {...payload, error: null, loading: false};
 
     case types.SIGNIN_FAILED:
-      return {...state, error: "Username / Password does not match." };
+      return {...state, error: true, loading: false };
 
     case types.RESET_ERROR:
-      return {...state, error: null };
+      return {...state, error: null, loading: false };
 
     case types.UPDATE_ACCOUNT:
-      return {...state, user: payload.user };
+      return {...state, username: payload.username || state.username, loading: false };
 
     default:
       return state;
