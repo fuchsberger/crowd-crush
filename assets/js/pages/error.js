@@ -1,5 +1,5 @@
 import { withRouter } from 'react-router-dom'
-import { Container } from 'reactstrap'
+import { Container, Label } from 'semantic-ui-react'
 
 /**
  * Component accepts either:
@@ -39,7 +39,7 @@ const Error = ({ code = 404, heading=null, body=null, location }) => {
         body = (
           <div>
             <p className="lead">
-              No match for <code>{ location.pathname }</code>
+              No match for <Label><code>{ location.pathname }</code></Label>
             </p>
             <p>
               The given page doesn't exist. This could be because the url was
@@ -54,7 +54,7 @@ const Error = ({ code = 404, heading=null, body=null, location }) => {
   }
 
   return (
-    <Container className="text-center">
+    <Container textAlign='center'>
       <h2 className="mt-4 mb-3">
         { code && <small className="text-muted"> { code } <br /></small> }
         { heading }
