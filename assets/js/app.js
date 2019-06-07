@@ -36,7 +36,7 @@ const RootHtml = ( ) => (
           {/* default 404 if no route matches*/}
           <Route component={Pages.Error} />
         </Switch>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </BrowserRouter>
   </Provider>
