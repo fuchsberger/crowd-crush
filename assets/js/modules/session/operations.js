@@ -73,9 +73,13 @@ const signIn = (params, redirect) => {
 
 const signOut = ( redirect ) => {
   return dispatch => {
-    localStorage.removeItem('user_token');
-    dispatch(initialize(true));
-    redirect('/login')
+    Utils.httpDelete('/login')
+    .then((response) => {
+      console.log("logout", response)
+      localStorage.removeItem('user_token');
+      dispatch(initialize(true));
+      redirect('/login')
+    })
   };
 };
 

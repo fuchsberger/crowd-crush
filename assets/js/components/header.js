@@ -4,35 +4,27 @@ import { Link } from 'react-router-dom'
 import { Dropdown, Icon, Menu } from 'semantic-ui-react'
 import { sessionOperations as Session } from '../modules/session'
 
+const item = (to, text, icon) => (
+  <Menu.Item as={Link} active={location.pathname === to} to={to}>
+    <Icon name={icon} />
+    {text}
+  </Menu.Item>
+)
+
 const Header = ({ location, history, signOut, user }) => (
-  <Menu fixed='top' inverted>
+  <Menu fixed='top' inverted pointing>
     <Menu.Item header>Crowd Crush</Menu.Item>
-
-    <Menu.Item as={Link} active={location.pathname === '/about'} to='/about'>
-      <Icon name='info' />
-      About
-    </Menu.Item>
-
-    <Menu.Item as={Link} active={location.pathname === '/videos'} to='/videos'>
-      <Icon name='video camera' />
-      Videos
-    </Menu.Item>
-
-    {/* {session && navItem(path, '/video/add', 'Add Video', 'plus')} */}
-    {/* {admin && navItem(path, '/users', 'Users', 'users')} */}
+    {item('/about', 'About', 'info')}
+    {item('/videos', 'Videos', 'video camera')}
+    {user && item('/video/add', 'Add Video', 'plus')}
+    {user && item('/users', 'Users', 'users')}
 
     <Menu.Menu position='right'>
 
       {/* <Menu.Item>
         <Input icon='search' disabled placeholder='Search...' />
       </Menu.Item> */}
-
-      {!user && location.pathname != '/login' &&
-        <Menu.Item as={Link} to='/login'>
-          <Icon name='power' />
-          Login
-        </Menu.Item>
-      }
+      {!user && location.pathname != '/login' && item('/login', 'Login', 'power')}
 
       {user &&
         <Dropdown item icon='caret down' text={user.username}>
@@ -52,6 +44,6 @@ const Header = ({ location, history, signOut, user }) => (
   </Menu>
 );
 
-const mapStateToProps = store => ({ user: store.session.user });
+const mapStateToProps = ({ session }) => ({ user: session.user });
 const mapDispatchToProps = { signOut: Session.signOut }
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

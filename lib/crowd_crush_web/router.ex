@@ -24,6 +24,7 @@ defmodule CrowdCrushWeb.Router do
   scope "/", CrowdCrushWeb do
     pipe_through :api
     post "/login", SessionsController, :create
+    delete "/login", SessionsController, :delete
   end
 
   scope "/", CrowdCrushWeb do
