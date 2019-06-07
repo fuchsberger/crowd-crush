@@ -1,9 +1,23 @@
 /* Base */
 
 body {
-  padding-top: 47px;
-  padding-bottom: 70px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
+
+.fullscreen{
+  position:fixed;
+  top:47px;
+  bottom: 47px;
+  left: 0;
+  right: 0;
+}
+
+/* Login Form */
+#login-container .column { max-width: 400px; }
+#login-container .ui.bottom.attached.message { margin-bottom:0!important; }
+#login-container .list { margin-top: 5px; }
+
 
 /* Controls */
 

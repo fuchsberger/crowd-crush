@@ -1,8 +1,8 @@
 defmodule CrowdCrushWeb.UserSocket do
 
   use Phoenix.Socket
-  import CrowdCrush.Accounts, only: [get_user: 1]
-  import CrowdCrushWeb.Auth, only: [salt: 0]
+
+  alias CrowdCrush.Accounts
 
   # Channels
   channel "public", CrowdCrushWeb.PublicChannel
@@ -11,13 +11,13 @@ defmodule CrowdCrushWeb.UserSocket do
 
   # returning error forces client to delete invalid token and retry anonymously
   def connect(%{"token" => token}, socket) do
-    case Phoenix.Token.verify(socket, salt(), token, max_age: 86400) do
+    case Phoenix.Token.verify(socket, "user_token", token, max_age: 86400) do
       {:ok, user_id} ->
-        case get_user(user_id) do
+        case Accounts.get_user(user_id) do
           nil  -> :error
           user -> {:ok, assign(socket, :current_user, user)}
         end
-      {:error, _reason} ->
+      {:error, reason} ->
         :error
     end
   end

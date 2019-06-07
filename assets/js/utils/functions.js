@@ -7,13 +7,13 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 function buildHeaders() {
   return {
     Accept: 'application/json',
-    Authorization: localStorage.getItem('phoenixAuthToken'),
+    Authorization: localStorage.getItem('user_token'),
     'Content-Type': 'application/json'
   };
 }
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status == 200) {
     return response;
   } else {
     var error = new Error(response.statusText);
@@ -77,18 +77,6 @@ const sortArrayByColumn = ( array, c ) => (
   array.sort((a, b) => (a[c] === b[c] ? 0 : a[c] < b[c] ? -1 : 1))
 );
 
-const styleInputIcon = (icon) => {
-  return {
-    backgroundImage: svgUri(
-      <FontAwesomeIcon style={{ color: '#707070' }} icon={icon} />
-    ),
-    backgroundPosition: '9px center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'auto 16px',
-    paddingLeft: 32
-  };
-}
-
 const svgUri = (component) => {
   const svgString = encodeURIComponent(renderToStaticMarkup(component));
   return `url("data:image/svg+xml,${svgString}")`;
@@ -102,6 +90,5 @@ export default {
   renderErrorsFor,
   setDocumentTitle,
   sortArrayByColumn,
-  styleInputIcon,
   svgUri
 }

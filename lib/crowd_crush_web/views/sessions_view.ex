@@ -1,11 +1,8 @@
-defmodule CrowdCrushWeb.SessionsView do  
+defmodule CrowdCrushWeb.SessionsView do
   use CrowdCrushWeb, :view
 
-  def render("show.json", %{jwt: jwt, user: user}) do
-    %{
-      jwt: jwt,
-      user: user
-    }
+  def render("show.json", %{user: u, user_token: token}) do
+    %{user: %{ name: u.name, username: u.username }, user_token: token}
   end
 
   def render("error.json", _) do
@@ -15,4 +12,4 @@ defmodule CrowdCrushWeb.SessionsView do
   def render("forbidden.json", %{error: error}) do
     %{error: error}
   end
-end  
+end

@@ -2,9 +2,12 @@ defmodule CrowdCrushWeb.UserChannel do
   use CrowdCrushWeb, :channel
   import CrowdCrush.Accounts
 
+  alias CrowdCrushWeb.UserView
+
   def join("user", _params, socket) do
     if Map.has_key?(socket.assigns, :current_user) do
-      {:ok, %{user: render_me(socket.assigns.current_user)}, socket}
+      user = View.render(UserView, "user.json", user: socket.assigns.current_user)
+      {:ok, %{user: user}, socket}
     else
       {:error, %{ error: "Unauthorized." }}
     end
@@ -20,8 +23,10 @@ defmodule CrowdCrushWeb.UserChannel do
 
         case update_user(socket.assigns.current_user, changes) do
           {:ok, user } ->
-            socket = assign(socket, :current_user, user)
-            { :reply, {:ok, %{ user: render_me(user) }}, socket }
+            { :reply,
+              {:ok, %{user: Phoenix.View.render(UserView, "user.json", user: user)}},
+              assign(socket, :current_user, user)
+            }
           _ ->
             {:reply, {:error, %{ error: "Could not update user!" }}, socket}
         end

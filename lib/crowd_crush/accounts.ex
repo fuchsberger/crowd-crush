@@ -4,6 +4,7 @@ defmodule CrowdCrush.Accounts do
   """
 
   import Ecto.Query, warn: false
+  require Logger
 
   alias CrowdCrush.Repo
   alias CrowdCrush.Accounts.{Credential, User}
@@ -14,15 +15,22 @@ defmodule CrowdCrush.Accounts do
   end
 
   def get_user_by_email(email) do
-    Repo.get_by(User, [email: email])
+    from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)
+    |> Repo.one()
+    |> Repo.preload(:credential)
   end
 
-  def render_me(user) do
-    Phoenix.View.render(UserView, "me.json", user)
-  end
-
-  def render_user(user) do
-    Phoenix.View.render(UserView, "user.json", user)
+  def authenticate_by_email_and_pass(email, given_pass) do
+    user = get_user_by_email(email)
+    cond do
+      user && Pbkdf2.verify_pass(given_pass, user.credential.password_hash) ->
+        {:ok, user}
+      user ->
+        {:error, :unauthorized}
+      true ->
+        Pbkdf2.no_user_verify()
+        {:error, :not_found}
+    end
   end
 
   def update_user(user, changes) do

@@ -16,15 +16,15 @@ const initialize = (signOut = false) => {
   return dispatch => {
 
     // establish socket with auth token (if present)
-    const token = localStorage.getItem('phoenixAuthToken')
+    const token = localStorage.getItem('user_token')
 
     const socket = new Socket('/socket', { params: token ? { token } : {} });
 
     // if trying to connect and there was an error (such as invalid token),
     // delete token and try again (anonymous)
     socket.onError( () => {
-      if(localStorage.getItem('phoenixAuthToken')){
-        localStorage.removeItem('phoenixAuthToken')
+      if(localStorage.getItem('user_token')){
+        localStorage.removeItem('user_token')
         dispatch(initialize())
       }
     })
@@ -44,28 +44,28 @@ const initialize = (signOut = false) => {
 
     if(token){
       const uChannel = Api.configUserChannel(socket, dispatch)
-      if (uChannel.state != 'joined') {
-        uChannel.join().receive('ok', ({ user }) =>
+      if (uChannel.state != 'joined')
+        uChannel.join()
+        .receive('ok', ({ user }) =>
           dispatch(actions.signinSuccess(socket, pChannel, uChannel, user)));
-      }
     }
     else dispatch(actions.initialize(socket, pChannel, signOut))
   }
 }
 
-const signIn = (redirect, creds, from='/videos') => {
+const signIn = (params, redirect) => {
   return ( dispatch ) => {
-    const data = { session: creds };
-    Utils.httpPost('/api/sessions', data)
+    const data = { session: params };
+    Utils.httpPost('/login', data)
     .then((response) => {
-      localStorage.setItem('phoenixAuthToken', response.jwt);
+      localStorage.setItem('user_token', response.user_token);
       dispatch(initialize())
-      redirect(from)
+      redirect('/videos')
     })
     .catch((error) => {
       error.response.json()
       .then((errorJSON) => {
-        dispatch(actions.signinFailed(errorJSON.error));
+        // dispatch(actions.signinFailed(errorJSON.error));
       });
     });
   };
@@ -73,9 +73,9 @@ const signIn = (redirect, creds, from='/videos') => {
 
 const signOut = ( redirect ) => {
   return dispatch => {
-    localStorage.removeItem('phoenixAuthToken');
+    localStorage.removeItem('user_token');
     dispatch(initialize(true));
-    redirect('/sign_in')
+    redirect('/login')
   };
 };
 

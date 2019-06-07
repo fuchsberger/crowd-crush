@@ -1,8 +1,5 @@
 defmodule CrowdCrush.Accounts.User do
   use CrowdCrush, :schema
-
-  # @derive { Jason.Encoder, only: [:first_name, :last_name, :email ]}
-
   alias CrowdCrush.Accounts.Credential
 
   schema "users" do

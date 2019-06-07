@@ -21,9 +21,9 @@ defmodule CrowdCrushWeb.Router do
   #   get "/export/json/:id", CrowdCrushWeb.ExportController, :export_json
   # end
 
-  scope "/api", CrowdCrushWeb do
+  scope "/", CrowdCrushWeb do
     pipe_through :api
-    post "/sessions", SessionsController, :create
+    post "/login", SessionsController, :create
   end
 
   scope "/", CrowdCrushWeb do

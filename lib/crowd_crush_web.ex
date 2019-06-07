@@ -22,7 +22,10 @@ defmodule CrowdCrushWeb do
 
       import Plug.Conn
       import CrowdCrushWeb.Gettext
+
       alias CrowdCrushWeb.Router.Helpers, as: Routes
+
+      require Logger
     end
   end
 
@@ -42,6 +45,8 @@ defmodule CrowdCrushWeb do
       import CrowdCrushWeb.Gettext
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
+
+      require Logger
     end
   end
 
@@ -56,7 +61,12 @@ defmodule CrowdCrushWeb do
   def channel do
     quote do
       use Phoenix.Channel
+
       import CrowdCrushWeb.Gettext
+
+      alias Phoenix.View
+
+      require Logger
     end
   end
 

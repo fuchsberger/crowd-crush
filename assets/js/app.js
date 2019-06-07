@@ -22,7 +22,7 @@ const RootHtml = ( ) => (
         <Switch>
           <Route path="/" exact render={() => (<Redirect to="/videos"/>)} />
           <Route path="/about" component={Pages.About} />
-          <Route path="/sign_in" component={Pages.SignIn} />
+          <Route path="/login" component={Pages.Login} />
           <Route path="/simulation/:id" component={Pages.SimulationShow} />
           <Route path="/videos" exact component={Pages.VideoList} />
           <Route path="/videos/:id" component={Pages.VideoShow} />

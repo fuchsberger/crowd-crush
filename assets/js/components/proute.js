@@ -8,11 +8,11 @@ import { Route, Redirect, withRouter } from "react-router-dom"
 
 const PRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => (
-    localStorage.getItem('phoenixAuthToken') ? (
+    localStorage.getItem('user_token') ? (
       <Component {...props}/>
     ) : (
       <Redirect to={{
-        pathname: '/sign_in',
+        pathname: '/login',
         state: {
           error: "Please authenticate.",
           from: rest.location.pathname

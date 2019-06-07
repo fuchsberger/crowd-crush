@@ -9,6 +9,7 @@ a.b.c
 
 ## 0.12.0
 * removed version from page (caused build to fail)
+* added credential table and split sensitive user data from general data
 
 ### 0.11.1
 * optimized css import mechanics
