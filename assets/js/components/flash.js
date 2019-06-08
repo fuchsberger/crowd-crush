@@ -1,38 +1,38 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Alert } from 'reactstrap'
+import { Container, Message } from 'semantic-ui-react'
 import { flashOperations as Flash } from '../modules/flash'
-import Icon from './icon'
 
-class FlashContainer extends React.Component {
+class FlashContainer extends Component {
+
   // path has changed --> disable flash message, unless redirected from /
   componentWillReceiveProps(nProps) {
     const { location, flash, clearFlash } = this.props;
-    if (flash && location.pathname !== nProps.location.pathname
-        && location.path !== '/') clearFlash();
+    if (!flash.dismissed
+        && location.pathname !== nProps.location.pathname
+        && location.path !== '/')
+      clearFlash();
   }
 
   render() {
-    const { flash, clearFlash } = this.props;
-    const show = flash ? 'show-flash' : '';
+    const { clearFlash, flash } = this.props
+    const { dismissed, header, content, ...typeProps } = flash
 
-    if(!flash) return null;
+    if(dismissed) return null;
 
     return (
-      <Alert
-        className={`alert-flash d-flex justify-content-between ${show}`}
-        color={flash.type == 'error' ? 'danger' : 'info'}
-        onClick={() => clearFlash()}
-      >
-        <span>
-          { flash.type == 'error' ? <Icon fa exclamation-circle /> : <Icon fa info-circle /> }
-        </span>
-        <span>{flash.msg}</span>
-        <button type="button" className="close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </Alert>
+      <Container>
+        <Message
+          compact
+          size='small'
+          icon='check circle'
+          header={header}
+          content={content}
+          onDismiss={clearFlash}
+          {...typeProps}
+        />
+      </Container>
     );
   }
 }

@@ -1,23 +1,27 @@
-/* Base */
+/* MENU TWEAKS  */
 
-body {
-  padding-top: 50px;
-  padding-bottom: 50px;
+/* hide menu button on non-mobile devices */
+#menu :nth-child(2) { display: none; }
+
+/* on mobile devices */
+@media only screen and (max-width: 767px){
+  /* always show menu button */
+  #menu :nth-child(2) {
+    display: block;
+    width:auto!important;
+    position: absolute;
+    right:0;
+  }
+
+  /* hide menu items by default */
+  #menu :nth-child(n+3):nth-last-child(n) { display: none; }
+
+  /* show menu items, if menu button is active */
+  #menu :nth-child(2).active ~ .item,
+  #menu :nth-child(2).active ~ .right.menu { display: block; }
 }
 
-.fullscreen{
-  position:fixed;
-  top:47px;
-  bottom: 47px;
-  left: 0;
-  right: 0;
-}
-
-/* Login Form */
-.fullscreen .column { max-width: 400px; }
-.fullscreen .ui.bottom.attached.message { margin-bottom:0!important; }
-.fullscreen .list { margin-top: 5px; }
-
+#login-container .column { max-width: 400px; }
 
 /* Controls */
 

@@ -11,6 +11,8 @@ a.b.c
 * removed version from page (caused build to fail)
 * added credential table and split sensitive user data from general data
 * improvements to login and logout, logout now also deletes session on server
+* new settings page with much improved functionality
+* remove name field from user (had no purpose)
 
 ### 0.11.1
 * optimized css import mechanics

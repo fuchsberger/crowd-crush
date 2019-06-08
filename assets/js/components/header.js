@@ -1,48 +1,66 @@
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { Link } from 'react-router-dom'
 import { Dropdown, Icon, Menu } from 'semantic-ui-react'
 import { sessionOperations as Session } from '../modules/session'
 
-const item = (to, text, icon) => (
-  <Menu.Item as={Link} active={location.pathname === to} to={to}>
-    <Icon name={icon} />
-    {text}
-  </Menu.Item>
-)
+class Header extends Component {
 
-const Header = ({ location, history, signOut, username }) => (
-  <Menu fixed='top' inverted pointing>
-    <Menu.Item header>Crowd Crush</Menu.Item>
-    {item('/about', 'About', 'info')}
-    {item('/videos', 'Videos', 'video camera')}
-    {username && item('/video/add', 'Add Video', 'plus')}
-    {username && item('/users', 'Users', 'users')}
+  state = { open: false }
 
-    <Menu.Menu position='right'>
+  toggleMenu = () => this.setState({ open: !this.state.open })
 
-      {/* <Menu.Item>
-        <Input icon='search' disabled placeholder='Search...' />
-      </Menu.Item> */}
-      {!username && location.pathname != '/login' && item('/login', 'Login', 'power')}
 
-      {username &&
-        <Dropdown item icon='caret down' text={username}>
-          <Dropdown.Menu>
-            <Dropdown.Item as={Link} to="/settings">
-              <Icon name='cog' />
-              Settings
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => signOut(history.push)}>
-              <Icon name='power' />
-              Sign Out
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      }
-    </Menu.Menu>
-  </Menu>
-);
+  item = (to, text, icon) => (
+    <Menu.Item as={Link} active={location.pathname === to} to={to} icon={icon} name={text} />
+  )
+
+  render(){
+    const { location, history, signOut, username } = this.props
+    return(
+      <Menu id="menu" attached='top' inverted stackable>
+        <Menu.Item header>Crowd Crush</Menu.Item>
+        <Menu.Item
+          active={this.state.open}
+          id="collapse-button"
+          name='Menu'
+          icon="bars"
+          onClick={this.toggleMenu}
+          position='right'
+        />
+
+        {this.item('/about', 'About', 'info')}
+        {this.item('/videos', 'Videos', 'video camera')}
+        {username && this.item('/video/add', 'Add Video', 'plus')}
+        {username && this.item('/users', 'Users', 'users')}
+
+        <Menu.Menu  position='right'>
+
+          {/* <Menu.Item>
+            <Input icon='search' disabled placeholder='Search...' />
+          </Menu.Item> */}
+          {!username && location.pathname != '/login' && this.item('/login', 'Login', 'power')}
+
+          {username &&
+            <Dropdown item icon='caret down' text={username}>
+              <Dropdown.Menu>
+                <Dropdown.Item as={Link} to="/settings">
+                  <Icon name='cog' />
+                  Settings
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => signOut(history.push)}>
+                  <Icon name='power' />
+                  Sign Out
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          }
+        </Menu.Menu>
+      </Menu>
+    )
+  }
+}
 
 const mapStateToProps = ({ session }) => ({ username: session.username });
 const mapDispatchToProps = { signOut: Session.signOut }

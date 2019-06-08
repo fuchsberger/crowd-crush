@@ -92,7 +92,7 @@ const updateAccount = ({ activeIndex, email, password, new_password, username })
     uChannel.push("update_account", data)
     .receive('ok', res => {
       dispatch(actions.updateAccount(res.username || null))
-      dispatch(Flash.info("You account was successfully updated!"))
+      dispatch(Flash.get(res))
     })
     .receive('error', ({ error }) => dispatch(actions.error(error)))
   }
