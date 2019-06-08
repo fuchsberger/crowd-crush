@@ -63,7 +63,7 @@ const signIn = (params, redirect) => {
       dispatch(initialize())
       redirect('/videos')
     })
-    .catch(() => dispatch(actions.signinFailed()));
+    .catch(() => dispatch(actions.error(true)));
   };
 }
 
@@ -76,15 +76,25 @@ const signOut = ( redirect ) => {
   };
 };
 
-const updateAccount = ({ confirm_password, ...data }) => {
+const updateAccount = ({ activeIndex, email, password, new_password, username }) => {
   return ( dispatch, store) => {
+    dispatch(actions.startOperation())
+
+    // send only relevant data to server
+    let data
+    switch(activeIndex){
+      case 0: data = { username: username}; break;
+      case 1: data = { email, password }; break;
+      case 2: data = { new_password, password }
+    }
+
     const uChannel = store().session.userChannel
     uChannel.push("update_account", data)
-    .receive('ok', ({ user }) => {
-      dispatch(actions.updateAccount(user))
+    .receive('ok', res => {
+      dispatch(actions.updateAccount(res.username || null))
       dispatch(Flash.info("You account was successfully updated!"))
     })
-    .receive('error', ({ error }) => console.log(error))
+    .receive('error', ({ error }) => dispatch(actions.error(error)))
   }
 }
 

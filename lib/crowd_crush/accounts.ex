@@ -11,7 +11,9 @@ defmodule CrowdCrush.Accounts do
   alias CrowdCrushWeb.UserView
 
   def get_user(id) do
-    Repo.get(User, id)
+    User
+    |> Repo.get(id)
+    |> Repo.preload([:credential])
   end
 
   def get_user_by_email(email) do
@@ -33,9 +35,10 @@ defmodule CrowdCrush.Accounts do
     end
   end
 
-  def update_user(user, changes) do
-    Repo.update(User.changeset(user, changes))
-  end
+  def update_user(user, changes), do: Repo.update(User.changeset(user, changes))
+
+  def update_credential(credential, changes),
+    do: Repo.update(Credential.update_changeset(credential, changes))
 
   def validate_password(user, password) do
     Comeonin.Bcrypt.checkpw(password, user.encrypted_password)

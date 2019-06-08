@@ -63,6 +63,7 @@ defmodule CrowdCrushWeb do
       use Phoenix.Channel
 
       import CrowdCrushWeb.Gettext
+      import CrowdCrushWeb.UserSocket, only: [ current_user: 1 ]
 
       alias Phoenix.View
 

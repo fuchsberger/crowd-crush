@@ -12,26 +12,31 @@ defmodule CrowdCrushWeb.UserChannel do
     end
   end
 
-  def handle_in("update_account", params, socket) do
-    case validate_password(socket.assigns.current_user, params["password"]) do
-      true ->
-        changes =
-          params
-          |> Map.put("password", params["new_password"])
-          |> Map.delete("new_password")
+  def handle_in("update_account", %{"username" => username}, socket) do
+    case update_user(socket.assigns.current_user, %{username: username}) do
+      {:ok, user } ->
+        {:reply, {:ok, %{username: user.username}}, assign(socket, :current_user, user)}
+      _ ->
+        {:reply, {:error, %{ error: "Could not update user!" }}, socket}
+    end
+  end
 
-        case update_user(socket.assigns.current_user, changes) do
-          {:ok, user } ->
-            { :reply,
-              {:ok, %{user: Phoenix.View.render(UserView, "user.json", user: user)}},
-              assign(socket, :current_user, user)
-            }
+  def handle_in("update_account", %{"password" => password} = params, socket) do
+    case Pbkdf2.verify_pass(password, socket.assigns.current_user.credential.password_hash) do
+      true ->
+        changes = Map.put(params, "password", params["new_password"])
+        user = current_user(socket)
+
+        case update_credential(user.credential, changes) do
+          {:ok, credential } ->
+            user = Map.put(user, :credential, credential)
+            {:reply, {:ok, %{}}, assign(socket, :current_user, user)}
           _ ->
             {:reply, {:error, %{ error: "Could not update user!" }}, socket}
         end
-      _ ->
+      false ->
         {:reply, {:error, %{ error: "Wrong password!" }}, socket}
-    end
+      end
   end
 
   # def handle_in("add_video", params, socket) do

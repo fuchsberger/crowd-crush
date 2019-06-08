@@ -15,10 +15,9 @@ class Login extends Component {
   handleSubmit = () => {
     this.setState({ submitted: true })
 
-    if (this.validator.allValid()) {
-      this.setState({ loading: true })
+    if (this.validator.allValid())
       this.props.signIn(this.state, this.props.history.push)
-    } else {
+    else {
       this.validator.showMessages();
       this.forceUpdate();
     }

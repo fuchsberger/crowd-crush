@@ -20,6 +20,14 @@ defmodule CrowdCrush.Accounts.Credential do
     |> put_pass_hash()
   end
 
+  def update_changeset(credential, attrs) do
+    credential
+    |> cast(attrs, [:email, :password])
+    |> validate_length(:password, min: 6, max: 100)
+    |> unique_constraint(:email)
+    |> put_pass_hash()
+  end
+
   defp put_pass_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->

@@ -2,6 +2,7 @@ defmodule CrowdCrushWeb.UserSocket do
 
   use Phoenix.Socket
 
+  alias CrowdCrush.Repo
   alias CrowdCrush.Accounts
 
   # Channels
@@ -29,4 +30,6 @@ defmodule CrowdCrushWeb.UserSocket do
       do: "user:#{socket.assigns.current_user.id}",
       else: nil
   end
+
+  def current_user(socket), do: Map.get(socket.assigns, :current_user)
 end

@@ -16,17 +16,17 @@ const signinSuccess = (socket, publicChannel, userChannel, username) => ({
   username
 });
 
-const signinFailed = () => ({ type: types.SIGNIN_FAILED });
+const error = error => ({ error, type: types.ERROR })
 
-const resetError = () => ({ type: types.RESET_ERROR });
+const resetError = () => ({ type: types.RESET_ERROR })
 
 const updateAccount = ( username = null ) => ({ type: types.UPDATE_ACCOUNT, username })
 
 export default {
+  error,
   initialize,
   startOperation,
   signinSuccess,
-  signinFailed,
   resetError,
   updateAccount
 };
