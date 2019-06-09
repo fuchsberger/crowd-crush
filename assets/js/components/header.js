@@ -19,7 +19,7 @@ class Header extends Component {
   render(){
     const { location, history, signOut, username } = this.props
     return(
-      <Menu id="menu" attached='top' inverted stackable>
+      <Menu attached='top' inverted stackable>
         <Menu.Item header>Crowd Crush</Menu.Item>
         <Menu.Item
           active={this.state.open}

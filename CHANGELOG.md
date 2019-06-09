@@ -13,6 +13,8 @@ a.b.c
 * improvements to login and logout, logout now also deletes session on server
 * new settings page with much improved functionality
 * remove name field from user (had no purpose)
+* implemented mobile menu
+* improved flash message system
 
 ### 0.11.1
 * optimized css import mechanics

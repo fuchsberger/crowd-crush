@@ -1,12 +1,12 @@
 /* MENU TWEAKS  */
 
 /* hide menu button on non-mobile devices */
-#menu :nth-child(2) { display: none; }
+#collapse-button { display: none; }
 
 /* on mobile devices */
 @media only screen and (max-width: 767px){
   /* always show menu button */
-  #menu :nth-child(2) {
+  #collapse-button {
     display: block;
     width:auto!important;
     position: absolute;
@@ -14,14 +14,19 @@
   }
 
   /* hide menu items by default */
-  #menu :nth-child(n+3):nth-last-child(n) { display: none; }
+  #collapse-button ~ .item,
+  #collapse-button ~ .right.menu { display: none; }
 
   /* show menu items, if menu button is active */
-  #menu :nth-child(2).active ~ .item,
-  #menu :nth-child(2).active ~ .right.menu { display: block; }
+  #collapse-button.active ~ .item,
+  #collapse-button.active ~ .right.menu { display: block; }
 }
 
+/* LOGIN FORM */
 #login-container .column { max-width: 400px; }
+
+
+/* TODO: go over and delete as no longer required */
 
 /* Controls */
 
