@@ -38,7 +38,7 @@ const initialize = (signOut = false) => {
         .join()
         .receive('ok', ({ last_updated, videos }) => {
           pChannel.params.last_updated = last_updated;
-          dispatch(Video.all(videos));
+          dispatch(Video.load(videos));
         });
     }
 

@@ -1,7 +1,9 @@
-const ALL = 'videos/ALL'
+const LOAD = 'videos/LOAD'
 const DELETE_ALL = 'videos/DELETE_ALL'
+const SORT = 'videos/SORT'
 
 export default {
-  ALL,
-  DELETE_ALL
+  LOAD,
+  DELETE_ALL,
+  SORT
 }

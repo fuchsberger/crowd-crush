@@ -1,9 +1,25 @@
-import types from "./types";
+import types from "./types"
 
-export default function reducer(state = null, { type, videos }) {
+const initialState = {
+  data: null,
+  sortColumn: 'title',
+  sortDirection: 'ascending'
+}
+
+export default function reducer(state = initialState, { type, columnName, videos }) {
   switch (type) {
-    case types.ALL:
-      return state ? {...state, ...videos} : { ...videos }
+
+    case types.LOAD:
+      return {...state, data: state.data ? state.data.concat(videos) : videos }
+
+    case types.SORT:
+      if(columnName !== state.sortColumn)
+        return {...state, sortColumn: columnName, sortDirection: 'ascending' }
+
+      return {
+        ...state,
+        sortDirection: state.sortDirection === 'ascending' ? 'descending' : 'ascending'
+      }
 
     case types.UPDATE_ALL:
       nState = { ...state };

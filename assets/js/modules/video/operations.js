@@ -2,10 +2,13 @@ import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
 
 // sync operations
-const all = actions.all;
 const deleteAll = actions.deleteAll;
+const load = actions.load;
+const sort = columnName => actions.sort(columnName)
 
 // async operations ( preceded with _ )
+
+
 
 const _deleteAll = ( ids ) => {
   return (dispatch, store) => {
@@ -39,7 +42,8 @@ export const _updateAll = (ids, changes) => {
 }
 
 export default {
-  all,
+  load,
+  sort,
   deleteAll,
   _deleteAll,
   _insert,

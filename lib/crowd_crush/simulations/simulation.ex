@@ -41,27 +41,21 @@ defmodule CrowdCrush.Simulation do
   end
 
   def list_videos(syncTime) do
-    now = NaiveDateTime.utc_now()
-
-    markers_count = from m in Marker,
-      select: %{count: count()}, group_by: m.video_id
-
     videos = from(v in Video,
-      where: v.updated_at > ^syncTime,
-      preload: [markers: ^markers_count],
-      select: map(v, [:id, :title, :youtubeID, :inserted_at, markers: [:count]])
-    )
+      join: m in assoc(v, :markers),
+      select: %{
+        id: v.id,
+        title: v.title,
+        marker_count: count(m.id),
+        inserted_at: v.inserted_at,
+        youtubeID: v.youtubeID
+      },
+      group_by: v.id,
+      where: v.updated_at > ^syncTime)
     |> Repo.all()
-    |> Enum.into(%{}, fn v ->
-      [ markers ] = v.markers
-      {
-        v.id,
-        Map.delete(v, :id)
-        |> Map.put(:markers, markers.count)
-        |> Map.put(:inserted_at, NaiveDateTime.to_iso8601(v.inserted_at) <> "Z")
-      }
-    end)
-    {now, videos}
+    |> View.render_many(VideoView, "video.json")
+
+    { NaiveDateTime.utc_now(), videos }
   end
 
   def get_video_details(video_id) do
