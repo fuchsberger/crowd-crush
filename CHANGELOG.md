@@ -15,6 +15,8 @@ a.b.c
 * remove name field from user (had no purpose)
 * implemented mobile menu
 * improved flash message system
+* implmeneted simple sortable video list view
+* removed default footer (unnecessary)
 
 ### 0.11.1
 * optimized css import mechanics

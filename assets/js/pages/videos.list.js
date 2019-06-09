@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { map } from 'lodash/collection'
+import TimeAgo from 'react-timeago'
 import { Container, Table } from 'semantic-ui-react'
 import Loading from '../components/loading'
 import { videoOperations as Video, videoSelectors } from '../modules/video'
@@ -27,7 +29,7 @@ class VideosList extends Component {
 
   render() {
 
-    const { loading, sort, sortColumn, sortDirection, videos } = this.props
+    const { loading, history, sort, sortColumn, sortDirection, videos } = this.props
 
     if(loading) return <Loading />
 
@@ -36,7 +38,7 @@ class VideosList extends Component {
 
     return (
       <Container>
-        <Table compact sortable celled fixed>
+        <Table compact selectable sortable fixed>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell
@@ -46,10 +48,10 @@ class VideosList extends Component {
                 Title
               </Table.HeaderCell>
               <Table.HeaderCell
-                sorted={sortColumn === 'youtubeID' ? sortDirection : null}
-                onClick={() => sort('youtubeID')}
+                sorted={sortColumn === 'marker_count' ? sortDirection : null}
+                onClick={() => sort('marker_count')}
               >
-                YoutubeID
+                Markers
               </Table.HeaderCell>
               <Table.HeaderCell
                 sorted={sortColumn === 'inserted_at' ? sortDirection : null}
@@ -60,11 +62,11 @@ class VideosList extends Component {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {map(videos, ({ id, title, youtubeID, inserted_at }) => (
-              <Table.Row key={id}>
+            {map(videos, ({ id, title, marker_count, inserted_at }) => (
+              <Table.Row key={id} onClick={() => history.push(`/videos/${id}`)}>
                 <Table.Cell>{title}</Table.Cell>
-                <Table.Cell>{youtubeID}</Table.Cell>
-                <Table.Cell>{inserted_at}</Table.Cell>
+                <Table.Cell>{marker_count}</Table.Cell>
+                <Table.Cell><TimeAgo date={inserted_at} /></Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>

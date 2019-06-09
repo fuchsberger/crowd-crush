@@ -8,7 +8,7 @@ import { render } from "react-dom"
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
 import { Provider } from "react-redux"
 import store from "./store"
-import { Flash, Footer, Header, PRoute } from "./components"
+import { Flash, Header, PRoute } from "./components"
 import Pages from "./pages"
 import { sessionOperations as Session } from "./modules/session"
 import { simOperations as Sim } from "./modules/sim"
@@ -36,7 +36,6 @@ const RootHtml = ( ) => (
           {/* default 404 if no route matches*/}
           <Route component={Pages.Error} />
         </Switch>
-        {/* <Footer /> */}
       </div>
     </BrowserRouter>
   </Provider>
