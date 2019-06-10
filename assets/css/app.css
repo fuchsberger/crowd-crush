@@ -4,7 +4,5 @@
 /* Project CSS */
 @import "bootstrap_fixes.css";
 @import "layout.css";
-@import "flash.css";
-@import "react_table.css";
 @import "simulation.css";
 @import "spinner.css";
