@@ -1,15 +1,15 @@
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import Icon from '../../utils/icons';
-import { Button, Col, Container } from 'reactstrap';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import TinyMCE from 'react-tinymce';
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import Icon from '../../utils/icons'
+import { Button, Col, Container } from 'reactstrap'
+import { AvForm, AvField } from 'availity-reactstrap-validation'
+import TinyMCE from 'react-tinymce'
 import { YOUTUBE_API_KEY, YOUTUBE_URL_REGEX, MCE_DEFAULT_CONFIG }
-from '../../ducks/constants';
-import { addVideo } from '../../modules/videoList';
-import NavBot from '../../components/layout/navbot';
-import Loading from '../../components/layout/loading';
-import ErrorView from '../home/error';
+from '../../ducks/constants'
+import { addVideo } from '../../modules/videoList'
+import NavBot from '../../components/layout/navbot'
+import Loading from '../../components/layout/loading'
+import ErrorView from '../home/error'
 
 class SimAddView extends React.Component {
   constructor(props) {

@@ -3,7 +3,7 @@ import CSS from '../css/app.css'
 import React from 'react'
 import { render } from "react-dom"
 import { connect } from 'react-redux'
-import { BrowserRouter, Route, Redirect, Switch, withRouter } from 'react-router-dom'
+import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom'
 import { Provider } from "react-redux"
 import socket from './api' // do not delete!
 import store from "./store"
@@ -12,7 +12,6 @@ import Pages from "./pages"
 import { simOperations as Sim } from "./modules/sim"
 
 const Router = ({ ready }) => {
-  console.log(ready)
   // make sure public and user channels are ready
   if(!ready) return <Loading />
 
@@ -24,10 +23,8 @@ const Router = ({ ready }) => {
       <Route path="/videos" exact component={Pages.VideoList} />
       <Route path="/videos/:id" component={Pages.VideoShow} />
 
-      {/* <Route path="/video/add" component={VideoAddView} /> */}
-
-
       {/* Private Routes (require login) */}
+      <PRoute path="/video/add" component={Pages.VideoAddView} />
       <PRoute path="/settings" component={Pages.Settings} />
 
       {/* default 404 if no route matches*/}
@@ -51,7 +48,6 @@ const RootHtml =
       <AuthenticatedRouter />
     </BrowserRouter>
   </Provider>
-
 
 // render react app
 render(RootHtml, document.getElementById( "react-root" ) );

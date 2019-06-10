@@ -8,6 +8,7 @@ a.b.c
 * c - minor updated
 
 ## 0.12.0
+* vastly improved underlying mechanisms including authentication and channel management
 * removed version from page (caused build to fail)
 * added credential table and split sensitive user data from general data
 * improvements to login and logout, logout now also deletes session on server
