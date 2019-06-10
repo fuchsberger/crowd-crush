@@ -58,8 +58,6 @@ module.exports = (env, options) => ({
     ]
   },
   plugins: [
-    // TODO: remove React and PropTypes and test if works
-    // new webpack.ProvidePlugin({ React: 'react', PropTypes: 'prop-types' }),
     new MiniCssExtractPlugin({ filename: '../css/app.css' }),
     new CopyWebpackPlugin([{ from: 'static/', to: '../' }])
   ]

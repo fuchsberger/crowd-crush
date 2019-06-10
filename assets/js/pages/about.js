@@ -1,3 +1,4 @@
+import React from 'react'
 import { Container, List } from 'semantic-ui-react'
 
 export default () => (

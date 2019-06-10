@@ -2,7 +2,7 @@
  * Referrer
  * If URL contains ?redirect=/path will redirect to that path
  */
-
+import React from 'react'
 import { Redirect, withRouter } from 'react-router-dom'
 
 const Referrer = ({ location }) => {

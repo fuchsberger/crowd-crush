@@ -14,7 +14,7 @@ defmodule CrowdCrushWeb.UserChannel do
   end
 
   def handle_in("update_account", %{"username" => username}, socket) do
-    case Accounts.update_user(socket.assigns.current_user, %{username: username}) do
+    case Accounts.update_user(socket.assigns.user_id, %{username: username}) do
       {:ok, user } ->
         {:reply, {:ok, %{
           success: "Your username was successfully changed to: #{user.username}",
@@ -26,17 +26,16 @@ defmodule CrowdCrushWeb.UserChannel do
   end
 
   def handle_in("update_account", %{"password" => password} = params, socket) do
-    case Pbkdf2.verify_pass(password, socket.assigns.current_user.credential.password_hash) do
+    user = Accounts.get_user_with_credential(socket.assigns.user_id)
+    case Pbkdf2.verify_pass(password, user.credential.password_hash) do
       true ->
         changes = Map.put(params, "password", params["new_password"])
-        user = current_user(socket)
 
         case Accounts.update_credential(user.credential, changes) do
           {:ok, credential } ->
-            user = Map.put(user, :credential, credential)
-            {:reply, {:ok, %{}}, assign(socket, :current_user, user)}
+            {:reply, {:ok, %{success: "You have changed your email/password." }}, socket}
           _ ->
-            {:reply, {:error, %{ error: "Could not update user!" }}, socket}
+            {:reply, {:error, %{ error: "Could not update email/password!" }}, socket}
         end
       false ->
         {:reply, {:error, %{ error: "Wrong password!" }}, socket}

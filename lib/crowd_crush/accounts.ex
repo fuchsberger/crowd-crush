@@ -6,17 +6,13 @@ defmodule CrowdCrush.Accounts do
   import Ecto.Query, warn: false
   require Logger
 
+  alias Ecto.Changeset
   alias CrowdCrush.Repo
   alias CrowdCrush.Accounts.{Credential, User}
   alias CrowdCrushWeb.UserView
 
   def get_user(id), do: Repo.get(User, id)
-
-  # def get_user(id) do
-  #   User
-  #   |> Repo.get(id)
-  #   |> Repo.preload([:credential])
-  # end
+  def get_user_with_credential(id), do: Repo.preload(get_user(id), [:credential])
 
   def get_user_by_email(email) do
     from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)
@@ -37,7 +33,11 @@ defmodule CrowdCrush.Accounts do
     end
   end
 
-  def update_user(user, changes), do: Repo.update(User.changeset(user, changes))
+  def update_user(id, changes) do
+    Repo.get(User, id)
+    |> Changeset.change(changes)
+    |> Repo.update()
+  end
 
   def update_credential(credential, changes),
     do: Repo.update(Credential.update_changeset(credential, changes))

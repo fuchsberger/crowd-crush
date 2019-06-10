@@ -37,8 +37,19 @@ class Settings extends Component {
   handleSubmit = () => {
     this.setState({ submitted: true })
 
-    if (this.validator.allValid())
-      this.props.updateAccount(this.state)
+    if (this.validator.allValid()){
+      const { activeIndex, email, password, new_password, username } = this.state
+
+      // send only relevant data to server
+      let data
+      switch(activeIndex){
+        case 0: data = { username: username}; break;
+        case 1: data = { email, password }; break;
+        case 2: data = { new_password, password }
+      }
+
+      this.props.updateAccount(data)
+    }
     else {
       this.validator.showMessages();
       this.forceUpdate();

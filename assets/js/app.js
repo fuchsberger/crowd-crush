@@ -34,8 +34,7 @@ const Router = ({ ready }) => {
 }
 
 const mapStateToProps = ( store ) => ({
-  ready: store.videos.data !== null
-    &&  window.userToken === "" ? true : store.session.username != null
+  ready: store.videos.data && (window.userToken === "" ? true : store.session.username != null)
 })
 const AuthenticatedRouter = withRouter(connect(mapStateToProps)(Router))
 
