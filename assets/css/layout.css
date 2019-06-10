@@ -1,4 +1,5 @@
 /* MENU TWEAKS  */
+.ui[class*="top attached"].menu { margin-bottom: 1em!important; }
 
 /* hide menu button on non-mobile devices */
 #collapse-button { display: none; }

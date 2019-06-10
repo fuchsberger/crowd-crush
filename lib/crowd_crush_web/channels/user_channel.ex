@@ -1,19 +1,20 @@
 defmodule CrowdCrushWeb.UserChannel do
   use CrowdCrushWeb, :channel
-  import CrowdCrush.Accounts
 
+  alias CrowdCrush.Accounts
   alias CrowdCrushWeb.UserView
 
   def join("user", _params, socket) do
-    if Map.has_key?(socket.assigns, :current_user) do
-      {:ok, %{ username: socket.assigns.current_user.username }, socket}
-    else
-      {:error, %{ error: "Unauthorized." }}
+    case Accounts.get_user(socket.assigns.user_id) do
+      user ->
+        {:ok, %{ username: user.username }, socket}
+      _ ->
+        {:error, %{ error: "Unauthorized" }}
     end
   end
 
   def handle_in("update_account", %{"username" => username}, socket) do
-    case update_user(socket.assigns.current_user, %{username: username}) do
+    case Accounts.update_user(socket.assigns.current_user, %{username: username}) do
       {:ok, user } ->
         {:reply, {:ok, %{
           success: "Your username was successfully changed to: #{user.username}",
@@ -30,7 +31,7 @@ defmodule CrowdCrushWeb.UserChannel do
         changes = Map.put(params, "password", params["new_password"])
         user = current_user(socket)
 
-        case update_credential(user.credential, changes) do
+        case Accounts.update_credential(user.credential, changes) do
           {:ok, credential } ->
             user = Map.put(user, :credential, credential)
             {:reply, {:ok, %{}}, assign(socket, :current_user, user)}

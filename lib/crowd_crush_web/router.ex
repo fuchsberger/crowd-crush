@@ -8,11 +8,7 @@ defmodule CrowdCrushWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :put_layout, false
-  end
-
-  pipeline :api do
-    plug :accepts, ["json"]
-    plug :fetch_session
+    plug CrowdCrushWeb.Auth
   end
 
   # scope "/" do
@@ -22,15 +18,14 @@ defmodule CrowdCrushWeb.Router do
   # end
 
   scope "/", CrowdCrushWeb do
-    pipe_through :api
-    post "/login", SessionsController, :create
-    delete "/login", SessionsController, :delete
-  end
-
-  scope "/", CrowdCrushWeb do
     pipe_through :browser # Use the default browser stack
     get "/export/csv/:id", ExportController, :export_csv
     get "/export/eclipse/:id", ExportController, :export_eclipse
+
+    post "/login", SessionController, :create
+    get "/login", SessionController, :new
+    get "/logout", SessionController, :delete
+
     get "/", PageController, :index
     get "/*path", PageController, :index
   end

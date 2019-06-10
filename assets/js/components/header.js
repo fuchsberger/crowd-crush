@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { Link } from 'react-router-dom'
-import { Dropdown, Icon, Form, Menu } from 'semantic-ui-react'
+import { Dropdown, Icon, Input, Form, Menu } from 'semantic-ui-react'
 import { sessionOperations as Session } from '../modules/session'
 
 class Header extends Component {
@@ -17,7 +17,7 @@ class Header extends Component {
   )
 
   render(){
-    const { location, history, signOut, username } = this.props
+    const { location, username } = this.props
     return(
       <Menu attached='top' inverted stackable>
         <Menu.Item header>Crowd Crush</Menu.Item>
@@ -36,31 +36,12 @@ class Header extends Component {
         {username && this.item('/users', 'Users', 'users')}
 
         <Menu.Menu  position='right'>
-
-          {/* <Menu.Item>
-            <Input icon='search' disabled placeholder='Search...' />
-          </Menu.Item> */}
           {!username && location.pathname != '/login' && this.item('/login', 'Login', 'power')}
-
           {username &&
             <Dropdown item icon='caret down' text={username}>
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/settings">
-                  <Icon name='cog' />
-                  Settings
-                </Dropdown.Item>
-                <Form
-                  acceptCharset="UTF-8"
-                  action="/logout"
-                  method="post"
-                >
-                  <Form.Input type='hidden' name='_utf8' value="✓" />
-                  <Form.Input type='hidden' name='_csrf_token' value={window.csrfToken}/>
-                  <Dropdown.Item as={Form.Button}>
-                    <Icon name='power' />
-                    Sign Out
-                  </Dropdown.Item>
-                </Form>
+                <Dropdown.Item as={Link} to='/settings' icon='cog' content='Settings' />
+                <Dropdown.Item as='a' href='/logout' icon='power' content='Sign Out' />
               </Dropdown.Menu>
             </Dropdown>
           }
@@ -71,5 +52,4 @@ class Header extends Component {
 }
 
 const mapStateToProps = ({ session }) => ({ username: session.username });
-const mapDispatchToProps = { signOut: Session.signOut }
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
+export default withRouter(connect(mapStateToProps)(Header));

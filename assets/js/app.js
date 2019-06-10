@@ -1,3 +1,5 @@
+import CSS from '../css/app.css'
+
 import React from 'react'
 import { render } from "react-dom"
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'

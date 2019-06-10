@@ -1,29 +1,16 @@
-import { connect } from 'react-redux'
-import { Route, Redirect, withRouter } from "react-router-dom"
-
 /**
  * Protected Route
  * Wraps a Route and redirects to login, if user is not authentificated
  */
 
-const PRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={props => (
-    localStorage.getItem('user_token') ? (
-      <Component {...props}/>
-    ) : (
-      <Redirect to={{
-        pathname: '/login',
-        state: {
-          error: "Please authenticate.",
-          from: rest.location.pathname
-        }
-      }}/>
-    )
-  )}/>
+import { connect } from 'react-redux'
+import { Route, Redirect, withRouter } from 'react-router-dom'
+
+const ProtectedRoute = ({ component, isAuthentificated, path, ...rest }) => (
+  isAuthentificated
+  ? <Route path={path} component={component} />
+  : <Redirect to={{ pathname: '/login', state: { referrer: rest.location.pathname }}}/>
 )
 
-const mapStateToProps = ( store ) => ({
-  isAuthentificated: !!store.session.user,
-});
-
-export default withRouter(connect(mapStateToProps)(PRoute));
+const mapStateToProps = ( store ) => ({ isAuthentificated: store.session.username != null })
+export default withRouter(connect(mapStateToProps)(ProtectedRoute));

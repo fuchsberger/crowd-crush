@@ -10,11 +10,13 @@ defmodule CrowdCrush.Accounts do
   alias CrowdCrush.Accounts.{Credential, User}
   alias CrowdCrushWeb.UserView
 
-  def get_user(id) do
-    User
-    |> Repo.get(id)
-    |> Repo.preload([:credential])
-  end
+  def get_user(id), do: Repo.get(User, id)
+
+  # def get_user(id) do
+  #   User
+  #   |> Repo.get(id)
+  #   |> Repo.preload([:credential])
+  # end
 
   def get_user_by_email(email) do
     from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)

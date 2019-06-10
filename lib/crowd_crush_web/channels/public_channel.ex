@@ -3,11 +3,12 @@ defmodule CrowdCrushWeb.PublicChannel do
   import CrowdCrush.Simulation
 
   def join("public", params, socket) do
-    syncTime = Map.get(params, :syncTime, ~N[2000-01-01 10:00:00])
-    {now, videos} = list_videos(syncTime)
+    # Logger.warn "#{inspect params}"
+    last_updated = Map.get(params, :last_updated, ~N[2000-01-01 10:00:00])
+    {now, videos} = list_videos(last_updated)
 
     params = %{
-      syncTime: now,
+      last_updated: now,
       videos: videos
     }
     {:ok, params, socket}

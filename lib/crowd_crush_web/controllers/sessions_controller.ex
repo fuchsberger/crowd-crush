@@ -1,33 +1,31 @@
-defmodule CrowdCrushWeb.SessionsController do
-  use Phoenix.Controller
+defmodule CrowdCrushWeb.SessionController do
+  use CrowdCrushWeb, :controller
 
-  alias CrowdCrushWeb.Auth
+  alias CrowdCrushWeb.{Auth, PageView}
 
-  def create(conn, %{"session" => %{"email" => email, "password" => pass}}) do
+  # fake login controller action used after logout to  directly redirect to login
+  def new(conn, _) do
+    conn
+    |> put_view(PageView)
+    |> render "index.html"
+  end
+
+  def create(conn, %{"email" => email, "password" => pass}) do
     case Auth.login_by_email_and_pass(conn, email, pass) do
       {:ok, conn} ->
-
-        render conn, "show.json",
-          user: conn.assigns.current_user,
-          user_token: conn.assigns.user_token
+        redirect(conn, to: Routes.page_path(conn, :index))
 
       {:error, _reason, conn} ->
         conn
-        |> put_status(:unauthorized)
-        |> render("error.json")
+        |> put_flash(:error, "Invalid email/password combination")
+        |> put_view(CrowdCrushWeb.PageView)
+        |> render("index.html")
     end
   end
 
-  def delete(conn, _params) do
+  def delete(conn, _) do
     conn
     |> Auth.logout()
-    |> send_resp(:ok, "logged out.")
-    |> halt()
-  end
-
-  def unauthenticated(conn, _params) do
-    conn
-    |> put_status(:forbidden)
-    |> render(CrowdCrushWeb.SessionsView, "forbidden.json", error: "Not Authenticated!")
+    |> redirect(to: Routes.session_path(conn, :new))
   end
 end

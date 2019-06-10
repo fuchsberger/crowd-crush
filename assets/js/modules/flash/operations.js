@@ -11,7 +11,9 @@ const get = ({ error=false, info=false, success=false, warning=false }) => {
   };
 };
 
-// Clears the currently active flash message.
-const clear = () => (dispatch => dispatch(actions.clear()))
+const error = error => { return dispatch => () => actions.error(error) }
 
-export default { get, clear };
+// Clears the currently active flash message.
+const clear = () => (dispatch => dispatch => dispatch(actions.clear()))
+
+export default { get, clear, error };
