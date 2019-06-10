@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { Link } from 'react-router-dom'
-import { Dropdown, Icon, Menu } from 'semantic-ui-react'
+import { Dropdown, Icon, Form, Menu } from 'semantic-ui-react'
 import { sessionOperations as Session } from '../modules/session'
 
 class Header extends Component {
@@ -49,10 +49,18 @@ class Header extends Component {
                   <Icon name='cog' />
                   Settings
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => signOut(history.push)}>
-                  <Icon name='power' />
-                  Sign Out
-                </Dropdown.Item>
+                <Form
+                  acceptCharset="UTF-8"
+                  action="/logout"
+                  method="post"
+                >
+                  <Form.Input type='hidden' name='_utf8' value="✓" />
+                  <Form.Input type='hidden' name='_csrf_token' value={window.csrfToken}/>
+                  <Dropdown.Item as={Form.Button}>
+                    <Icon name='power' />
+                    Sign Out
+                  </Dropdown.Item>
+                </Form>
               </Dropdown.Menu>
             </Dropdown>
           }

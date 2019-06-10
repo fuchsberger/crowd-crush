@@ -1,4 +1,5 @@
 const ERROR = "sesson/ERROR"
+const LOGIN = 'session/LOGIN'
 const INITIALIZE = "session/INITIALIZE"
 const START_OPERATION = "sessions/START_OPERATION"
 const SIGNED_IN = "session/SIGNED_IN"
@@ -8,6 +9,7 @@ const UPDATE_ACCOUNT = "session/UPDATE_ACCOUNT"
 
 export default {
   ERROR,
+  LOGIN,
   INITIALIZE,
   START_OPERATION,
   SIGNED_IN,

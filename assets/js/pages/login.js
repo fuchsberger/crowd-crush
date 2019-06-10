@@ -12,14 +12,12 @@ class Login extends Component {
 
   onInputChange = (e, { name, value }) => this.setState({ [name]: value })
 
-  handleSubmit = () => {
+  handleSubmit = (e) => {
     this.setState({ submitted: true })
 
-    if (this.validator.allValid())
-      this.props.signIn(this.state, this.props.history.push)
-    else {
-      this.validator.showMessages();
-      this.forceUpdate();
+    if (!this.validator.allValid()){
+      this.validator.showMessages()
+      this.forceUpdate()
     }
   }
 
@@ -47,10 +45,16 @@ class Login extends Component {
                 />
             }
             <Form
+              acceptCharset="UTF-8"
+              action="/login"
               className="attached fluid segment"
               loading={this.props.loading}
+              method="post"
               onSubmit={this.handleSubmit}
             >
+              <Form.Input type='hidden' name='_utf8' value="✓" />
+              <Form.Input type='hidden' name='_csrf_token' value={window.csrfToken}/>
+
               <Form.Input
                 error={submitted && !this.validator.fieldValid('email')}
                 label={emailError}

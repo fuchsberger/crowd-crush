@@ -1,5 +1,7 @@
 const configPublicChannel = ( socket, dispatch ) => {
-  const channel = socket.channel('public');
+
+  const params = {est: "hi"}// socket.channel('public').params()
+  const channel = socket.channel('public', params);
 
   // Listen for events
 

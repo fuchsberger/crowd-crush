@@ -2,10 +2,8 @@ import types from "./types"
 
 const initialState = {
   error: null,
-  loading: true,
+  loading: false,
   socket: null,
-  publicChannel: null,
-  userChannel: null,
   username: null
 };
 
@@ -17,11 +15,13 @@ const initialState = {
  * RESET_ERROR - we leave sign_in page (when error was present) -> reset error
  */
 
-export default function reducer(state = initialState, {type, ...payload}) {
+export default function reducer(state = initialState, {type, username, ...payload}) {
   switch (type) {
     case types.START_OPERATION: return { ...state, loading: true }
 
     case types.ERROR: return { ...state, loading: false, error: payload.error }
+
+    case types.LOGIN: return { ...state, loading: false, error: false, username }
 
     case types.INITIALIZE:
     case types.SIGNED_OUT:

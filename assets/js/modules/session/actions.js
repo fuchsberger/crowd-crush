@@ -1,6 +1,8 @@
 import types from "./types"
 
-const startOperation = () => ({ type: types.START_OPERATION });
+const startOperation = () => ({ type: types.START_OPERATION })
+
+const login = username => ({ type: types.LOGIN, username })
 
 const initialize = (socket, publicChannel, signout=false) => ({
   type: signout ? types.SIGNED_OUT : types.INITIALIZE,
@@ -24,6 +26,7 @@ const updateAccount = ( username = null ) => ({ type: types.UPDATE_ACCOUNT, user
 
 export default {
   error,
+  login,
   initialize,
   startOperation,
   signinSuccess,

@@ -1,12 +1,8 @@
-// CSS imports
-// import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
-import "../node_modules/semantic-ui-css/semantic.css"
-import CSS from '../css/app.css'
-
-// Javascript imports
+import React from 'react'
 import { render } from "react-dom"
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
 import { Provider } from "react-redux"
+import socket from './api' // do not delete!
 import store from "./store"
 import { Flash, Header, PRoute } from "./components"
 import Pages from "./pages"
@@ -20,7 +16,7 @@ const RootHtml = ( ) => (
         <Header />
         <Flash />
         <Switch>
-          <Route path="/" exact render={() => (<Redirect to="/videos"/>)} />
+          <Route path="/" exact render={() => (<Redirect to="/about"/>)} />
           <Route path="/about" component={Pages.About} />
           <Route path="/login" component={Pages.Login} />
           <Route path="/simulation/:id" component={Pages.SimulationShow} />
@@ -52,5 +48,7 @@ window.addEventListener("resize", () => {
   resizeTimeout = setTimeout(resize, 200);
 });
 
-// initialize socket
-store.dispatch(Session.initialize());
+// configurePublicChannel(store.dispatch)
+
+// setTimeout(() => { console.log(socket.channel('public'))} , 1000)
+// store.dispatch(Session.initialize());
