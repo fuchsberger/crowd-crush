@@ -3,18 +3,12 @@ defmodule CrowdCrushWeb.SessionController do
 
   alias CrowdCrushWeb.{Auth, PageView}
 
-  # fake login controller action used after logout to  directly redirect to login
-  def new(conn, _) do
-    conn
-    |> put_view(PageView)
-    |> render "index.html"
-  end
-
-  def create(conn, %{"email" => email, "password" => pass}) do
+  def create(conn, %{"email" => email, "password" => pass} = params) do
     case Auth.login_by_email_and_pass(conn, email, pass) do
       {:ok, conn} ->
-        redirect(conn, to: Routes.page_path(conn, :index))
-
+        if Map.has_key?(params, "redirect"),
+          do: redirect(conn, to: Routes.page_path(conn, :index, redirect: params["redirect"])),
+          else: redirect(conn, to: Routes.page_path(conn, :index))
       {:error, _reason, conn} ->
         conn
         |> put_flash(:error, "Invalid email/password combination")
@@ -26,6 +20,6 @@ defmodule CrowdCrushWeb.SessionController do
   def delete(conn, _) do
     conn
     |> Auth.logout()
-    |> redirect(to: Routes.session_path(conn, :new))
+    |> redirect(to: Routes.page_path(conn, :index, redirect: "/login"))
   end
 end

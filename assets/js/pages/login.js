@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from "react-router-dom"
-import { Grid, Form, Icon, List, Message } from 'semantic-ui-react'
+import { Grid, Form, Icon, Input, List, Message } from 'semantic-ui-react'
 import Validator from 'simple-react-validator'
 
 class Login extends Component {
@@ -15,7 +15,6 @@ class Login extends Component {
     if (this.validator.allValid()) this.setState({ loading: true })
     else {
       this.validator.showMessages()
-      // this.forceUpdate()
       this.setState({ submitted: true })
     }
   }
@@ -45,11 +44,9 @@ class Login extends Component {
             method="post"
             onSubmit={this.handleSubmit}
           >
-            <Form.Input type='hidden' as='input' name='_utf8' value="✓" />
-            <Form.Input type='hidden' as='input' name='_csrf_token' value={window.csrfToken}/>
-            {
-              redirect && <Form.Input type='hidden' as='input' name='redirect' value={redirect}/>
-            }
+            <Input type='hidden' name='_utf8' value="✓" />
+            <Input type='hidden' name='_csrf_token' value={window.csrfToken}/>
+            { redirect && <Input type='hidden' name='redirect' value={redirect}/> }
 
             <Form.Input
               error={submitted && !this.validator.fieldValid('email')}

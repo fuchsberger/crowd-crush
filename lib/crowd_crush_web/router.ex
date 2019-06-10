@@ -23,7 +23,6 @@ defmodule CrowdCrushWeb.Router do
     get "/export/eclipse/:id", ExportController, :export_eclipse
 
     post "/login", SessionController, :create
-    get "/login", SessionController, :new
     get "/logout", SessionController, :delete
 
     get "/", PageController, :index

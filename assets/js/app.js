@@ -2,45 +2,59 @@ import CSS from '../css/app.css'
 
 import React from 'react'
 import { render } from "react-dom"
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { BrowserRouter, Route, Redirect, Switch, withRouter } from 'react-router-dom'
 import { Provider } from "react-redux"
 import socket from './api' // do not delete!
 import store from "./store"
-import { Flash, Header, PRoute } from "./components"
+import { Flash, Header, Loading, PRoute, Referrer } from "./components"
 import Pages from "./pages"
-import { sessionOperations as Session } from "./modules/session"
 import { simOperations as Sim } from "./modules/sim"
 
-const RootHtml = ( ) => (
+const Router = ({ ready }) => {
+  console.log(ready)
+  // make sure public and user channels are ready
+  if(!ready) return <Loading />
+
+  return(
+    <Switch>
+      <Route path="/about" component={Pages.About} />
+      <Route path="/login" component={Pages.Login} />
+      <Route path="/simulation/:id" component={Pages.SimulationShow} />
+      <Route path="/videos" exact component={Pages.VideoList} />
+      <Route path="/videos/:id" component={Pages.VideoShow} />
+
+      {/* <Route path="/video/add" component={VideoAddView} /> */}
+
+
+      {/* Private Routes (require login) */}
+      <PRoute path="/settings" component={Pages.Settings} />
+
+      {/* default 404 if no route matches*/}
+      <Route component={Pages.Error} />
+    </Switch>
+  )
+}
+
+const mapStateToProps = ( store ) => ({
+  ready: store.videos.data !== null
+    &&  window.userToken === "" ? true : store.session.username != null
+})
+const AuthenticatedRouter = withRouter(connect(mapStateToProps)(Router))
+
+const RootHtml =
   <Provider store={ store }>
     <BrowserRouter>
-      <div>
-        <Header />
-        <Flash />
-        <Switch>
-          <Route path="/" exact render={() => (<Redirect to="/about"/>)} />
-          <Route path="/about" component={Pages.About} />
-          <Route path="/login" component={Pages.Login} />
-          <Route path="/simulation/:id" component={Pages.SimulationShow} />
-          <Route path="/videos" exact component={Pages.VideoList} />
-          <Route path="/videos/:id" component={Pages.VideoShow} />
-          {/*
-          <Route path="/video/add" component={VideoAddView} />
-          */}
-
-          {/* Private Routes (require login) */}
-          <PRoute path="/settings" component={Pages.Settings} />
-
-          {/* default 404 if no route matches*/}
-          <Route component={Pages.Error} />
-        </Switch>
-      </div>
+      <Referrer />
+      <Header />
+      <Flash />
+      <AuthenticatedRouter />
     </BrowserRouter>
   </Provider>
-);
+
 
 // render react app
-render( <RootHtml />, document.getElementById( "react-root" ) );
+render(RootHtml, document.getElementById( "react-root" ) );
 
 // listen for window resizes
 let resizeTimeout;
@@ -49,8 +63,3 @@ window.addEventListener("resize", () => {
   if(!!resizeTimeout) clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(resize, 200);
 });
-
-// configurePublicChannel(store.dispatch)
-
-// setTimeout(() => { console.log(socket.channel('public'))} , 1000)
-// store.dispatch(Session.initialize());

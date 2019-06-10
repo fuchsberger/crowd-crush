@@ -39,7 +39,7 @@ const Error = ({ code = 404, heading=null, body=null, location }) => {
         body = (
           <div>
             <p className="lead">
-              No match for <Label><code>{ location.pathname }</code></Label>
+              No match for <Label as='label'><code>{ location.pathname }</code></Label>
             </p>
             <p>
               The given page doesn't exist. This could be because the url was
