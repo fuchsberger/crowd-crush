@@ -3,17 +3,17 @@
 import About from './about'
 import Error from './error'
 import Login from './login'
-import SimulationShow from './simulation.show'
+// import SimulationShow from './simulation.show.jss'
 import Settings from './settings'
 import VideoList from './videos.list'
-import VideoShow from './videos.show'
+// import VideoShow from './videos.show.jss'
 
 export default {
   About,
   Error,
   Login,
-  SimulationShow,
+  // SimulationShow,
   Settings,
   VideoList,
-  VideoShow
+  // VideoShow
 }
