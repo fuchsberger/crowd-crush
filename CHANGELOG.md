@@ -18,6 +18,7 @@ a.b.c
 * improved flash message system
 * implmeneted simple sortable video list view
 * removed default footer (unnecessary)
+* server flash messages are now integrated into react flash system
 
 ### 0.11.1
 * optimized css import mechanics
