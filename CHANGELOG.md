@@ -7,6 +7,13 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.12.2
+* flash messages are now displayed attached to header and use reselect for smarter DOM updates
+* removed flash component
+
+## 0.12.1
+* server flash messages are now integrated into react flash system
+
 ## 0.12.0
 * vastly improved underlying mechanisms including authentication and channel management
 * removed version from page (caused build to fail)
@@ -18,7 +25,7 @@ a.b.c
 * improved flash message system
 * implmeneted simple sortable video list view
 * removed default footer (unnecessary)
-* server flash messages are now integrated into react flash system
+
 
 ### 0.11.1
 * optimized css import mechanics

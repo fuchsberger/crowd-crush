@@ -12,7 +12,7 @@ defmodule CrowdCrushWeb.SessionController do
       {:error, _reason, conn} ->
         conn
         |> put_flash(:error, "Invalid email/password combination")
-        |> put_view(CrowdCrushWeb.PageView)
+        |> put_view(PageView)
         |> render("index.html")
     end
   end

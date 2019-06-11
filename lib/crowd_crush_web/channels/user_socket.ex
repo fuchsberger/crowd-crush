@@ -1,7 +1,6 @@
 defmodule CrowdCrushWeb.UserSocket do
 
   use Phoenix.Socket
-  alias CrowdCrush.Accounts
 
   # Channels
   channel "public", CrowdCrushWeb.PublicChannel
@@ -19,7 +18,4 @@ defmodule CrowdCrushWeb.UserSocket do
   end
 
   def id(socket), do: "users_socket:#{socket.assigns.user_id}"
-
-  # TODO: Delete
-  def current_user(socket), do: Map.get(socket.assigns, :current_user)
 end

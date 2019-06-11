@@ -2,14 +2,13 @@ defmodule CrowdCrushWeb.UserChannel do
   use CrowdCrushWeb, :channel
 
   alias CrowdCrush.Accounts
-  alias CrowdCrushWeb.UserView
 
   def join("user", _params, socket) do
     case Accounts.get_user(socket.assigns.user_id) do
+      nil ->
+        {:error, %{ error: "Unauthorized" }}
       user ->
         {:ok, %{ username: user.username }, socket}
-      _ ->
-        {:error, %{ error: "Unauthorized" }}
     end
   end
 
@@ -32,7 +31,7 @@ defmodule CrowdCrushWeb.UserChannel do
         changes = Map.put(params, "password", params["new_password"])
 
         case Accounts.update_credential(user.credential, changes) do
-          {:ok, credential } ->
+          {:ok, _credential } ->
             {:reply, {:ok, %{success: "You have changed your email/password." }}, socket}
           _ ->
             {:reply, {:error, %{ error: "Could not update email/password!" }}, socket}

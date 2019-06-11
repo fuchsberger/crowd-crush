@@ -1,5 +1,5 @@
 /* MENU TWEAKS  */
-.ui[class*="top attached"].menu { margin-bottom: 1em!important; }
+/* .ui[class*="top attached"].menu { margin-bottom: 1em!important; } */
 
 /* hide menu button on non-mobile devices */
 #collapse-button { display: none; }
@@ -21,6 +21,24 @@
   /* show menu items, if menu button is active */
   #collapse-button.active ~ .item,
   #collapse-button.active ~ .right.menu { display: block; }
+}
+
+/* NOTIFICATIONS */
+
+@keyframes slideInFromTop {
+  from {padding: 0; max-height: 0px;}
+  to {padding: 1em 1.5em; max-height: 50px;}
+}
+
+.menu ~ .message{
+  min-height:0;
+}
+
+.menu ~ .message.warning {
+  animation-fill-mode: forwards;
+  animation-duration: 1s;
+  animation-name: slideInFromTop;
+  overflow:hidden;
 }
 
 /* LOGIN FORM */

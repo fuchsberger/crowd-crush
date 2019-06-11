@@ -24,28 +24,20 @@ defmodule CrowdCrushWeb do
       import CrowdCrushWeb.Gettext
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
-
       require Logger
     end
   end
 
   def view do
     quote do
-      use Phoenix.View,
-        root: "lib/crowd_crush_web/templates",
-        namespace: CrowdCrushWeb
-
-      # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
-
-      # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
+      use Phoenix.View, root: "lib/crowd_crush_web/templates", namespace: CrowdCrushWeb
 
+      import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
       import CrowdCrushWeb.ErrorHelpers
       import CrowdCrushWeb.Gettext
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
-
       require Logger
     end
   end
@@ -53,6 +45,7 @@ defmodule CrowdCrushWeb do
   def router do
     quote do
       use Phoenix.Router
+
       import Plug.Conn
       import Phoenix.Controller
     end
@@ -63,10 +56,8 @@ defmodule CrowdCrushWeb do
       use Phoenix.Channel
 
       import CrowdCrushWeb.Gettext
-      import CrowdCrushWeb.UserSocket, only: [ current_user: 1 ]
 
       alias Phoenix.View
-
       require Logger
     end
   end
@@ -74,7 +65,5 @@ defmodule CrowdCrushWeb do
   @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
-  defmacro __using__(which) when is_atom(which) do
-    apply(__MODULE__, which, [])
-  end
+  defmacro __using__(which) when is_atom(which), do: apply(__MODULE__, which, [])
 end

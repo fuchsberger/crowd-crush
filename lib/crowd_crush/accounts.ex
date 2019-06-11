@@ -4,12 +4,9 @@ defmodule CrowdCrush.Accounts do
   """
 
   import Ecto.Query, warn: false
-  require Logger
 
-  alias Ecto.Changeset
   alias CrowdCrush.Repo
   alias CrowdCrush.Accounts.{Credential, User}
-  alias CrowdCrushWeb.UserView
 
   def get_user(id), do: Repo.get(User, id)
   def get_user_with_credential(id), do: Repo.preload(get_user(id), [:credential])
@@ -35,99 +32,13 @@ defmodule CrowdCrush.Accounts do
 
   def update_user(id, changes) do
     Repo.get(User, id)
-    |> Changeset.change(changes)
+    |> User.changeset(changes)
     |> Repo.update()
   end
 
-  def update_credential(credential, changes),
-    do: Repo.update(Credential.update_changeset(credential, changes))
-
-  def validate_password(user, password) do
-    Comeonin.Bcrypt.checkpw(password, user.encrypted_password)
-  end
-
-  def list_credentials do
-    Repo.all(Credential)
-  end
-
-  @doc """
-  Gets a single credential.
-
-  Raises `Ecto.NoResultsError` if the Credential does not exist.
-
-  ## Examples
-
-      iex> get_credential!(123)
-      %Credential{}
-
-      iex> get_credential!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_credential!(id), do: Repo.get!(Credential, id)
-
-  @doc """
-  Creates a credential.
-
-  ## Examples
-
-      iex> create_credential(%{field: value})
-      {:ok, %Credential{}}
-
-      iex> create_credential(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_credential(attrs \\ %{}) do
-    %Credential{}
-    |> Credential.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a credential.
-
-  ## Examples
-
-      iex> update_credential(credential, %{field: new_value})
-      {:ok, %Credential{}}
-
-      iex> update_credential(credential, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_credential(%Credential{} = credential, attrs) do
     credential
     |> Credential.changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a Credential.
-
-  ## Examples
-
-      iex> delete_credential(credential)
-      {:ok, %Credential{}}
-
-      iex> delete_credential(credential)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_credential(%Credential{} = credential) do
-    Repo.delete(credential)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking credential changes.
-
-  ## Examples
-
-      iex> change_credential(credential)
-      %Ecto.Changeset{source: %Credential{}}
-
-  """
-  def change_credential(%Credential{} = credential) do
-    Credential.changeset(credential, %{})
   end
 end

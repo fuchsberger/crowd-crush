@@ -1,24 +1,16 @@
 import types from "./types"
 
-const baseState = {
-  dismissed: true,
-  error: false,
-  info: false,
-  warning: false,
-  success: false,
-  header: null,
-  content: null
-};
+const initialState = { message: null, type: null }
 
-const reducer = (state = baseState, {type, header, content}) => {
+const reducer = (state = initialState, {type, message}) => {
   switch (type) {
-    case types.CLEAR: return { ...state, dismissed: true }
-    case types.ERROR: return { ...baseState, header, content, dismissed: false, error: true }
-    case types.INFO: return { ...baseState, header, content, dismissed: false, info: true }
-    case types.SUCCESS: return { ...baseState, header, content, dismissed: false, success: true }
-    case types.WARNING: return { ...baseState, header, content, dismissed: false, warning: true }
+    case types.CLEAR: return initialState
+    case types.ERROR: return { message, type: 'error' }
+    case types.INFO: return { message, type: 'info' }
+    case types.SUCCESS: return { message, type: 'success' }
+    case types.WARNING: return { message, type: 'warning' }
     default: return state;
   }
 }
 
-export default reducer;
+export default reducer

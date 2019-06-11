@@ -7,9 +7,9 @@ const clear = actions.clear
 const get = ({ error=false, info=false, success=false, warning=false }) => {
   return dispatch => {
     if(error) return dispatch(actions.error(error))
+    if(warning) return dispatch(actions.warning(warning))
     if(info) return dispatch(actions.info(info))
     if(success) return dispatch(actions.success(success))
-    if(warning) return dispatch(actions.warning(warning))
   }
 }
 

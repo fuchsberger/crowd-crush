@@ -7,7 +7,7 @@ import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom'
 import { Provider } from "react-redux"
 import socket from './api' // do not delete!
 import store from "./store"
-import { Flash, Header, Loading, PRoute, Referrer } from "./components"
+import { Header, Loading, PRoute, Referrer } from "./components"
 import { flashOperations } from './modules/flash'
 import Pages from "./pages"
 import { simOperations as Sim } from "./modules/sim"
@@ -44,7 +44,6 @@ const RootHtml =
     <BrowserRouter>
       <Referrer />
       <Header />
-      <Flash />
       <AuthenticatedRouter />
     </BrowserRouter>
   </Provider>
