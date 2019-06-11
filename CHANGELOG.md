@@ -7,9 +7,14 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.12.3
+* updated readme
+
+
 ## 0.12.2
 * flash messages are now displayed attached to header and use reselect for smarter DOM updates
 * removed flash component
+* cleaned some old unused code
 
 ## 0.12.1
 * server flash messages are now integrated into react flash system

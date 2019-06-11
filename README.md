@@ -2,72 +2,21 @@
 
 # Crowd Crush
 
-## Versioning
-x.y.z
+CrowdCrush is a research tool that allows to annotate the motions of objects in videos.
+Primarily used for pedestrian crowd simulations, this project is part of Alexander Fuchsberger's dissertation, conducted at the University of Nebraska at Omaha.
 
-  * x: Major Release (Edeliver Release)
-  * y: Major Update, or update including a database change (Edeliver Release)
-  * z: Minor Update (Edeliver Upgrade)
+Currently the following features are implemented:
 
-## Installation and getting server running (dev)
+* Annotation of objects via Agents and Markers
+* 2D relative Coordinate Translation into real world coordinates
+* Rendering of
+  * Original Video
+  * Original Video overlayed with annotated Agents
+  * Overlay Videos (such as Background removal rendered variants)
+  * Overlay Videos with annotated Agents
+  * Side by side comparison of agent movements with a secondary simulation
+* Downloading of Data files that serve as input for succeeding research projects
 
-To install in a fresh cloud9 development environment
+If you have any questions, please contact me via email at afuchsberger@unomaha.edu.
 
-* needs github authorization
-* assumes blank cloud9 workspace with ubuntu 14.04 (trusty)
-
-
-```
-sudo touch /etc/init.d/couchdb
-wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
-sudo dpkg -i erlang-solutions_1.0_all.deb
-sudo apt-get update
-sudo apt-get install elixir
-mix local.hex
-sudo apt-get install erlang
-nvm install stable
-nvm alias default stable
-sudo apt-get install erlang-base-hipe erlang-dev erlang-eunit erlang-parsetools
-sudo apt-get install inotify-tools
-sudo nano /etc/apt/sources.list.d/pgdg.list
-
-### add the following to the file ###########################
-# PostgreSQL repository
-deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main
-#############################################################
-
-sudo su
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-apt-get update -y
-apt-get install postgresql-9.5 -y
-apt-get purge postgresql-9.3
-
-nano /etc/postgresql/9.5/main/postgresql.conf
-
-### change the following line to this port ##################
-port = 5432
-#############################################################
-```
-
-Before starting app for the first time or when dependencies changed:
-
-```
-mix deps.get
-npm install
-sudo service postgresql start
-mix ecto.create && mix ecto.migrate
-```
-
-To start Phoenix app after already installed:
-
-```
-sudo service postgresql start
-mix phoenix.server
-```
-
-Now you can visit [`localhost:8080`](http://localhost:8080) from your browser.
-
-## Command Cheat Sheet
-
-* `mix ecto.gen.migration file_name` Create Database Migration File
-* `mix ecto.migrate` Incorporates Changes at priv/repo/migrations/\*file_name)
+If you want to report any bugs or report on the research tool please submit an issue on Github
