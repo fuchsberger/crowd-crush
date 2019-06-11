@@ -13,6 +13,7 @@
   <body>
     <main id='react-root'></main>
     <script>
+      window.flash = <%= get_flash(@conn) %>
       window.debug = <%= debug() %>;
       window.csrfToken = "<%= Phoenix.Controller.get_csrf_token() %>";
       window.userToken = "<%= assigns[:user_token] %>";

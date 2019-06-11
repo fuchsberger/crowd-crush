@@ -8,6 +8,7 @@ import { Provider } from "react-redux"
 import socket from './api' // do not delete!
 import store from "./store"
 import { Flash, Header, Loading, PRoute, Referrer } from "./components"
+import { flashOperations } from './modules/flash'
 import Pages from "./pages"
 import { simOperations as Sim } from "./modules/sim"
 
@@ -50,6 +51,9 @@ const RootHtml =
 
 // render react app
 render(RootHtml, document.getElementById( "react-root" ) );
+
+// initially check for server flash messages to display
+store.dispatch(flashOperations.get(window.flash))
 
 // listen for window resizes
 let resizeTimeout;

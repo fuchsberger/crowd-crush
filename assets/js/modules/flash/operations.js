@@ -1,6 +1,8 @@
 import actions from "./actions"
 
-// Takes a channel server response and looks for flash message indicators.
+const clear = actions.clear
+
+// Takes a channel server response or initial flash and looks for flash message indicators.
 // Also clears a previously active flash message.
 const get = ({ error=false, info=false, success=false, warning=false }) => {
   return dispatch => {
@@ -8,12 +10,7 @@ const get = ({ error=false, info=false, success=false, warning=false }) => {
     if(info) return dispatch(actions.info(info))
     if(success) return dispatch(actions.success(success))
     if(warning) return dispatch(actions.warning(warning))
-  };
-};
+  }
+}
 
-const error = error => { return dispatch => () => actions.error(error) }
-
-// Clears the currently active flash message.
-const clear = () => (dispatch => dispatch => dispatch(actions.clear()))
-
-export default { get, clear, error };
+export default { get, clear }
