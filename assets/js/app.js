@@ -3,21 +3,24 @@ import CSS from '../css/app.css'
 import React from 'react'
 import { render } from "react-dom"
 import { connect } from 'react-redux'
-import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom'
+import { Route, Router, Switch, withRouter } from 'react-router-dom'
 import { Provider } from "react-redux"
 import socket from './api' // do not delete!
 import store from "./store"
-import { Header, Loading, PRoute, Referrer } from "./components"
+import { Header, PRoute } from "./components"
 import { flashOperations } from './modules/flash'
 import Pages from "./pages"
 import { simOperations as Sim } from "./modules/sim"
 
-const Router = ({ ready }) => {
+import { history } from './utils'
+
+const MainComponent = ({ ready }) => {
   // make sure public and user channels are ready
-  if(!ready) return <Loading />
+  if(!ready) return <div id="spinner-wrapper"><div id="spinner" /></div>
 
   return(
     <Switch>
+      <Route path="/" exact component={Pages.About} />
       <Route path="/about" component={Pages.About} />
       <Route path="/login" component={Pages.Login} />
       <Route path="/simulation/:id" component={Pages.SimulationShow} />
@@ -37,15 +40,14 @@ const Router = ({ ready }) => {
 const mapStateToProps = ( store ) => ({
   ready: store.videos.data && (window.userToken === "" ? true : store.session.username != null)
 })
-const AuthenticatedRouter = withRouter(connect(mapStateToProps)(Router))
+const Main = withRouter(connect(mapStateToProps)(MainComponent))
 
 const RootHtml =
   <Provider store={ store }>
-    <BrowserRouter>
-      <Referrer />
+    <Router history={ history }>
       <Header />
-      <AuthenticatedRouter />
-    </BrowserRouter>
+      <Main />
+    </Router>
   </Provider>
 
 // render react app

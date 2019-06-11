@@ -18,7 +18,6 @@ import { updateUsers, deleteUsers } from '../../modules/userList';
 import { error } from '../../modules/flash';
 import { showModal } from '../../modules/modal';
 import ErrorView from '../home/error';
-import Loading from '../../components/layout/loading';
 import ModalBlock from '../../components/user/modal_block';
 import UserTable from '../../components/user/table';
 import { isAdmin } from '../../ducks/selectors';

@@ -8,7 +8,6 @@ import { YOUTUBE_API_KEY, YOUTUBE_URL_REGEX, MCE_DEFAULT_CONFIG }
 from '../../ducks/constants'
 import { addVideo } from '../../modules/videoList'
 import NavBot from '../../components/layout/navbot'
-import Loading from '../../components/layout/loading'
 import ErrorView from '../home/error'
 
 class SimAddView extends React.Component {

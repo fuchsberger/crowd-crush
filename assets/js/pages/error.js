@@ -9,22 +9,14 @@ import { Container, Label } from 'semantic-ui-react'
  * code                       -> default [code] error
  * no arguments               -> default 404 error
  */
-
 const Error = ({ code = 404, heading=null, body=null, location }) => {
 
   if (!heading) {
     switch (code) {
-      case 401:
-        heading = 'Authentification required';
-        break;
-      case 403:
-        heading = 'Forbidden';
-        break;
-      case 404:
-        heading = 'Page Not Found';
-        break;
-      default:
-        heading = 'Unknown Error';
+      case 401: heading = 'Authentification required'; break;
+      case 403: heading = 'Forbidden'; break;
+      case 404: heading = 'Page Not Found'; break;
+      default: heading = 'Unknown Error';
     }
   }
 

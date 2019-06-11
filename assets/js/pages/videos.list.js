@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { map } from 'lodash/collection'
 import TimeAgo from 'react-timeago'
 import { Container, Table } from 'semantic-ui-react'
-import Loading from '../components/loading'
 import { videoOperations as Video, videoSelectors } from '../modules/video'
 
 class VideosList extends Component {

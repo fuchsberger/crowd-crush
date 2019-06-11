@@ -9,6 +9,7 @@ a.b.c
 
 ## 0.12.3
 * updated readme
+* improved route handling and avoid unnecessary rerenders
 
 
 ## 0.12.2

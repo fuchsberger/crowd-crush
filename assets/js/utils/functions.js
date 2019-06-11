@@ -1,6 +1,3 @@
-
-import fetch from 'isomorphic-fetch'
-
 /**
  * sort 2-dimensional array by column
  * @param {[]} array array of arrays
@@ -9,18 +6,6 @@ import fetch from 'isomorphic-fetch'
 const sortArrayByColumn = ( array, c ) => (
   array.sort((a, b) => (a[c] === b[c] ? 0 : a[c] < b[c] ? -1 : 1))
 );
-
-const httpPost = (url, data) => {
-  return fetch(url, {
-    method: 'post',
-    headers: buildHeaders(),
-    body: JSON.stringify(data),
-  })
-  .then(checkStatus)
-  .then(parseJSON);
-}
-
-const httpDelete = (url) => fetch(url, { method: 'delete', headers: buildHeaders() })
 
 function buildHeaders() {
   return {
@@ -42,7 +27,5 @@ function checkStatus(response) {
 function parseJSON(response) { return response.json(); }
 
 export default {
-  httpPost,
-  httpDelete,
   sortArrayByColumn
 }

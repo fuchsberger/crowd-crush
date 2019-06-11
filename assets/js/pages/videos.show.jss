@@ -4,7 +4,6 @@ import { Container } from 'reactstrap'
 import { simOperations as Sim, simSelectors } from '../modules/sim'
 import { ControlBar } from './video'
 import { Markers } from './sim'
-import { Loading } from '../components'
 import Error from './error'
 
 class VideoShowView extends React.Component {

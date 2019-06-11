@@ -4,13 +4,13 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Route, Redirect, withRouter } from 'react-router-dom'
+import { Route, Redirect } from 'react-router-dom'
 
-const EnhanchedRoute = ({ component, isAuthentificated, location, path }) => (
+const ProtectedRoute = ({ component, isAuthentificated, path }) => (
   isAuthentificated
     ? <Route path={path} component={component} />
-    : <Redirect to={{ pathname: '/login', state: { referrer: location.pathname }}}/>
+    : <Redirect to={{ pathname: '/login', state: { referrer: path }}}/>
 )
 
 const mapStateToProps = ( store ) => ({ isAuthentificated: store.session.username != null })
-export default withRouter(connect(mapStateToProps)(EnhanchedRoute));
+export default connect(mapStateToProps)(ProtectedRoute);

@@ -15,6 +15,4 @@ Currently the following features are implemented:
   * Side by side comparison of agent movements with a secondary simulation
 * Downloading of Data files that serve as input for succeeding research projects
 
-If you have any questions, please submit an issue.
-
 If you want to report any bugs or report on the research tool please submit an issue on Github
