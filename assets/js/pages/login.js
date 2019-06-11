@@ -25,17 +25,17 @@ class Login extends Component {
     const emailError = this.validator.message('email', email, 'required|email')
     const passwordError = this.validator.message('password', password, 'required')
 
-    const redirect = this.props.location.state && this.props.location.state.referrer || false
+    const redirect = this.props.location.state && this.props.location.state.redirect || false
     const warning = redirect ? true : false
     const header = redirect ? 'You need to sign in first.' : 'Welcome to our site!'
-    const content = redirect
+    const message = redirect
       ? 'Afterwards you will be redirected.'
       : 'Please sign in to start describing videos.'
 
     return (
       <Grid id='login-container' textAlign='center' verticalAlign='middle'>
         <Grid.Column>
-          <Message attached warning={warning} header={header} content={content} />
+          <Message attached warning={warning} header={header} content={message} />
           <Form
             acceptCharset="UTF-8"
             action="/login"

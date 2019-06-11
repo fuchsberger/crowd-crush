@@ -1,5 +1,4 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
 import { Container, Label } from 'semantic-ui-react'
 
 /**
@@ -9,8 +8,7 @@ import { Container, Label } from 'semantic-ui-react'
  * code                       -> default [code] error
  * no arguments               -> default 404 error
  */
-const Error = ({ code = 404, heading=null, body=null, location }) => {
-
+export default Error = ({ code = 404, heading=null, body=null, location }) => {
   if (!heading) {
     switch (code) {
       case 401: heading = 'Authentification required'; break;
@@ -56,5 +54,3 @@ const Error = ({ code = 404, heading=null, body=null, location }) => {
     </Container>
   );
 };
-
-export default withRouter(Error);

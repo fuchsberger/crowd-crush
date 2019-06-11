@@ -15,6 +15,7 @@
     <script>
       window.flash = <%= get_flash(@conn) %>
       window.debug = <%= debug() %>;
+      window.redirect = <%= redirect(@conn) %>;
       window.csrfToken = "<%= Phoenix.Controller.get_csrf_token() %>";
       window.userToken = "<%= assigns[:user_token] %>";
     </script>

@@ -9,7 +9,7 @@ import { Route, Redirect } from 'react-router-dom'
 const ProtectedRoute = ({ component, isAuthentificated, path }) => (
   isAuthentificated
     ? <Route path={path} component={component} />
-    : <Redirect to={{ pathname: '/login', state: { referrer: path }}}/>
+    : <Redirect to={{ pathname: '/login', state: { redirect: path }}}/>
 )
 
 const mapStateToProps = ( store ) => ({ isAuthentificated: store.session.username != null })
