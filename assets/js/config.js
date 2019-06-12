@@ -13,7 +13,6 @@ export const YOUTUBE_PLAYER_OPTS = {
     rel: 0
   }
 };
-export const YOUTUBE_URL_REGEX = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
 
 // URLS
 export const URL_LOGIN = '/login';
