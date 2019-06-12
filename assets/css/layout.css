@@ -24,6 +24,7 @@
 }
 
 /* NOTIFICATIONS */
+#flash:not(.hidden) { margin-top: -1em!important; }
 
 @keyframes slideInFromTop {
   from {padding: 0; max-height: 0px;}
@@ -43,25 +44,3 @@
 
 /* LOGIN FORM */
 #login-container .column { max-width: 400px; }
-
-
-/* TODO: go over and delete as no longer required */
-
-/* Controls */
-
-.btn-space {
-  margin-right: 25px;
-}
-
-.nav-link,
-.pointer,
-#btnLogout,
-#btnLogin {
-  cursor: pointer;
-}
-
-/* InputGroupAddon Icon ensure all have same width */
-
-.input-group-text.icon {
-  min-width: 42px;
-}

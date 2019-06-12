@@ -1,47 +1,33 @@
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
-import Icon from '../../utils/icons'
-import { Button, Col, Container } from 'reactstrap'
-import { AvForm, AvField } from 'availity-reactstrap-validation'
-import TinyMCE from 'react-tinymce'
-import { YOUTUBE_API_KEY, YOUTUBE_URL_REGEX, MCE_DEFAULT_CONFIG }
-from '../../ducks/constants'
-import { addVideo } from '../../modules/videoList'
-import NavBot from '../../components/layout/navbot'
-import ErrorView from '../home/error'
+// import { Link } from 'react-router-dom'
+// import Icon from '../../utils/icons'
+import { Container, Grid } from 'semantic-ui-react'
+// import { Button, Col, Container } from 'reactstrap'
+// import { YOUTUBE_API_KEY, YOUTUBE_URL_REGEX, MCE_DEFAULT_CONFIG }
+// from '../../ducks/constants'
+// import { addVideo } from '../../modules/videoList'
+// import NavBot from '../../components/layout/navbot'
+// import ErrorView from '../home/error'
 
-class SimAddView extends React.Component {
-  constructor(props) {
-    super(props);
+class SimAddView extends Component {
 
-    this.changeDesc = this.changeDesc.bind(this);
-    this.changeURL = this.changeURL.bind(this);
-    this.handleValidSubmit = this.handleValidSubmit.bind(this);
-    this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
-    this.reset = this.reset.bind(this);
-
-    this.state = {
-      aspectratio: null,
-      error: null,
-      description: null,
-      title: null,
-      youtubeID: null
-    };
+  state = {
+    aspectratio: null,
+    error: null,
+    description: null,
+    title: null,
+    youtubeID: null
   }
 
-  componentDidUpdate() {
-    if (this.props.user && !this.state.youtubeID)
-      document.getElementById('youtubeURL').focus();
-  }
-
-  changeDesc(e) {
+  changeDesc = e => {
     this.setState({
       description: e.target.getContent(),
       errors: { ...this.state.errors, description: null }
     });
   }
 
-  changeURL(e) {
+  changeURL = e => {
     // validate url
     const match = e.target.value.match(YOUTUBE_URL_REGEX);
     const id = match && match[5].length == 11 ? match[5] : false;
@@ -72,7 +58,7 @@ class SimAddView extends React.Component {
     xhr.send();
   }
 
-  reset() {
+  reset = () => {
     this.setState({
       aspectratio: null,
       description: null,
@@ -81,34 +67,35 @@ class SimAddView extends React.Component {
     });
   }
 
-  handleValidSubmit(e, values) {
+  handleValidSubmit = (e, values) => {
     this.props.addVideo({ ...values, description: this.state.description });
   }
 
-  handleInvalidSubmit(e, errors, values) {
+  handleInvalidSubmit = (e, errors, values) => {
     this.setState({ error: true });
   }
 
   render() {
-    const { user } = this.props;
 
-    if (user === null) return <Loading />;
-    if (user === false) return <ErrorView code={401} />;
-
-    const { aspectratio, description, error, title, youtubeID } = this.state;
-    const {
-      changeDesc,
-      changeURL,
-      handleValidSubmit,
-      handleInvalidSubmit,
-      reset
-    } = this;
+    // const { aspectratio, description, error, title, youtubeID } = this.state;
+    // const {
+    //   changeDesc,
+    //   changeURL,
+    //   handleValidSubmit,
+    //   handleInvalidSubmit,
+    //   reset
+    // } = this;
 
 
     return (
       <Container>
-        <h2 className="text-center">Add Video</h2>
-        <AvForm
+      <Grid>
+        <Grid.Column>
+          <h2>Add Video</h2>
+        </Grid.Column>
+
+
+        {/* <AvForm
           className={error ? 'was-validated' : 'needs-validation'}
           onValidSubmit={handleValidSubmit}
           onInvalidSubmit={handleInvalidSubmit}
@@ -183,11 +170,11 @@ class SimAddView extends React.Component {
             </div>
           )}
         </AvForm>
-        <NavBot />
+        <NavBot /> */}
+      </Grid>
       </Container>
     );
   }
 }
-const mapStateToProps = store => ({ user: store.session.user });
-const mapDispatchToProps = { addVideo }
-export default connect(mapStateToProps, mapDispatchToProps)(SimAddView);
+const mapDispatchToProps = {  }
+export default connect(() => ({}), mapDispatchToProps)(SimAddView);

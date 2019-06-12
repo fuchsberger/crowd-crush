@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from "react-router-dom"
-import { Grid, Form, Icon, Input, List, Message } from 'semantic-ui-react'
+import { Container, Grid, Form, Icon, Input, List, Message } from 'semantic-ui-react'
 import Validator from 'simple-react-validator'
 
 class Login extends Component {
@@ -33,7 +33,7 @@ class Login extends Component {
       : 'Please sign in to start describing videos.'
 
     return (
-      <Grid id='login-container' textAlign='center' verticalAlign='middle'>
+      <Container id='login-container' as={Grid} textAlign='center'>
         <Grid.Column>
           <Message attached warning={warning} header={header} content={message} />
           <Form
@@ -88,7 +88,7 @@ class Login extends Component {
             <List.Item as={Link} to='/terms'>Terms of Use</List.Item>
           </List>
         </Grid.Column>
-      </Grid>
+      </Container>
     )
   }
 }

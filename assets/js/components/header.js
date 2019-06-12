@@ -12,9 +12,8 @@ class Header extends Component {
 
   render(){
     const { clearFlash, icon, message, messageType, username } = this.props
-    return(
-      <div>
-        <Menu attached='top' inverted stackable>
+    return([
+        <Menu attached='bottom' inverted stackable key={0}>
           <Container>
             <Menu.Item
               active={this.state.open}
@@ -24,7 +23,7 @@ class Header extends Component {
               onClick={this.toggleMenu}
               position='right'
             />
-            <Menu.Item header exact as={NavLink} to='/' icon='info' name='Crowd Crush' />
+            <Menu.Item header exact as={NavLink} to='/' name='Crowd Crush' />
             <Menu.Item as={NavLink} to='/videos' icon='video camera' name='Videos' />
             {username && <Menu.Item as={NavLink} to='/video/add' icon='plus' name='Add Video' />}
             {username && <Menu.Item as={NavLink} to='/users' icon='users' name='Users' />}
@@ -41,16 +40,14 @@ class Header extends Component {
               }
             </Menu.Menu>
           </Container>
-        </Menu>
-        {message &&
-          <Message attached='bottom' onDismiss={clearFlash} {...messageType}>
-            <Container fluid textAlign='center'>
-              <Icon name={icon} />
-              {message}
-            </Container>
-          </Message>
-        }
-      </div>
+        </Menu>,
+        <Message  id='flash' attached='bottom' key={1} onDismiss={clearFlash} hidden={!message} {...messageType}>
+          <Container fluid textAlign='center'>
+            <Icon name={icon} />
+            {message}
+          </Container>
+        </Message>
+      ]
     )
   }
 }

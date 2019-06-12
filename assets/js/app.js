@@ -14,7 +14,7 @@ import { simOperations as Sim } from "./modules/sim"
 
 import { history } from './utils'
 
-const MainComponent = ({ ready, location }) => {
+const MainComponent = ({ ready }) => {
   // make sure public and user channels are ready
   if(!ready) return <div id="spinner-wrapper"><div id="spinner" /></div>
 
@@ -28,11 +28,11 @@ const MainComponent = ({ ready, location }) => {
       <Route path="/videos/:id" component={Pages.VideoShow} />
 
       {/* Private Routes (require login) */}
-      <PRoute path="/video/add" component={Pages.VideoAddView} />
+      <PRoute path="/video/add" component={Pages.VideoAdd} />
       <PRoute path="/settings" component={Pages.Settings} />
 
       {/* default 404 if no route matches*/}
-      <Route component={Pages.Error} pathname={location.pathname} />
+      <Route component={Pages.Error} />
     </Switch>
   )
 }

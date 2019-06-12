@@ -2,7 +2,6 @@
 @import "../node_modules/semantic-ui-css/semantic.css";
 
 /* Project CSS */
-@import "bootstrap_fixes.css";
 @import "layout.css";
 @import "simulation.css";
 @import "spinner.css";

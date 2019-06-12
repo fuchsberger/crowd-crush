@@ -5,7 +5,7 @@ import TimeAgo from 'react-timeago'
 import { Container, Table } from 'semantic-ui-react'
 import { videoOperations as Video, videoSelectors } from '../modules/video'
 
-class VideosList extends Component {
+class VideoList extends Component {
 
   // constructor(props) {
   //   super(props);
@@ -145,4 +145,4 @@ const mapDispatchToProps = {
   updateVideos: Video.updateAll
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(VideosList);
+export default connect(mapStateToProps, mapDispatchToProps)(VideoList);

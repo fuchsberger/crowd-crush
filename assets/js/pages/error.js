@@ -9,6 +9,7 @@ import { Container, Label } from 'semantic-ui-react'
  * no arguments               -> default 404 error
  */
 export default Error = ({ code = 404, heading=null, body=null, location }) => {
+
   if (!heading) {
     switch (code) {
       case 401: heading = 'Authentification required'; break;
