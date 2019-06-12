@@ -14,15 +14,28 @@ import Validator from 'simple-react-validator'
 
 class SimAddView extends Component {
 
-  state = { aspectratio: '', error: null, title: '', youtubeID: '' }
+  state = { aspectratio: '', error: null, title: '', youtubeID: null, youtube_url: '' }
   validator = new Validator({ element: false })
 
   onInputChange = (e, { name, value }) => this.setState({ [name]: value })
 
   changeURL = e => {
-    // // validate url
-    // const match = e.target.value.match()
+
+    const youtubeID = this.youtube_parser(e.target.value)
+
+    this.validator.message('youtubeID', youtubeID, 'required|string|size:11', {
+      messages: { default: 'Does not seem to be a a valid YouTube URL.'}
+    })
+
+    if(!youtubeID) return this.setState({ youtubeID: false, youtube_url: e.target.value})
+
+
+    // validate url
+    // const match = e.target.v
+    console.log("SUCCESS")
+    this.setState({ youtubeID, youtube_url: e.target.value})
     // const id = match && match[5].length == 11 ? match[5] : false
+    // this.setState({ youtube_url: e.target.value, youtubeID: id })
 
     // const youtubeError = this.validator.message('youtubeID', id, 'required|min:11')
 
@@ -50,6 +63,8 @@ class SimAddView extends Component {
     //   }
     // };
     // xhr.send();
+
+
   }
 
   reset = () => this.setState({ aspectratio: null, title: null, youtubeID: null })
@@ -66,12 +81,17 @@ class SimAddView extends Component {
     this.setState({ error: true });
   }
 
+  youtube_parser = url => {
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/
+    var match = url.match(regExp);
+    return (match&&match[7].length==11)? match[7] : false;
+  }
+
   render() {
 
-    const { aspectratio, error, title, youtube_url } = this.state
+    const { aspectratio, error, title, youtubeID, youtube_url } = this.state
 
-    this.validator.message('youtube_url', youtube_url, [{regex: /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/}])
-    console.log(this.validator.errorMessages, this.validator.fieldValid('youtube_url'))
+
 
 
     // const {
@@ -90,18 +110,31 @@ class SimAddView extends Component {
         <h2>Add Video</h2>
 
         <Form onSubmit={this.handleSubmit}>
-          <Form.Input
-            error={!this.validator.fieldValid('youtube_url')}
-            label={this.validator.errorMessages.youtube_url ||
-              'Please start by pasting a valid YouTube video URL...'}
-            icon='youtube'
-            iconPosition='left'
-            name='youtube_url'
-            onChange={this.onInputChange}
-            placeholder='paste YouTube URL'
-            type='text'
-            value={youtube_url}
-          />
+          {this.validator.fieldValid('youtubeID')
+            ? <div>
+                <Form.Input
+                  label='Youtube ID'
+                  icon='youtube'
+                  iconPosition='left'
+                  readOnly
+                  name='youtubeID'
+                  type='text'
+                  value={youtubeID}
+                />
+              </div>
+            : <Form.Input
+                error={youtube_url == '' ? false : !this.validator.fieldValid('youtubeID')}
+                label={this.validator.errorMessages.youtubeID ||
+                  'Please start by pasting a valid YouTube video URL...'}
+                icon='youtube'
+                iconPosition='left'
+                name='youtube_url'
+                onChange={this.changeURL}
+                placeholder='paste YouTube URL'
+                type='text'
+                value={youtube_url}
+              />
+          }
         </Form>
 
         {/* <AvForm
