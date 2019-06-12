@@ -12,15 +12,12 @@ if (window.debug) {
     collapsed: true,
     timestamp: false,
     // do not show certain events in logger
-    predicate: (_getState, action) => {
-      return true
-      return ![
+    predicate: (_getState, action) => ![
         'sim/TICK',
         'keys/KEY_DOWN',
         'keys/KEY_UP',
         'sessions/START_OPERATION'
       ].includes(action.type)
-    }
   });
   middlewares.push(loggerMiddleware);
 }
