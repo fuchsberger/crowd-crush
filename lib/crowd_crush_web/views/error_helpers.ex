@@ -73,5 +73,12 @@ defmodule CrowdCrushWeb.ErrorHelpers do
   end
 
   def return_error(socket, message), do: {:reply, {:error, %{ error: message}}, socket}
-  def return_success(socket, message), do: {:reply, {:ok, %{ success: message }}, socket}
+  def return_success(socket, message, opts \\ []) do
+    response =
+      [success: message]
+      |> Keyword.merge(opts)
+      |> Enum.into(%{})
+    {:reply, {:ok, response}, socket}
+  end
+
 end

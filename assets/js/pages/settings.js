@@ -43,7 +43,7 @@ class Settings extends Component {
       // send only relevant data to server
       let data
       switch(activeIndex){
-        case 0: data = { username: username}; break;
+        case 0: return this.props.changeUsername(username)
         case 1: data = { email, password }; break;
         case 2: data = { new_password, password }
       }
@@ -191,6 +191,12 @@ class Settings extends Component {
   }
 }
 
-const mapStateToProps = ({ session }) => ({ error: session.error, loading: session.loading });
-const mapDispatchToProps = { updateAccount: Session.updateAccount };
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);
+const mapStateToProps = store => ({
+  error: store.flash.error,
+  loading: store.loading
+})
+const mapDispatchToProps = {
+  changeUsername: Session.changeUsername,
+  updateAccount: Session.updateAccount
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Settings)

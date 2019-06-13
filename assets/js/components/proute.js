@@ -12,5 +12,5 @@ const ProtectedRoute = ({ component, isAuthentificated, path }) => (
     : <Redirect to={{ pathname: '/login', state: { redirect: path }}}/>
 )
 
-const mapStateToProps = ( store ) => ({ isAuthentificated: store.session.username != null })
+const mapStateToProps = store => ({ isAuthentificated: store.user != null })
 export default connect(mapStateToProps)(ProtectedRoute);

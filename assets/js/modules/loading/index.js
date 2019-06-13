@@ -14,6 +14,7 @@ const reducer = (state = false, { type }) => {
     case types.ERROR:
     case types.INFO:
     case types.WARNING:
+    case types.SUCCESS:
     case types.GET:
       return false
 

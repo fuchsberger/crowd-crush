@@ -1,8 +1,3 @@
-const isAuthenticated = (state) => (state.session.currentUser != null)
-const isInitialized = (state) =>
-  (state.session.publicChannel && state.session.publicChannel.state == 'joined')
+const isAuthenticated = (state) => (state.username != null)
 
-export default {
-  isAuthenticated,
-  isInitialized
-};
+export default { isAuthenticated}

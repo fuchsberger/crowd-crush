@@ -37,9 +37,8 @@ const MainComponent = ({ ready }) => {
   )
 }
 
-const mapStateToProps = ( store ) => ({
-  ready: store.videos.data && (window.userToken === "" ? true : store.session.username != null)
-})
+const mapStateToProps = ( store ) =>
+  ({ ready: store.videos.data && (window.userToken === "" ? true : store.user != null) })
 const Main = withRouter(connect(mapStateToProps)(MainComponent))
 
 const RootHtml =

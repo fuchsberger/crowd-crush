@@ -13,15 +13,14 @@ defmodule CrowdCrushWeb.PrivateChannel do
     end
   end
 
-  def handle_in("update_account", %{"username" => username}, socket) do
-    case Accounts.update_user(socket.assigns.user_id, %{username: username}) do
+  def handle_in("change_username", username, socket) do
+    case Accounts.update_user(socket.assigns.user_id, %{ username: username }) do
       {:ok, user } ->
-        {:reply, {:ok, %{
-          success: "Your username was successfully changed to: #{user.username}",
-          username: user.username
-        }}, assign(socket, :current_user, user)}
+        return_success socket,
+          "Your username was successfully changed to: #{username}",
+          username: username
       _ ->
-        {:reply, {:error, %{ error: "Could not update user!" }}, socket}
+        return_error socket, "Could not update user!"
     end
   end
 

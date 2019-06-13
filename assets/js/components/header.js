@@ -11,7 +11,7 @@ class Header extends Component {
   toggleMenu = () => this.setState({ open: !this.state.open })
 
   render(){
-    const { clearFlash, icon, message, messageType, username } = this.props
+    const { clearFlash, icon, message, messageType, user } = this.props
     return([
         <Menu attached='bottom' inverted stackable key={0}>
           <Container>
@@ -25,13 +25,13 @@ class Header extends Component {
             />
             <Menu.Item header exact as={NavLink} to='/' name='Crowd Crush' />
             <Menu.Item as={NavLink} to='/videos' icon='video camera' name='Videos' />
-            {username && <Menu.Item as={NavLink} to='/video/add' icon='plus' name='Add Video' />}
-            {username && <Menu.Item as={NavLink} to='/users' icon='users' name='Users' />}
+            {user && <Menu.Item as={NavLink} to='/video/add' icon='plus' name='Add Video' />}
+            {user && <Menu.Item as={NavLink} to='/users' icon='users' name='Users' />}
 
             <Menu.Menu  position='right'>
-              {!username && <Menu.Item as={NavLink} to='/login' icon='power' name='Login' />}
-              {username &&
-                <Dropdown item icon='caret down' text={username}>
+              {!user && <Menu.Item as={NavLink} to='/login' icon='power' name='Login' />}
+              {user &&
+                <Dropdown item icon='caret down' text={user}>
                   <Dropdown.Menu>
                     <Dropdown.Item as={NavLink} to='/settings' icon='cog' content='Settings' />
                     <Dropdown.Item as='a' href='/logout' icon='power' content='Sign Out' />
@@ -56,7 +56,7 @@ const mapStateToProps = store => ({
   icon: Flash.icon(store),
   message: Flash.message(store),
   messageType: Flash.messageType(store),
-  username: store.session.username
+  user: store.user
 });
 const mapDispatchToProps = { clearFlash: flashOperations.clear }
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
