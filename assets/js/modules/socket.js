@@ -8,8 +8,8 @@ socket.connect()
 export default socket
 
 // load public and user channels on start
-import configurePublicChannel from './public'
-import configureUserChannel from './user'
+import configurePublicChannel from './public_channel'
+import configurePrivateChannel from './private_channel'
 
 export const publicChannel = configurePublicChannel(store.dispatch)
-export const userChannel = configureUserChannel(store.dispatch)
+export const privateChannel = configurePrivateChannel(store.dispatch)

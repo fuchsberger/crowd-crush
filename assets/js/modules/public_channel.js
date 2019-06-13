@@ -1,5 +1,5 @@
-import socket from './index'
-import { videoOperations as Video } from '../modules/video'
+import socket from './socket'
+import { videoOperations as Video } from './video'
 
 export default (dispatch) => {
 
@@ -13,7 +13,6 @@ export default (dispatch) => {
   //   channel.params.last_updated_videoList = last_updated_videoList;
   //   dispatch(loadVideos(videos))
   // });
-
 
   channel.join()
   .receive('ok', ({ last_updated, videos }) => {

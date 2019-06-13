@@ -1,20 +1,3 @@
-const configPublicChannel = ( socket, dispatch ) => {
-
-  const params = {est: "hi"}// socket.channel('public').params()
-  const channel = socket.channel('public', params);
-
-  // Listen for events
-
-  // channel.on('delete_videos', ({ videos }) => dispatch(removeVideos(videos)));
-
-  // channel.on('set_videos', ({ last_updated_videoList, videos }) => {
-  //   channel.params.last_updated_videoList = last_updated_videoList;
-  //   dispatch(loadVideos(videos))
-  // });
-
-  return channel;
-}
-
 /**
  * Configures and returns simulation channel.
  * Also subscribes to channel events and dispatches actions accordingly.
@@ -53,18 +36,4 @@ const configSimChannel = ( socket, dispatch, video_id, params ) => {
   // );
 
   return channel;
-}
-
-const configUserChannel = ( socket, dispatch ) => {
-  const channel = socket.channel('user');
-
-  // Listen for events
-
-  return channel;
-}
-
-export default {
-  configPublicChannel,
-  configSimChannel,
-  configUserChannel
 }

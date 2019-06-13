@@ -29,7 +29,7 @@ export default function reducer(state = initialState, {type, username, ...payloa
       return { ...initialState, ...payload, loading: false }
 
     case types.SIGNED_IN:
-      // payload contains: socket, publicChannel, userChannel, user
+      // payload contains: socket, publicChannel, privateChannel, user
       return {...payload, error: null, loading: false};
 
     case types.RESET_ERROR:

@@ -6,8 +6,8 @@ const REQUEST_COMPLETE = 'api/REQUEST_COMPLETE'
 const reducer = (state = false, { type }) => {
   switch (type) {
     case REQUEST_STARTED: return true
-    case REQUEST_COMPLETE: return false
 
+    case REQUEST_COMPLETE:
     // also disable loading when a flash message was produced
     // (usually when receiving server response)
     case types.CLEAR:

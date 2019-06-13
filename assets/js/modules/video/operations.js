@@ -1,7 +1,7 @@
 import actions from "./actions"
-import { start_request } from '../api'
+import { start_request } from '../loading'
 import { flashOperations as Flash } from '../flash'
-import { userChannel } from '../../api'
+import { privateChannel } from '../index'
 
 // sync operations
 const deleteAll = actions.deleteAll;
@@ -14,7 +14,7 @@ const add = data => {
   return (dispatch) => {
     dispatch(start_request())
 
-    userChannel.push('add_video', data)
+    privateChannel.push('add_video', data)
       .receive('ok', res => dispatch(Flash.get(res)))
       .receive('error', res => dispatch(Flash.get(res)))
   }
@@ -25,7 +25,7 @@ const _deleteAll = ( ids ) => {
   return (dispatch, store) => {
     if (ids.length === 0)
       return dispatch(Flash.error('You must select at least one video first.'));
-    store().session.userChannel
+    store().session.privateChannel
       .push('delete_videos', { ids })
       .receive('error', ( res ) => dispatch(Flash.error(res.flash)));
   }
@@ -33,20 +33,19 @@ const _deleteAll = ( ids ) => {
 
 const _insert = ( redirect, video ) =>  {
   return (dispatch, store) => {
-    store().session.userChannel
+    store().session.privateChannel
       .push('add_video', video)
       .receive('ok', () => redirect(`/simulation/${video.youtubeID}`))
       .receive('error', ( res ) => dispatch(Flash.error(res.flash)));
   }
 }
 
-
 // applied in userlist for mass operations on a selection of users
 export const _updateAll = (ids, changes) => {
   return (dispatch, store) => {
     if (ids.length === 0)
       return dispatch(Flash.error('You must select at least one video first.'));
-    store().session.userChannel
+    store().session.privateChannel
       .push('update_videos', { ids, changes })
       .receive('error', ( res ) => dispatch(Flash.error(res.flash)));
   }

@@ -1,6 +1,6 @@
 import CSS from '../css/app.css'
 
-import socket from './api' // do not delete!
+import socket from './modules/socket' // do not delete!
 import React from 'react'
 import { render } from "react-dom"
 import { connect } from 'react-redux'

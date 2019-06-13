@@ -10,11 +10,11 @@ const initialize = (socket, publicChannel, signout=false) => ({
   publicChannel
 });
 
-const signinSuccess = (socket, publicChannel, userChannel, username) => ({
+const signinSuccess = (socket, publicChannel, privateChannel, username) => ({
   type: types.SIGNED_IN,
   socket,
   publicChannel,
-  userChannel,
+  privateChannel,
   username
 });
 

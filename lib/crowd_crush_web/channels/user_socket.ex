@@ -4,7 +4,7 @@ defmodule CrowdCrushWeb.UserSocket do
 
   # Channels
   channel "public", CrowdCrushWeb.PublicChannel
-  channel "user", CrowdCrushWeb.UserChannel
+  channel "private", CrowdCrushWeb.PrivateChannel
   channel "sim:*", CrowdCrushWeb.SimChannel
 
   # Users or users with expired/invalid token join as anonymous users.
