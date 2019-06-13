@@ -14,8 +14,10 @@ defmodule CrowdCrush.Simulation do
   alias CrowdCrush.Simulations.Video
   alias CrowdCrushWeb.VideoView
 
-  def add_video(params) do
-    Video.changeset(%Video{}, params) |> Repo.insert()
+  def create_video(attrs \\ %{}) do
+    %Video{}
+    |> Video.changeset(attrs)
+    |> Repo.insert()
   end
 
   def delete_videos(videos) do
@@ -42,15 +44,15 @@ defmodule CrowdCrush.Simulation do
 
   def list_videos(syncTime) do
     videos = from(v in Video,
-      join: m in assoc(v, :markers),
+      # join: m in assoc(v, :markers),
       select: %{
         id: v.id,
         title: v.title,
-        marker_count: count(m.id),
+        # marker_count: count(m.id),
         inserted_at: v.inserted_at,
         youtubeID: v.youtubeID
       },
-      group_by: v.id,
+      # group_by: v.id,
       where: v.updated_at > ^syncTime)
     |> Repo.all()
     |> View.render_many(VideoView, "video.json")

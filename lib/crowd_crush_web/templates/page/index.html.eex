@@ -18,6 +18,7 @@
       window.redirect = <%= redirect(@conn) %>;
       window.csrfToken = "<%= Phoenix.Controller.get_csrf_token() %>";
       window.userToken = "<%= assigns[:user_token] %>";
+      window.youtubeAPIKey = "<%= youtube_api_key() %>";
     </script>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>

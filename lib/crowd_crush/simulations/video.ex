@@ -27,8 +27,7 @@ defmodule CrowdCrush.Simulations.Video do
   """
   def changeset(struct, params) do
     struct
-    |> cast(params, ~w(aspectratio title youtubeID
-                      m0_x m0_y mX_x mX_y mY_x mY_y mR_x mR_y dist_x dist_y))
+    |> cast(params, ~w(aspectratio title youtubeID m0_x m0_y mX_x mX_y mY_x mY_y mR_x mR_y dist_x dist_y)a)
     |> validate_required([:youtubeID, :title, :aspectratio])
     |> validate_format(:title, ~r/^[^<>]*$/)
     |> validate_length(:title, min: 5, max: 100)

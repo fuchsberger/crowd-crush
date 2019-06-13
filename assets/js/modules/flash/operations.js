@@ -1,6 +1,8 @@
 import actions from "./actions"
 
 const clear = actions.clear
+const success = actions.success
+const warning = actions.warning
 
 // Takes a channel server response or initial flash and looks for flash message indicators.
 // Also clears a previously active flash message.
@@ -13,4 +15,4 @@ const get = ({ error=false, info=false, success=false, warning=false }) => {
   }
 }
 
-export default { get, clear }
+export default { get, clear, success, warning }

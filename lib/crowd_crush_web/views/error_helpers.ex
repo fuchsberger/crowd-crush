@@ -72,11 +72,6 @@ defmodule CrowdCrushWeb.ErrorHelpers do
     if integer > 1, do: "s", else: ""
   end
 
-  def return_ok(socket, data \\ %{})
-  def return_ok(socket, data) when is_binary(data), do: {:reply, {:ok, %{ flash: data}}, socket}
-  def return_ok(socket, data) when is_map(data), do: {:reply, {:ok, data}, socket}
-
-  def return_error(socket, data \\ %{})
-  def return_error(socket, data) when is_binary(data), do: {:reply, {:error, %{ flash: data}}, socket}
-  def return_error(socket, data) when is_map(data),    do: {:reply, {:error, data}, socket}
+  def return_error(socket, message), do: {:reply, {:error, %{ error: message}}, socket}
+  def return_success(socket, message), do: {:reply, {:ok, %{ success: message }}, socket}
 end

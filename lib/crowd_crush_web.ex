@@ -56,6 +56,7 @@ defmodule CrowdCrushWeb do
       use Phoenix.Channel
 
       import CrowdCrushWeb.Gettext
+      import CrowdCrushWeb.ErrorHelpers
 
       alias Phoenix.View
       require Logger

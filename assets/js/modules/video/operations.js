@@ -1,5 +1,7 @@
 import actions from "./actions"
+import { start_request } from '../api'
 import { flashOperations as Flash } from '../flash'
+import { userChannel } from '../../api'
 
 // sync operations
 const deleteAll = actions.deleteAll;
@@ -8,6 +10,15 @@ const sort = columnName => actions.sort(columnName)
 
 // async operations ( preceded with _ )
 
+const add = data => {
+  return (dispatch) => {
+    dispatch(start_request())
+
+    userChannel.push('add_video', data)
+      .receive('ok', res => dispatch(Flash.get(res)))
+      .receive('error', res => dispatch(Flash.get(res)))
+  }
+}
 
 
 const _deleteAll = ( ids ) => {
@@ -42,6 +53,7 @@ export const _updateAll = (ids, changes) => {
 }
 
 export default {
+  add,
   load,
   sort,
   deleteAll,

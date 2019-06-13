@@ -8,7 +8,8 @@ use Mix.Config
 # General application configuration
 config :crowd_crush,
   ecto_repos: [CrowdCrush.Repo],
-  env: Mix.env
+  env: Mix.env,
+  youtube_api_key: System.get_env("YOUTUBE_DATA_API_KEY")
 
 # Configures the endpoint
 config :crowd_crush, CrowdCrushWeb.Endpoint,

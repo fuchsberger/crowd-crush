@@ -2,7 +2,7 @@ const CLEAR = 'flash/CLEAR'
 const ERROR = 'flash/ERROR'
 const INFO = 'flash/INFO'
 const SUCCESS = 'flash/SUCCESS'
-const WARNING = 'WARNING/WARNING'
+const WARNING = 'flash/WARNING'
 
 export default {
   CLEAR,
