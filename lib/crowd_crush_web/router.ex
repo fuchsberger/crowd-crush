@@ -11,12 +11,6 @@ defmodule CrowdCrushWeb.Router do
     plug CrowdCrushWeb.Auth
   end
 
-  # scope "/" do
-  #   pipe_through :browser
-  #   get "/export/csv/:id", CrowdCrushWeb.ExportController, :export_csv
-  #   get "/export/json/:id", CrowdCrushWeb.ExportController, :export_json
-  # end
-
   scope "/", CrowdCrushWeb do
     pipe_through :browser # Use the default browser stack
     get "/export/csv/:id", ExportController, :export_csv
