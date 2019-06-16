@@ -43,7 +43,7 @@ class VideoAdd extends Component {
           return complete_request()
 
         default:
-          this.setState( {youtubeID })
+          this.setState( { youtubeID })
           warning('Could not connect to YouTube to retrieve aspect ratio. You can manually set the aspect ratio but it is discouraged to do so.')
       }
     }

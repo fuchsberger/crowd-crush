@@ -3,7 +3,7 @@ import types from "./types"
 const initialState = {
   data: null,
   sortColumn: 'title',
-  sortDirection: 'ascending'
+  sortDirection: 'asc'
 }
 
 export default function reducer(state = initialState, { type, columnName, videos }) {
@@ -14,11 +14,11 @@ export default function reducer(state = initialState, { type, columnName, videos
 
     case types.SORT:
       if(columnName !== state.sortColumn)
-        return {...state, sortColumn: columnName, sortDirection: 'ascending' }
+        return {...state, sortColumn: columnName, sortDirection: 'asc' }
 
       return {
         ...state,
-        sortDirection: state.sortDirection === 'ascending' ? 'descending' : 'ascending'
+        sortDirection: state.sortDirection === 'asc' ? 'desc' : 'asc'
       }
 
     case types.UPDATE_ALL:

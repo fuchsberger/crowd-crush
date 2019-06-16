@@ -1,7 +1,7 @@
 import actions from "./actions"
 import { start_request } from '../loading'
 import { flashOperations as Flash } from '../flash'
-import { privateChannel } from '../index'
+import { privateChannel } from '../socket'
 
 // sync operations
 const deleteAll = actions.deleteAll;

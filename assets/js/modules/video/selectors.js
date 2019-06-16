@@ -1,24 +1,21 @@
-import { sortBy } from 'lodash/collection'
-// import { createSelector } from 'reselect'
+import { orderBy } from 'lodash/collection'
+import { createSelector } from 'reselect'
 
-const loading = state => state.videos.data == null
 const sortColumn = state => state.videos.sortColumn
-const sortDirection = state => state.videos.sortDirection
+const direction = state => state.videos.sortDirection
+const videos = state => state.videos.data
 
-const videos = state => {
-  let videos = sortBy(state.videos.data, [state.videos.sortColumn])
-  if(state.videos.sortDirection === 'descending') videos.reverse()
-  return videos
-}
+const sortDirection = createSelector(
+  [direction], direction => direction == 'asc' ? 'ascending' : 'descending')
 
-// videos are stored as an object. this function transforms them into an array
-export const listAll = ( videos )  => (
-  videos ? Object.keys(videos).map(i => ({ ...videos[i], id: i })) : null
-);
+const sortedVideos = createSelector([videos, sortColumn, direction],
+  (videos, column, direction) => {
+    if(column == 'marker_count') return orderBy(videos, v => v[column], direction)
+    return orderBy(videos, v => v[column].toLowerCase(), direction)
+  })
 
 export default {
-  loading,
   sortColumn,
   sortDirection,
-  videos
+  sortedVideos
 }

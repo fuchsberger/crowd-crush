@@ -12,6 +12,7 @@ a.b.c
 * improved route handling and avoid unnecessary rerenders
 * if visiting a protected route (login required) and not currently logged in, users will now be redirected to login form with custom message. After successful login, users will be redirected to originally requested page.
 * all features in settings page (change username, password, email) now have their own event
+* fixed upper/lowercase sorting bug in video list
 
 ## 0.12.2
 * flash messages are now displayed attached to header and use reselect for smarter DOM updates

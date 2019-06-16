@@ -46,7 +46,7 @@ const VideoList = ({ history, sort, sortColumn, sortDirection, videos }) => (
 const mapStateToProps = store => ({
   sortColumn: videoSelectors.sortColumn(store),
   sortDirection: videoSelectors.sortDirection(store),
-  videos: videoSelectors.videos(store)
+  videos: videoSelectors.sortedVideos(store)
 })
 const mapDispatchToProps = { sort: Video.sort }
 export default connect(mapStateToProps, mapDispatchToProps)(VideoList)
