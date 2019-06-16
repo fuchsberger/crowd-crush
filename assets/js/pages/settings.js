@@ -40,14 +40,11 @@ class Settings extends Component {
     if (this.validator.allValid()){
       const { activeIndex, email, password, new_password, username } = this.state
 
-      // send only relevant data to server
-      let data
       switch(activeIndex){
         case 0: return this.props.changeUsername(username)
-        case 1: data = { email, password }; break;
-        case 2: data = { new_password, password }
+        case 1: return this.props.changeEmail({ email, password })
+        case 2: return this.props.changePassword({ new_password, password })
       }
-
       this.props.updateAccount(data)
     }
     else {
@@ -196,7 +193,8 @@ const mapStateToProps = store => ({
   loading: store.loading
 })
 const mapDispatchToProps = {
-  changeUsername: Session.changeUsername,
-  updateAccount: Session.updateAccount
+  changeEmail: Session.changeEmail,
+  changePassword: Session.changePassword,
+  changeUsername: Session.changeUsername
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Settings)

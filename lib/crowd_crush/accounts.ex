@@ -38,7 +38,7 @@ defmodule CrowdCrush.Accounts do
 
   def update_credential(%Credential{} = credential, attrs) do
     credential
-    |> Credential.changeset(attrs)
+    |> Credential.update_changeset(attrs)
     |> Repo.update()
   end
 end
