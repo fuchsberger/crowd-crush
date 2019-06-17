@@ -10,8 +10,8 @@ const sortDirection = createSelector(
 
 const sortedVideos = createSelector([videos, sortColumn, direction],
   (videos, column, direction) => {
-    if(column == 'marker_count') return orderBy(videos, v => v[column], direction)
-    return orderBy(videos, v => v[column].toLowerCase(), direction)
+    if(['title'].includes(column)) return orderBy(videos, v => v[column].toLowerCase(), direction)
+    return orderBy(videos, v => v[column], direction)
   })
 
 export default {

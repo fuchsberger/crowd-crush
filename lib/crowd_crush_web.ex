@@ -24,6 +24,7 @@ defmodule CrowdCrushWeb do
       import CrowdCrushWeb.Gettext
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
+
       require Logger
     end
   end
@@ -33,11 +34,10 @@ defmodule CrowdCrushWeb do
       use Phoenix.HTML
       use Phoenix.View, root: "lib/crowd_crush_web/templates", namespace: CrowdCrushWeb
 
-      import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
-      import CrowdCrushWeb.ErrorHelpers
-      import CrowdCrushWeb.Gettext
+      import CrowdCrushWeb.{ErrorHelpers, Gettext}
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
+
       require Logger
     end
   end
@@ -55,10 +55,11 @@ defmodule CrowdCrushWeb do
     quote do
       use Phoenix.Channel
 
-      import CrowdCrushWeb.Gettext
-      import CrowdCrushWeb.ErrorHelpers
+      import CrowdCrushWeb.{ErrorHelpers, Gettext}
 
       alias Phoenix.View
+      alias CrowdCrushWeb.Endpoint
+
       require Logger
     end
   end

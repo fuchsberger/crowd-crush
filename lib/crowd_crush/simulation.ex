@@ -47,6 +47,7 @@ defmodule CrowdCrush.Simulation do
       left_join: m in assoc(v, :markers),
       select: %{
         id: v.id,
+        duration: v.duration,
         title: v.title,
         marker_count: count(m.id),
         inserted_at: v.inserted_at,

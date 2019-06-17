@@ -7,12 +7,16 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.12.4
+* video duration is now retrieved from youtube when adding and video list displays and sorts duration
+
 ## 0.12.3
 * updated readme
 * improved route handling and avoid unnecessary rerenders
 * if visiting a protected route (login required) and not currently logged in, users will now be redirected to login form with custom message. After successful login, users will be redirected to originally requested page.
 * all features in settings page (change username, password, email) now have their own event
 * fixed upper/lowercase sorting bug in video list
+* adding a new video also adds it to the video list for everyone
 
 ## 0.12.2
 * flash messages are now displayed attached to header and use reselect for smarter DOM updates

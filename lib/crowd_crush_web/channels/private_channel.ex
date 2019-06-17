@@ -60,12 +60,11 @@ defmodule CrowdCrushWeb.PrivateChannel do
     end
   end
 
-  def handle_in("add_video", params, socket) do
-    now = NaiveDateTime.utc_now()
+  def handle_in("create_video", params, socket) do
     case Simulation.create_video(params) do
       {:ok, video} ->
-        broadcast socket, "add_video", %{
-          time: now,
+        Endpoint.broadcast "public", "add_video", %{
+          time: NaiveDateTime.utc_now(),
           video: View.render_one(video, VideoView, "video.json")
         }
         return_success socket, "The video was successfully added to the database."

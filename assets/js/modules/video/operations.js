@@ -4,17 +4,18 @@ import { flashOperations as Flash } from '../flash'
 import { privateChannel } from '../socket'
 
 // sync operations
-const deleteAll = actions.deleteAll;
-const load = actions.load;
+const add = actions.add
+const deleteAll = actions.deleteAll
+const load = actions.load
 const sort = columnName => actions.sort(columnName)
 
 // async operations ( preceded with _ )
 
-const add = data => {
+const create = data => {
   return (dispatch) => {
     dispatch(start_request())
 
-    privateChannel.push('add_video', data)
+    privateChannel.push('create_video', data)
       .receive('ok', res => dispatch(Flash.get(res)))
       .receive('error', res => dispatch(Flash.get(res)))
   }
@@ -53,6 +54,7 @@ export const _updateAll = (ids, changes) => {
 
 export default {
   add,
+  create,
   load,
   sort,
   deleteAll,

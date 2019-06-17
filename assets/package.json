@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "history": "^4.9.0",
+    "iso8601-duration": "^1.2.0",
     "lodash": "^4.17.11",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",

@@ -1,21 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-// import { Link } from 'react-router-dom'
 import { Container, Form } from 'semantic-ui-react'
 import Validator from 'simple-react-validator'
+import { toSeconds, parse } from 'iso8601-duration'
 import { videoOperations as Video } from '../modules/video'
 import { start_request, complete_request } from '../modules/loading'
 import { flashOperations as Flash } from '../modules/flash'
-// import NavBot from '../../components/layout/navbot'
-// import ErrorView from '../home/error'
-
 
 class VideoAdd extends Component {
 
-  state = { aspectratio: '', title: '', submitted: false, youtubeID: null }
+  state = { aspectratio: '', duration: '', title: '', submitted: false, youtubeID: null }
   validator = new Validator({ element: false })
 
-  onInputChange = (e, { name, value }) => this.setState({ [name]: value })
+  onInputChange = (_e, { name, value }) => this.setState({ [name]: value })
 
   changeURL = e => {
 
@@ -28,15 +25,22 @@ class VideoAdd extends Component {
 
     // check youtube data-api for title and description and update state
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', `https://www.googleapis.com/youtube/v3/videos?id=${youtubeID}&key=${window.youtubeAPIKey}&part=snippet,player&maxHeight=8192`)
+    xhr.open('GET', `https://www.googleapis.com/youtube/v3/videos?&id=${youtubeID}&key=${window.youtubeAPIKey}&part=snippet,player,contentDetails&maxHeight=8192`)
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.onload = res => {
       switch(xhr.status){
         case 200:
-          const video = JSON.parse(res.srcElement.response).items[0]
-          // if (!res || !res.data || !res.data.items[0]) return this.reset();
+          res = JSON.parse(res.srcElement.response)
+
+          if(res.items.length == 0){
+            this.setState( { youtubeID })
+            return warning('Could not connect to YouTube to retrieve aspect ratio. You can manually set the aspect ratio and video duration but it is discouraged to do so.')
+          }
+
+          const video = res.items[0]
           this.setState({
             aspectratio: video.player.embedWidth / video.player.embedHeight,
+            duration: toSeconds(parse(video.contentDetails.duration)),
             title: video.snippet.title,
             youtubeID: video.id
           });
@@ -56,7 +60,7 @@ class VideoAdd extends Component {
     if(!this.validator.allValid()) return this.setState({ submitted: true })
 
     const {submitted, ...data } = this.state
-    this.props.addVideo(data)
+    this.props.createVideo(data)
     this.setState({ aspectratio: '', title: '', submitted: false, youtubeID: null })
   }
 
@@ -68,9 +72,10 @@ class VideoAdd extends Component {
 
   render() {
 
-    const { aspectratio, submitted, title, youtubeID } = this.state
+    const { aspectratio, duration, submitted, title, youtubeID } = this.state
 
     this.validator.message('aspectratio', aspectratio, 'required|numeric|between:0.1,3,num')
+    this.validator.message('duration', duration, 'required|integer|min:1')
     this.validator.message('title', title, 'required|alpha_num_dash_space|between:5,100')
     this.validator.message('youtubeID', youtubeID, 'required|string|size:11', {
       messages: { default: 'Does not seem to be a a valid YouTube URL.'}
@@ -115,6 +120,26 @@ class VideoAdd extends Component {
                   value={aspectratio}
                 />
                 <Form.Input
+                  disabled={typeof(duration) != 'string'}
+                  error={submitted
+                    && typeof(duration) == 'string'
+                    && !this.validator.fieldValid('duration')}
+                  icon='external square alternate'
+                  iconPosition='left'
+                  label={
+                    submitted
+                    && typeof(duration) == 'string'
+                    && this.validator.errorMessages.duration
+                    || 'Duration [sec]'
+                  }
+                  name='duration'
+                  onChange={this.onInputChange}
+                  required
+                  placeholder='Duration [sec]'
+                  type='text'
+                  value={duration}
+                />
+                <Form.Input
                   disabled
                   label='Youtube ID'
                   icon='youtube'
@@ -146,7 +171,7 @@ class VideoAdd extends Component {
 
 const mapStateToProps = store => ({ loading: store.loading })
 const mapDispatchToProps = {
-  addVideo: Video.add,
+  createVideo: Video.create,
   start_request,
   complete_request,
   warning: Flash.warning

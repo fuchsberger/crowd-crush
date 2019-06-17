@@ -6,8 +6,10 @@ const initialState = {
   sortDirection: 'asc'
 }
 
-export default function reducer(state = initialState, { type, columnName, videos }) {
+export default function reducer(state = initialState, { type, columnName, video, videos }) {
   switch (type) {
+
+    case types.ADD: return {...state, data: [ ...state.data, video ] }
 
     case types.LOAD:
       return {...state, data: state.data ? state.data.concat(videos) : videos }

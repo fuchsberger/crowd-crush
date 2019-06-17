@@ -17,6 +17,12 @@ const VideoList = ({ history, sort, sortColumn, sortDirection, videos }) => (
             Title
           </Table.HeaderCell>
           <Table.HeaderCell
+            sorted={sortColumn === 'duration' ? sortDirection : null}
+            onClick={() => sort('duration')}
+          >
+            Duration
+          </Table.HeaderCell>
+          <Table.HeaderCell
             sorted={sortColumn === 'marker_count' ? sortDirection : null}
             onClick={() => sort('marker_count')}
           >
@@ -31,9 +37,10 @@ const VideoList = ({ history, sort, sortColumn, sortDirection, videos }) => (
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {map(videos, ({ id, title, marker_count, inserted_at }) => (
+        {map(videos, ({ id, duration, title, marker_count, inserted_at }) => (
           <Table.Row key={id} onClick={() => history.push(`/videos/${id}`)}>
             <Table.Cell>{title}</Table.Cell>
+            <Table.Cell>{duration}</Table.Cell>
             <Table.Cell>{marker_count}</Table.Cell>
             <Table.Cell><TimeAgo date={inserted_at} /></Table.Cell>
           </Table.Row>

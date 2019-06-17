@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Container } from 'reactstrap'
+import { Container } from 'semantic-ui-react'
 import { simOperations as Sim, simSelectors } from '../modules/sim'
 import { ControlBar } from './video'
 import { Markers } from './sim'
