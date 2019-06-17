@@ -1,3 +1,3 @@
-const isAuthenticated = (state) => (state.username != null)
+const isAuthenticated = (state) => (state.user != null)
 
 export default { isAuthenticated}

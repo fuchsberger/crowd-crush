@@ -75,4 +75,20 @@ defmodule CrowdCrushWeb.PrivateChannel do
           else: return_error(socket,"Something went wrong. Please check your form fields.")
     end
   end
+
+  def handle_in("update_video", %{ "id" => id, "video" => video_params }, socket) do
+    video = Simulation.get_video!(id)
+
+    case Simulation.update_video(video, video_params) do
+      {:ok, video} ->
+        Endpoint.broadcast "public", "modify_video", %{
+          time: NaiveDateTime.utc_now(),
+          video: View.render_one(video, VideoView, "video.json")
+        }
+        return_success socket, "The video was successfully updated."
+
+      {:error, _changeset} ->
+        return_error socket, "Could not update video in database."
+    end
+  end
 end

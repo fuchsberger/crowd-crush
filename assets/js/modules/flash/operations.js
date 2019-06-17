@@ -1,6 +1,7 @@
 import actions from "./actions"
 
 const clear = actions.clear
+const error = actions.error
 const success = actions.success
 const warning = actions.warning
 
@@ -15,4 +16,4 @@ const get = ({ error=false, info=false, success=false, warning=false }) => {
   }
 }
 
-export default { get, clear, success, warning }
+export default { get, clear, error, success, warning }

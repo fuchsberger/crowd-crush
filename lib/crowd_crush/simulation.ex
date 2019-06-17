@@ -25,13 +25,9 @@ defmodule CrowdCrush.Simulation do
     |> Repo.delete_all([returning: [:id]])
   end
 
-  def get_video(id) do
-    Repo.get Video, id
-  end
+  def get_video(id), do: Repo.get Video, id
 
-  def get_video!(id) do
-    Repo.get! Video, id
-  end
+  def get_video!(id), do: Repo.get! Video, id
 
   # get video by youtube id
   def get_video(id, :youtube) do
@@ -56,7 +52,6 @@ defmodule CrowdCrush.Simulation do
       group_by: v.id,
       where: v.updated_at > ^syncTime)
     |> Repo.all()
-    |> View.render_many(VideoView, "video.json")
 
     { NaiveDateTime.utc_now(), videos }
   end
@@ -99,9 +94,9 @@ defmodule CrowdCrush.Simulation do
     |> Repo.update_all([set: [locked: !!status]], [returning: true])
   end
 
-  def update_video(id, params) do
-    Repo.get!(Video, id)
-    |> Video.changeset(params)
+  def update_video(%Video{} = video, attrs) do
+    video
+    |> Video.changeset(attrs)
     |> Repo.update()
   end
 

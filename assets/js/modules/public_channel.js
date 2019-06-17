@@ -12,6 +12,11 @@ export default (dispatch) => {
     dispatch(Video.add(video))
   });
 
+  channel.on('modify_video', ({ time, video }) => {
+    channel.params.last_updated = time
+    dispatch(Video.modify(video))
+  });
+
   // channel.on('delete_videos', ({ videos }) => dispatch(removeVideos(videos)));
 
   // channel.on('set_videos', ({ last_updated_videoList, videos }) => {

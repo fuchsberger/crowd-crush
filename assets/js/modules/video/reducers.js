@@ -1,3 +1,4 @@
+import { filter } from 'lodash/collection'
 import types from "./types"
 
 const initialState = {
@@ -7,12 +8,16 @@ const initialState = {
 }
 
 export default function reducer(state = initialState, { type, columnName, video, videos }) {
+
   switch (type) {
 
     case types.ADD: return {...state, data: [ ...state.data, video ] }
 
     case types.LOAD:
       return {...state, data: state.data ? state.data.concat(videos) : videos }
+
+    case types.MODIFY:
+      return {...state, data: [ ...filter(state.data, v => (v.id != video.id)), video] }
 
     case types.SORT:
       if(columnName !== state.sortColumn)
