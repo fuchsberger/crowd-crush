@@ -6,6 +6,7 @@ import { render } from "react-dom"
 import { connect } from 'react-redux'
 import { Route, Router, Switch, withRouter } from 'react-router-dom'
 import { Provider } from "react-redux"
+import { Dimmer, Loader } from 'semantic-ui-react'
 import store from "./store"
 import { Header, PRoute } from "./components"
 import { flashOperations } from './modules/flash'
@@ -16,14 +17,14 @@ import { history } from './utils'
 
 const MainComponent = ({ ready }) => {
   // make sure public and user channels are ready
-  if(!ready) return <div id="spinner-wrapper"><div id="spinner" /></div>
+  if(!ready) return <Dimmer active inverted><Loader/></Dimmer>
 
   return(
     <Switch>
       <Route path="/" exact component={Pages.About} />
       <Route path="/about" component={Pages.About} />
       <Route path="/login" component={Pages.Login} />
-      <Route path="/simulation/:id" component={Pages.SimulationShow} />
+      <Route path="/simulation/:id" component={Pages.Simulation} />
       <Route path="/videos" exact component={Pages.VideoList} />
       <Route path="/videos/:id" component={Pages.VideoShow} />
 

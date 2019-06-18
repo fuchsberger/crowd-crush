@@ -12,6 +12,7 @@ a.b.c
 * if client gets disconnected for whatever reason, it now syncronizes new / updated videos on reconnect
 * authenticated users can now delete videos from the video list, including all markers and overlays. Deleting a video removes it for all currently connected users (in the video list)
 * title in video list now links to simulation. New action (public) that links to the original youtube page (opens in new tab).
+* replaced loader component with semantic-ui dimmer/loader
 
 ## 0.12.3
 * updated readme
