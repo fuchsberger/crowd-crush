@@ -7,11 +7,9 @@ defmodule CrowdCrush.Simulation do
   import Ecto.Query
   import CrowdCrush.Service.Simulation
 
-  alias CrowdCrush.Repo
   alias Phoenix.View
-  alias CrowdCrush.Simulations.Overlay
-  alias CrowdCrush.Simulations.Marker
-  alias CrowdCrush.Simulations.Video
+  alias CrowdCrush.Repo
+  alias CrowdCrush.Simulations.{ Overlay, Marker, Video }
   alias CrowdCrushWeb.VideoView
 
   def create_video(attrs \\ %{}) do
@@ -20,23 +18,9 @@ defmodule CrowdCrush.Simulation do
     |> Repo.insert()
   end
 
-  def delete_videos(videos) do
-    from(v in Video, where: v.id in ^videos and not v.locked)
-    |> Repo.delete_all([returning: [:id]])
-  end
-
-  def get_video(id), do: Repo.get Video, id
+  def delete_video(video), do: Repo.delete(video)
 
   def get_video!(id), do: Repo.get! Video, id
-
-  # get video by youtube id
-  def get_video(id, :youtube) do
-    Repo.get_by(Video, [youtubeID: id])
-    |> Repo.preload([markers: from(m in Marker,
-        select: [m.agent, m.time, m.x, m.y],
-        order_by: [m.agent, m.time])
-      ])
-  end
 
   def list_videos(last_seen), do: Repo.all(from(v in Video, where: v.updated_at > ^last_seen))
 

@@ -1,15 +1,15 @@
 import { toSeconds, parse } from 'iso8601-duration'
 import actions from "./actions"
-import { start_request, complete_request } from '../loading'
+import { start_request } from '../loading'
 import { flashOperations as Flash } from '../flash'
 import { privateChannel } from '../socket'
 
 // sync operations
 const add = actions.add
-const deleteAll = actions.deleteAll
 const load = actions.load
 const modify = actions.modify
-const sort = columnName => actions.sort(columnName)
+const remove = actions.remove
+const sort = actions.sort
 
 // async operations ( preceded with _ )
 
@@ -18,6 +18,16 @@ const create = data => {
     dispatch(start_request())
 
     privateChannel.push('create_video', data)
+      .receive('ok', res => dispatch(Flash.get(res)))
+      .receive('error', res => dispatch(Flash.get(res)))
+  }
+}
+
+const delete_one = id => {
+  return (dispatch) => {
+    dispatch(start_request())
+
+    privateChannel.push(`delete_video:${id}`)
       .receive('ok', res => dispatch(Flash.get(res)))
       .receive('error', res => dispatch(Flash.get(res)))
   }
@@ -87,12 +97,12 @@ export const _updateAll = (ids, changes) => {
 export default {
   add,
   create,
+  delete_one,
   load,
   modify,
+  remove,
   sort,
   update,
-  deleteAll,
-  _deleteAll,
   _insert,
   _updateAll
 };

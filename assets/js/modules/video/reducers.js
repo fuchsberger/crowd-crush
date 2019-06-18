@@ -7,7 +7,7 @@ const initialState = {
   sortDirection: 'asc'
 }
 
-export default function reducer(state = initialState, { type, columnName, video, videos }) {
+export default function reducer(state = initialState, { type, columnName, id, video, videos }) {
 
   switch (type) {
 
@@ -22,6 +22,9 @@ export default function reducer(state = initialState, { type, columnName, video,
 
     case types.MODIFY:
       return {...state, data: [ ...filter(state.data, v => (v.id != video.id)), video] }
+
+    case types.REMOVE:
+        return {...state, data: reject(state.data, v => v.id == id ) }
 
     case types.SORT:
       if(columnName !== state.sortColumn)

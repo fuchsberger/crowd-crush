@@ -87,4 +87,17 @@ defmodule CrowdCrushWeb.PrivateChannel do
         return_error socket, "Could not update video in database."
     end
   end
+
+  def handle_in("delete_video:" <> video_id, _params, socket) do
+    video = Simulation.get_video!(video_id)
+
+    case Simulation.delete_video(video) do
+      {:ok, _video} ->
+        Endpoint.broadcast "public", "delete_video", %{ id: video_id }
+        return_success socket, "The video was successfully deleted."
+
+      {:error, _changeset} ->
+        return_error socket, "Could not update video in database."
+    end
+  end
 end

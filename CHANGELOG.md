@@ -10,6 +10,7 @@ a.b.c
 ## 0.12.4
 * video duration is now retrieved from youtube when adding and video list displays and sorts duration
 * if client gets disconnected for whatever reason, it now syncronizes new / updated videos on reconnect
+* authenticated users can now delete videos from the video list, including all markers and overlays.
 
 ## 0.12.3
 * updated readme
