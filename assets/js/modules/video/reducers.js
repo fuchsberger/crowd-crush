@@ -1,4 +1,4 @@
-import { filter } from 'lodash/collection'
+import { filter, includes, map, reject } from 'lodash/collection'
 import types from "./types"
 
 const initialState = {
@@ -14,7 +14,11 @@ export default function reducer(state = initialState, { type, columnName, video,
     case types.ADD: return {...state, data: [ ...state.data, video ] }
 
     case types.LOAD:
-      return {...state, data: state.data ? state.data.concat(videos) : videos }
+      // check if state already contains new videos, if so replace them with the new ones
+      return {...state, data: state.data
+        ? [...reject(state.data, v => includes(map(videos, v => v.id), v.id)), videos]
+        : videos
+      }
 
     case types.MODIFY:
       return {...state, data: [ ...filter(state.data, v => (v.id != video.id)), video] }

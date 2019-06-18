@@ -9,6 +9,7 @@ a.b.c
 
 ## 0.12.4
 * video duration is now retrieved from youtube when adding and video list displays and sorts duration
+* if client gets disconnected for whatever reason, it now syncronizes new / updated videos on reconnect
 
 ## 0.12.3
 * updated readme
@@ -25,6 +26,7 @@ a.b.c
 
 ## 0.12.1
 * server flash messages are now integrated into react flash system
+* added a feature in video list to automatically update aspect ratio and duration via youtube api (authentication required)
 
 ## 0.12.0
 * vastly improved underlying mechanisms including authentication and channel management

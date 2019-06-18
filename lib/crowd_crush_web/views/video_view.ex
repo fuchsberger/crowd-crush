@@ -7,7 +7,6 @@ defmodule CrowdCrushWeb.VideoView do
       duration: v.duration,
       title: v.title,
       inserted_at: NaiveDateTime.to_iso8601(v.inserted_at) <> "Z",
-      marker_count: Map.get(v, :marker_count, 0),
       youtubeID: v.youtubeID
     }
   end

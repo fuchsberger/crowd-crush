@@ -1,15 +1,13 @@
 defmodule CrowdCrushWeb.PrivateChannel do
   use CrowdCrushWeb, :channel
 
-  alias CrowdCrush.{Accounts, Simulation}
+  alias CrowdCrush.Accounts
   alias CrowdCrushWeb.VideoView
 
   def join("private", _params, socket) do
     case Accounts.get_user(socket.assigns.user_id) do
-      nil ->
-        {:error, %{ error: "Unauthorized" }}
-      user ->
-        {:ok, %{ username: user.username }, socket}
+      nil -> {:error, %{ error: "Unauthorized" }}
+      user -> {:ok, %{ username: user.username }, socket}
     end
   end
 
@@ -63,10 +61,9 @@ defmodule CrowdCrushWeb.PrivateChannel do
   def handle_in("create_video", params, socket) do
     case Simulation.create_video(params) do
       {:ok, video} ->
-        Endpoint.broadcast "public", "add_video", %{
-          time: NaiveDateTime.utc_now(),
-          video: View.render_one(video, VideoView, "video.json")
-        }
+        Endpoint.broadcast "public", "add_video",
+          %{ video: View.render_one(video, VideoView, "video.json")}
+
         return_success socket, "The video was successfully added to the database."
 
       {:error, changeset} ->
@@ -76,15 +73,14 @@ defmodule CrowdCrushWeb.PrivateChannel do
     end
   end
 
-  def handle_in("update_video", %{ "id" => id, "video" => video_params }, socket) do
-    video = Simulation.get_video!(id)
+  def handle_in("update_video:" <> video_id, video_params, socket) do
+    video = Simulation.get_video!(video_id)
 
     case Simulation.update_video(video, video_params) do
       {:ok, video} ->
-        Endpoint.broadcast "public", "modify_video", %{
-          time: NaiveDateTime.utc_now(),
-          video: View.render_one(video, VideoView, "video.json")
-        }
+        Endpoint.broadcast "public", "modify_video",
+          %{ video: View.render_one(video, VideoView, "video.json") }
+
         return_success socket, "The video was successfully updated."
 
       {:error, _changeset} ->

@@ -41,11 +41,10 @@ const update = (id, youtubeID) => {
           const aspectratio =  res.items[0].player.embedWidth / res.items[0].player.embedHeight
           const duration = toSeconds(parse(res.items[0].contentDetails.duration))
 
-          privateChannel.push('update_video', { id, video: { aspectratio, duration }})
+          privateChannel.push(`update_video:${id}`, { aspectratio, duration })
           .receive('ok', res => dispatch(Flash.get(res)))
           .receive('error', res => dispatch(Flash.get(res)))
-
-          return dispatch(Flash.success('Video aspect ratio and duration were updated!'))
+          break
 
         default:
           dispatch(Flash.error('Could not connect to YouTube. Please try again later or contact the administrator, if the issue persists.'))

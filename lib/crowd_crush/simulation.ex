@@ -35,26 +35,10 @@ defmodule CrowdCrush.Simulation do
     |> Repo.preload([markers: from(m in Marker,
         select: [m.agent, m.time, m.x, m.y],
         order_by: [m.agent, m.time])
-       ])
+      ])
   end
 
-  def list_videos(syncTime) do
-    videos = from(v in Video,
-      left_join: m in assoc(v, :markers),
-      select: %{
-        id: v.id,
-        duration: v.duration,
-        title: v.title,
-        marker_count: count(m.id),
-        inserted_at: v.inserted_at,
-        youtubeID: v.youtubeID
-      },
-      group_by: v.id,
-      where: v.updated_at > ^syncTime)
-    |> Repo.all()
-
-    { NaiveDateTime.utc_now(), videos }
-  end
+  def list_videos(last_seen), do: Repo.all(from(v in Video, where: v.updated_at > ^last_seen))
 
   def get_video_details(video_id) do
     from(v in Video, select: map(v, ~w(aspectratio m0_x m0_y mX_x mX_y mY_x mY_y

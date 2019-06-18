@@ -15,6 +15,7 @@ const VideoList = ({
   videos
 }) => (
   <Container>
+    {}
     <Table compact selectable sortable fixed>
       <Table.Header>
         <Table.Row>
@@ -31,12 +32,6 @@ const VideoList = ({
             Duration
           </Table.HeaderCell>
           <Table.HeaderCell
-            sorted={sortColumn === 'marker_count' ? sortDirection : null}
-            onClick={() => sort('marker_count')}
-          >
-            Markers
-          </Table.HeaderCell>
-          <Table.HeaderCell
             sorted={sortColumn === 'inserted_at' ? sortDirection : null}
             onClick={() => sort('inserted_at')}
           >
@@ -46,12 +41,11 @@ const VideoList = ({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {map(videos, ({ id, duration, title, marker_count, inserted_at, youtubeID }) => (
+        {map(videos, ({ id, duration, title, inserted_at, youtubeID }) => (
           <Table.Row key={id}>
             {/* onClick={() => history.push(`/videos/${id}`)} */}
             <Table.Cell>{title}</Table.Cell>
             <Table.Cell>{duration}</Table.Cell>
-            <Table.Cell>{marker_count}</Table.Cell>
             <Table.Cell><TimeAgo date={inserted_at} /></Table.Cell>
             {authenticated &&
               <Table.Cell>

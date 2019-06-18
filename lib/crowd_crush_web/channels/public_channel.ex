@@ -1,17 +1,15 @@
 defmodule CrowdCrushWeb.PublicChannel do
   use CrowdCrushWeb, :channel
-  import CrowdCrush.Simulation
 
   alias CrowdCrushWeb.VideoView
 
   def join("public", params, socket) do
-    last_updated = Map.get(params, :last_updated, ~N[2000-01-01 10:00:00])
-    {now, videos} = list_videos(last_updated)
+    last_seen = NaiveDateTime.from_iso8601!(params["last_seen"])
+    videos = Simulation.list_videos(last_seen)
 
-    params = %{
-      last_updated: now,
+    {:ok, %{
+      last_seen: now(),
       videos: View.render_many(videos, VideoView, "video.json")
-    }
-    {:ok, params, socket}
+    }, socket}
   end
 end

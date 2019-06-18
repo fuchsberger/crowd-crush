@@ -9,11 +9,15 @@ export default ( dispatch ) => {
   // ignore privateChannel when no valid token and return unjoined
   if(window.userToken === '') return channel
 
+  // listen for events
+
+
+  // join channel
   channel.join()
   .receive('ok', res => {
     dispatch(Session.login(res.username))
     dispatch(Flash.get(res))
   });
 
-  return channel;
+  return channel
 }

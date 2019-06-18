@@ -3,17 +3,17 @@ import { videoOperations as Video } from './video'
 
 export default (dispatch) => {
 
-  const channel = socket.channel('public')
+  const channel = socket.channel('public', () => ({ last_seen: "2000-01-01T00:00:00.0" }))
 
   // Listen for events
 
-  channel.on('add_video', ({ time, video }) => {
-    channel.params.last_updated = time
+  channel.on('add_video', ({ video }) => {
+    channel.params.last_seen = video.inserted_at
     dispatch(Video.add(video))
   });
 
-  channel.on('modify_video', ({ time, video }) => {
-    channel.params.last_updated = time
+  channel.on('modify_video', ({ video }) => {
+    channel.params.last_updated = video.updated_at
     dispatch(Video.modify(video))
   });
 
@@ -25,11 +25,10 @@ export default (dispatch) => {
   // });
 
   channel.join()
-  .receive('ok', ({ last_updated, videos }) => {
-    channel.params.last_updated = last_updated
-    dispatch(Video.load(videos));
-  });
-
+  .receive('ok', ({ last_seen, videos }) => {
+    dispatch(Video.load(videos))
+    channel.params.last_seen = last_seen
+  })
 
   return channel
 }
