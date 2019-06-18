@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from "react-router-dom"
 import { map } from 'lodash/collection'
 import TimeAgo from 'react-timeago'
 import { Button, Confirm, Container, Table } from 'semantic-ui-react'
@@ -51,33 +52,40 @@ class VideoList extends Component {
               >
                 Created
               </Table.HeaderCell>
-              {authenticated && <Table.HeaderCell>Actions</Table.HeaderCell>}
+              <Table.HeaderCell>Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {map(videos, ({ id, duration, title, inserted_at, youtubeID }) => (
               <Table.Row key={id}>
                 {/* onClick={() => history.push(`/videos/${id}`)} */}
-                <Table.Cell>{title}</Table.Cell>
+                <Table.Cell>
+                  <Link to={`/videos/${id}`}>{title}</Link>
+                </Table.Cell>
                 <Table.Cell>{duration}</Table.Cell>
                 <Table.Cell><TimeAgo date={inserted_at} /></Table.Cell>
-                {authenticated &&
-                  <Table.Cell>
-                    <Button
-                      icon='refresh'
-                      onClick={() => updateVideo(id, youtubeID)}
-                      size='mini'
-                      title='Get updated aspectratio and duration from YouTube'
-                    />
-                    <Button
-                      icon='delete'
-                      onClick={() => this.open(id)}
-                      size='mini'
-                      title='Remove Video and all associated markers and overlays'
-                    />
 
-                  </Table.Cell>
-                }
+                <Table.Cell>
+                  <a href={`https://www.youtube.com/watch?v=${youtubeID}`} target='_blank'>
+                    <Button icon='youtube' size='mini' />
+                  </a>
+                  {authenticated && [
+                  <Button
+                    icon='refresh'
+                    key={1}
+                    onClick={() => updateVideo(id, youtubeID)}
+                    size='mini'
+                    title='Get updated aspectratio and duration from YouTube'
+                  />,
+                  <Button
+                    key={2}
+                    icon='delete'
+                    onClick={() => this.open(id)}
+                    size='mini'
+                    title='Remove Video and all associated markers and overlays'
+                  />]
+                  }
+                </Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
