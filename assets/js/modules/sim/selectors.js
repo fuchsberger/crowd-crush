@@ -7,6 +7,10 @@ const player = state => state.sim.player
 const videoRatio = state => state.sim.video.aspectratio
 const windowRatio = state => state.sim.windowRatio
 
+const video_id = state => state.sim.video_id
+
+// DERIVED DATA
+
 /**
  * Converts an array of abs coordinates to relative coordinates
  * @param {[]} markers
@@ -88,6 +92,7 @@ const getAdjustments = ( aspectratio ) => {
   }
   return { h_mult, h_offset, w_mult, w_offset }
 }
+
 
 /**
  * returns each agents approximated position at a given time,
@@ -247,6 +252,8 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 });
 
+const loading = createSelector([ video_id ], video_id => !video_id)
+
 const running = ( player ) => ( player && player.getPlayerState() == 1 )
 
 export default {
@@ -258,5 +265,6 @@ export default {
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
-  running
+  loading,
+  video_id
 };

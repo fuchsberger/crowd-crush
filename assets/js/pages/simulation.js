@@ -3,18 +3,15 @@ import { connect } from 'react-redux'
 // import YouTube from 'react-youtube'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 // import { YOUTUBE_PLAYER_OPTS } from '../config'
-// import { simOperations as Sim } from '../modules/sim'
+import { simOperations, simSelectors as Sim } from '../modules/sim'
 // import { ControlBar, Overlay } from './sim'
-
-// import Loading from '../components/loading'
 // import Error from './error'
+import { videoSelectors as Video } from '../modules/video'
 
 class Simulation extends Component {
 
-  state = { loading: true }
-
   componentWillMount() {
-    // this.props.joinSimulation(this.props.match.params.id)
+    this.channel = this.props.joinSimulation(this.props.match.params.id)
   }
 
   // constructor(props) {
@@ -65,7 +62,7 @@ class Simulation extends Component {
 
   render() {
 
-    const { loading } = this.state
+    const { loading } = this.props
 
     if(loading) return <Dimmer active={loading}><Loader inverted/></Dimmer>
 
@@ -110,15 +107,17 @@ const mapStateToProps = store => ({
   // agent_hovered: store.sim.agent_hovered,
   // agent_selected: store.sim.agentSelected,
   // error: store.sim.error,
+  loading: Sim.loading(store),
   // overlay: store.sim.overlay,
   // player: store.sim.player,
   // simLoaded: store.sim.markers && store.sim.overlays,
   // socketReady: !!store.session.socket,
+  video: Video.get(store),
   // youtubeID: store.sim.video && store.sim.video.youtubeID
 });
 
 const mapDispatchToProps = {
-  // joinSimulation: Sim.join,
+  joinSimulation: simOperations.join,
   // leaveSimulation: Sim.leave,
   // loadPlayer: Sim.loadPlayer
 }

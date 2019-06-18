@@ -1,3 +1,4 @@
+import socket from '../socket'
 import { Api } from "../../utils"
 import { REFRESH_INTERVAL } from '../../config'
 import actions from "./actions"
@@ -17,23 +18,58 @@ const updateVideo = actions.updateVideo
 
 // async actions
 
+/**
+ * Joins simulation channel and returns channel object.
+ * Also subscribes to channel events and dispatches actions accordingly.
+ * @param { number } video_id
+ */
 const join = ( video_id, params = {} ) => {
-  return (dispatch, store) => {
-    const socket = store().session.socket
-    const channel = Api.configSimChannel(socket, dispatch, video_id, params)
+  return (dispatch) => {
+
+    const channel = socket.channel(`sim:${video_id}`, params)
+
+  // if(params.overlays){
+  // // channel.on('delete_overlay', overlay =>
+  // //   dispatch({
+  // //     type: DELETE_OVERLAY,
+  // //     youtubeID: overlay.youtubeID
+  // //   })
+  // // );
+
+  // // channel.on('set_overlay', overlay =>
+  // //   dispatch({ type: SET_OVERLAY, overlay })
+  // // );
+  // }
+
+
+  // // listen for new/updated markers
+  // channel.on('set_marker', marker =>
+  //   dispatch({ type: SET_MARKER, marker }));
+
+  // channel.on('remove_agent', res =>
+  //   dispatch({ type: DELETE_AGENT, ...res })
+  // );
+
+  // channel.on('remove_all_agents', () =>
+  //   dispatch({ type: DELETE_ALL_AGENTS })
+  // );
 
     channel.join()
     .receive('ok', ( res ) => {
-      const { syncTime, ...simParams} = res
-      channel.params.syncTime = syncTime
+        console.log(res)
 
-      // if markers are in absolute coords convert to relative first
-      if(params.abs)
-        simParams.markers = simSelectors.convertToRel(simParams.markers)
+      // const { syncTime, ...simParams} = res
+      // channel.params.syncTime = syncTime
 
-      dispatch(actions.join( channel, simParams ));
+      // // if markers are in absolute coords convert to relative first
+      // if(params.abs)
+      //   simParams.markers = simSelectors.convertToRel(simParams.markers)
+
+      dispatch(actions.join(video_id));
     })
     .receive('error', () => dispatch(actions.joinError()))
+
+    return channel
   }
 }
 

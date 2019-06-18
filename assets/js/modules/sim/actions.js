@@ -1,18 +1,7 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = (channel, simParams) => {
-
-  let duration = 0
-  for(let i = 0; i < simParams.markers.length; i++){
-    if(simParams.markers[i][1] > duration) duration = simParams.markers[i][1];
-  }
-
-  return ({
-    type: types.JOIN,
-    payload: { channel, ...simParams, duration }
-  });
-}
+const join = video_id => ({ type: types.JOIN, video_id })
 
 const moveCursor = (x, y) => ({
   type: types.MOVE_CURSOR,
