@@ -1,16 +1,15 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = video_id => ({ type: types.JOIN, video_id })
+const join = (video_id, markers) => ({ type: types.JOIN, video_id, markers })
+const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
+const leave = () => ({ type: types.LEAVE })
 
 const moveCursor = (x, y) => ({
   type: types.MOVE_CURSOR,
   cursorX: x,
   cursorY: y
 })
-
-const joinError = () => ({ type: types.JOIN_ERROR });
-const leave = () => ({ type: types.LEAVE });
 
 const loadPlayer = ( player ) => {
   player.pauseVideo();

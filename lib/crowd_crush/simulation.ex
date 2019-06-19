@@ -20,6 +20,7 @@ defmodule CrowdCrush.Simulation do
 
   def delete_video(video), do: Repo.delete(video)
 
+  def get_video(id), do: Repo.get Video, id
   def get_video!(id), do: Repo.get! Video, id
 
   def list_videos(last_seen), do: Repo.all(from(v in Video, where: v.updated_at > ^last_seen))
@@ -30,18 +31,12 @@ defmodule CrowdCrush.Simulation do
     |> Repo.get(video_id)
   end
 
-  @doc """
-    called when joining sim channel
-  """
-  @spec list_markers(integer, NaiveDateTime.t) :: list
-  def list_markers(video_id, syncTime) do
-    from(m in Marker,
-      select: [m.agent, m.time, m.x, m.y],
-      limit: 100000,
-      order_by: [asc: m.agent, asc: m.time],
-      where: m.video_id == ^video_id and m.updated_at > ^syncTime
+  def list_markers(%Video{} = video, last_seen) do
+    Repo.all(
+      from m in Ecto.assoc(video, :markers),
+        limit: 100000,
+        where: m.updated_at > ^last_seen
     )
-    |> Repo.all()
   end
 
   def render_video(video) do
@@ -191,9 +186,9 @@ defmodule CrowdCrush.Simulation do
   returns empty structure if none was found
   """
   def get_marker(video_id, agent, time) do
-      case Repo.get_by(Marker, video_id: video_id, agent: agent, time: time ) do
-        nil  -> %Marker{}   # Marker not found, we build new one
-        marker -> marker    # Marker exists, let's use it
-      end
+    case Repo.get_by(Marker, video_id: video_id, agent: agent, time: time ) do
+      nil  -> %Marker{}   # Marker not found, we build new one
+      marker -> marker    # Marker exists, let's use it
+    end
   end
 end

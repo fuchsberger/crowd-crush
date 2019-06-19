@@ -2,12 +2,12 @@ import socket from '../socket'
 import { Api } from "../../utils"
 import { REFRESH_INTERVAL } from '../../config'
 import actions from "./actions"
+import { flashOperations as Flash } from '../flash'
 import { simSelectors } from "."
 
 // sync actions
 
 const jump = actions.jump
-const leave = actions.leave
 const loadPlayer = actions.loadPlayer
 const moveCursor = actions.moveCursor
 const resize = actions.resize
@@ -23,10 +23,11 @@ const updateVideo = actions.updateVideo
  * Also subscribes to channel events and dispatches actions accordingly.
  * @param { number } video_id
  */
-const join = ( video_id, params = {} ) => {
+const join = video_id => {
   return (dispatch) => {
 
-    const channel = socket.channel(`sim:${video_id}`, params)
+    const channel = socket.channel(`sim:${video_id}`, () =>
+      ({ last_seen: "2000-01-01T00:00:00.0" }))
 
   // if(params.overlays){
   // // channel.on('delete_overlay', overlay =>
@@ -65,11 +66,22 @@ const join = ( video_id, params = {} ) => {
       // if(params.abs)
       //   simParams.markers = simSelectors.convertToRel(simParams.markers)
 
-      dispatch(actions.join(video_id));
+      dispatch(actions.join(video_id, res.markers))
     })
-    .receive('error', () => dispatch(actions.joinError()))
+    .receive('error', res => {
+
+      dispatch(actions.joinError())
+      dispatch(Flash.get(res))
+    })
 
     return channel
+  }
+}
+
+const leave = channel => {
+  return (dispatch) => {
+    channel.leave()
+    dispatch(actions.leave())
   }
 }
 

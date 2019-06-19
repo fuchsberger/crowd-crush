@@ -1,8 +1,11 @@
+import { includes, map, reject } from 'lodash/collection'
 import { REFRESH_INTERVAL } from '../../config'
 import types from "./types"
 import selectors from "./selectors"
 
 const initialState = {
+  error: false,
+  markers: [],
   video_id: null,
 
   // agentHovered: null,
@@ -34,13 +37,18 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.JOIN:
       return {
         ...state,
-        video_id: payload.video_id
+        markers: [
+          ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
+          payload.markers
+        ],
+        video_id: parseInt(payload.video_id)
         // ...initialState,
         // ...action.payload,
         // error: false
       }
 
-    // case types.JOIN_ERROR:      return { ...initialState, error: true }
+    case types.VIDEO_NOT_FOUND:
+      return { ...initialState, error: true }
 
     // case types.JUMP:
     //   let nTime;
@@ -65,7 +73,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     //   }
     //   return { ...state, time: nTime }
 
-    // case types.LEAVE:           return initialState
+    case types.LEAVE:           return initialState
 
     // case types.RESIZE:
     //   return {

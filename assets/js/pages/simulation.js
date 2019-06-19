@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 // import YouTube from 'react-youtube'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 // import { YOUTUBE_PLAYER_OPTS } from '../config'
@@ -12,6 +13,10 @@ class Simulation extends Component {
 
   componentWillMount() {
     this.channel = this.props.joinSimulation(this.props.match.params.id)
+  }
+
+  componentWillUnmount() {
+    this.props.leaveSimulation(this.channel)
   }
 
   // constructor(props) {
@@ -42,9 +47,7 @@ class Simulation extends Component {
   //     this.props.joinSimulation(this.props.match.params.id, { overlays: true });
   // }
 
-  // componentWillUnmount() {
-  //   this.props.leaveSimulation();
-  // }
+
 
   // stateChange(e){
   //   if(!this.ready && e.data == 1){
@@ -62,15 +65,17 @@ class Simulation extends Component {
 
   render() {
 
-    const { loading } = this.props
+    const { error, loading } = this.props
 
     if(loading) return <Dimmer active={loading}><Loader inverted/></Dimmer>
 
+
+    if (error) return (<Redirect to='/videos' />)
     return null
 
-    // const { error, loadPlayer, overlay, simLoaded, youtubeID } = this.props;
+    // const { loadPlayer, overlay, simLoaded, youtubeID } = this.props;
 
-    // if (error) return (<Error heading="Video not found." />);
+
     // if (!simLoaded) return <Loading />;
 
     // const { showOverlayMenu, showOverlayModal } = this.state
@@ -106,7 +111,7 @@ class Simulation extends Component {
 const mapStateToProps = store => ({
   // agent_hovered: store.sim.agent_hovered,
   // agent_selected: store.sim.agentSelected,
-  // error: store.sim.error,
+  error: Sim.error(store),
   loading: Sim.loading(store),
   // overlay: store.sim.overlay,
   // player: store.sim.player,
@@ -118,7 +123,7 @@ const mapStateToProps = store => ({
 
 const mapDispatchToProps = {
   joinSimulation: simOperations.join,
-  // leaveSimulation: Sim.leave,
+  leaveSimulation: simOperations.leave,
   // loadPlayer: Sim.loadPlayer
 }
 

@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect'
 
+const error = state => state.sim.error
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
 const time = state => state.sim.time
@@ -252,11 +253,12 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 });
 
-const loading = createSelector([ video_id ], video_id => !video_id)
+const loading = createSelector([ error, video_id ], (error, video_id) => !error && !video_id)
 
 const running = ( player ) => ( player && player.getPlayerState() == 1 )
 
 export default {
+  error,
   convertToRel,
   duration,
   frameCSS,

@@ -3,37 +3,38 @@
 defmodule CrowdCrushWeb.SimChannel do
 
   use CrowdCrushWeb, :channel
-  import CrowdCrush.Simulation
+  alias CrowdCrush.Simulation
+  alias CrowdCrushWeb.MarkerView
   # alias CrowdCrushWeb.Endpoint
 
   @doc """
   Join simulation.
   """
   def join("sim:"<> video_id, params, socket) do
-    case get_video_details(video_id) do
+    case Simulation.get_video(video_id) do
       nil ->
         {:error, %{ error: "No video with this ID."}}
       video ->
-        syncTime = Map.get params, :syncTime, ~N[2000-01-01 10:00:00]
+        last_seen = NaiveDateTime.from_iso8601!(params["last_seen"])
 
-        res = %{
-          syncTime: NaiveDateTime.utc_now(),
-          video: video
-        }
+        markers = Simulation.list_markers( video, last_seen )
 
         # if abs=true in params, convert markers to abs, otherwise leave rel
-        res = if Map.get(params, "abs", false) do
-          Map.put(res, :markers, get_csv_markers(video_id))
-        else
-          Map.put(res, :markers, list_markers( video_id, syncTime ))
-        end
+        # res = if Map.get(params, "abs", false) do
+        #   Map.put(res, :markers, get_csv_markers(video_id))
+        # else
+        #   Map.put(res, :markers, list_markers( video_id, syncTime ))
+        # end
 
         # if overlays=true in params, get and attach them
-        res = if Map.get(params, "overlays", false),
-          do: Map.put(res, :overlays, get_overlays(video_id)),
-          else: res
+        # res = if Map.get(params, "overlays", false),
+        #   do: Map.put(res, :overlays, get_overlays(video_id)),
+        #   else: res
 
-        { :ok, res, assign(socket, :video_id, video_id) }
+        { :ok, %{
+          last_seen: now(),
+          markers: View.render_many(markers, MarkerView, "marker.json")
+        }, assign(socket, :video_id, video.id) }
     end
   end
 
