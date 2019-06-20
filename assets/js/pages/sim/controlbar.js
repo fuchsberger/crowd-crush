@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
-import { Navbar } from 'reactstrap'
+import { Menu } from 'semantic-ui-react'
 import { ControlsCoords, ControlsMode, ControlsMarkers, ControlsPlayer, ControlsTime } from '.'
 
 const ControlBar = ({ mode }) => (
-  <Navbar className="justify-content-between" color="dark" dark
+  <Menu className="justify-content-between" color="dark" dark
     fixed="bottom" expand="md">
     <ControlsMode />
     { mode == 'sim'     && <ControlsPlayer /> }
@@ -12,7 +12,7 @@ const ControlBar = ({ mode }) => (
         ? <ControlsCoords />
         : <ControlsTime inPercent={ mode == 'sim' } />
     }
-  </Navbar>
+  </Menu>
 );
 
 const mapStateToProps = store => ({ mode: store.sim.mode });

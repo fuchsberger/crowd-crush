@@ -1,13 +1,16 @@
 import { createSelector } from 'reselect'
+import { find } from 'lodash/collection'
+import { videoSelectors as Video } from '../video'
 
 const error = state => state.sim.error
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
 const time = state => state.sim.time
 const player = state => state.sim.player
+const playerReady = state => state.sim.player_ready
 const videoRatio = state => state.sim.video.aspectratio
+const videos = state => state.videos.data
 const windowRatio = state => state.sim.windowRatio
-
 const video_id = state => state.sim.video_id
 
 // DERIVED DATA
@@ -253,9 +256,10 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 });
 
-const loading = createSelector([ error, video_id ], (error, video_id) => !error && !video_id)
-
 const running = ( player ) => ( player && player.getPlayerState() == 1 )
+
+const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
+const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
 export default {
   error,
@@ -267,6 +271,7 @@ export default {
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
-  loading,
-  video_id
-};
+  player,
+  playerReady,
+  youtubeID
+}

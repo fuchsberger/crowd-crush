@@ -1,12 +1,14 @@
 import socket from '../socket'
-import { Api } from "../../utils"
+// import { Api } from "../../utils"
 import { REFRESH_INTERVAL } from '../../config'
 import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
-import { simSelectors } from "."
+// import { simSelectors } from "."
 
 // sync actions
 
+
+const changePlayerState = actions.changePlayerState
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
 const moveCursor = actions.moveCursor
@@ -24,7 +26,7 @@ const updateVideo = actions.updateVideo
  * @param { number } video_id
  */
 const join = video_id => {
-  return (dispatch) => {
+  return dispatch => {
 
     const channel = socket.channel(`sim:${video_id}`, () =>
       ({ last_seen: "2000-01-01T00:00:00.0" }))
@@ -56,20 +58,17 @@ const join = video_id => {
   // );
 
     channel.join()
-    .receive('ok', ( res ) => {
-        console.log(res)
+    .receive('ok', ({ last_seen, markers }) => {
 
-      // const { syncTime, ...simParams} = res
-      // channel.params.syncTime = syncTime
+      channel.params.last_seen = last_seen
 
       // // if markers are in absolute coords convert to relative first
       // if(params.abs)
       //   simParams.markers = simSelectors.convertToRel(simParams.markers)
 
-      dispatch(actions.join(video_id, res.markers))
+      dispatch(actions.join(parseInt(video_id), markers))
     })
     .receive('error', res => {
-
       dispatch(actions.joinError())
       dispatch(Flash.get(res))
     })
@@ -79,7 +78,7 @@ const join = video_id => {
 }
 
 const leave = channel => {
-  return (dispatch) => {
+  return dispatch => {
     channel.leave()
     dispatch(actions.leave())
   }
@@ -140,6 +139,7 @@ const setMode = ( mode ) => {
 }
 
 export default {
+  changePlayerState,
   join,
   jump,
   leave,

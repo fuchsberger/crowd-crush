@@ -5,17 +5,15 @@ const join = (video_id, markers) => ({ type: types.JOIN, video_id, markers })
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
 
+const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
+
 const moveCursor = (x, y) => ({
   type: types.MOVE_CURSOR,
   cursorX: x,
   cursorY: y
 })
 
-const loadPlayer = ( player ) => {
-  player.pauseVideo();
-  player.seekTo(0, true);
-  return ({ type: types.UPDATE, params: { player } })
-}
+const loadPlayer = player => ({ type: types.LOAD_PLAYER, player })
 
 /**
  * Converts an array of absolute markers into an array of relative markers
@@ -56,6 +54,7 @@ const update = ( params ) => ({ type: types.UPDATE, params })
 const updateVideo = ( params ) => ({ type: types.UPDATE_VIDEO, params })
 
 export default {
+  changePlayerState,
   join,
   joinError,
   jump,

@@ -16,7 +16,7 @@ export default function reducer(state = initialState, { type, columnName, id, vi
     case types.LOAD:
       // check if state already contains new videos, if so replace them with the new ones
       return {...state, data: state.data
-        ? [...reject(state.data, v => includes(map(videos, v => v.id), v.id)), videos]
+        ? [...reject(state.data, v => includes(map(videos, v => v.id), v.id)), ...videos]
         : videos
       }
 
