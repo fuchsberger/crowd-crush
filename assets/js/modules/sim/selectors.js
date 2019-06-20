@@ -8,8 +8,8 @@ const markers2 = state => state.sim.markers2
 const time = state => state.sim.time
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
+const state = state => state.sim.player_state
 const videoRatio = state => state.sim.video.aspectratio
-const videos = state => state.videos.data
 const windowRatio = state => state.sim.windowRatio
 const video_id = state => state.sim.video_id
 
@@ -256,8 +256,6 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 });
 
-const running = ( player ) => ( player && player.getPlayerState() == 1 )
-
 const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
@@ -273,5 +271,6 @@ export default {
   getFrameConstraints,
   player,
   playerReady,
+  state,
   youtubeID
 }

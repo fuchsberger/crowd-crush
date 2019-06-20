@@ -6,8 +6,10 @@ import selectors from "./selectors"
 const initialState = {
   error: false,
   markers: [],
+  paused: true,
   player: null,
   player_ready: false,
+  player_state: -1,
   video_id: null,
 
   // agentHovered: null,
@@ -27,7 +29,6 @@ const initialState = {
   // mode: 'sim', // modes: coords, markers, sim (default)
   // overlay: null,
   // overlays: null,
-  // running: false,
   // time: 0,
   // video: null,
   // windowRatio: window.innerWidth / (window.innerHeight - 110)
@@ -37,13 +38,13 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
   switch ( type ) {
 
     case types.CHANGE_PLAYER_STATE:
-      const playerState = state.player.getPlayerState()
-      if(playerState == 1 && !state.player_ready){
+      const player_state = state.player.getPlayerState()
+      if(player_state == 1 && !state.player_ready){
         state.player.pauseVideo()
         state.player.seekTo(0, true)
-        return { ...state, player_ready: true }
+        return { ...state, player_ready: true, player_state }
       }
-      return state;
+      return { ...state, player_state }
 
     case types.JOIN:
       return {

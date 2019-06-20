@@ -92,7 +92,6 @@ const play = () => {
       () => dispatch(actions.tick()),
       REFRESH_INTERVAL
     );
-    dispatch(update({ running: true }))
   }
 }
 
@@ -101,7 +100,6 @@ const pause = () => {
     const player = store().sim.player
     if(player) player.pauseVideo()
     clearInterval(window.simTimer)
-    dispatch(update({ running: false }))
   }
 }
 
@@ -113,7 +111,7 @@ const stop = () => {
       player.seekTo(0, true)
     }
     clearInterval(window.simTimer)
-    dispatch(update({ running: false, time: 0 }))
+    dispatch(update({ time: 0 }))
   }
 }
 
