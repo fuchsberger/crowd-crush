@@ -1,26 +1,29 @@
 /* MENU TWEAKS  */
 /* .ui[class*="top attached"].menu { margin-bottom: 1em!important; } */
 
+.menu { z-index: 200;}
+.menu .container div { display: flex; }
+
 /* hide menu button on non-mobile devices */
 #collapse-button { display: none; }
 
 /* on mobile devices */
 @media only screen and (max-width: 767px){
+
+  /* hide menu items by default */
+  #collapse-button ~ div { display: none; }
+
+  /* show menu items, if menu button is active */
+  #collapse-button.active ~ div { display: block; }
+
   /* always show menu button */
   #collapse-button {
     display: block;
     width:auto!important;
     position: absolute;
     right:0;
+    z-index: 201;
   }
-
-  /* hide menu items by default */
-  #collapse-button ~ .item,
-  #collapse-button ~ .right.menu { display: none; }
-
-  /* show menu items, if menu button is active */
-  #collapse-button.active ~ .item,
-  #collapse-button.active ~ .right.menu { display: block; }
 }
 
 /* NOTIFICATIONS */

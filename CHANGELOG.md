@@ -13,6 +13,8 @@ a.b.c
 * authenticated users can now delete videos from the video list, including all markers and overlays. Deleting a video removes it for all currently connected users (in the video list)
 * title in video list now links to simulation. New action (public) that links to the original youtube page (opens in new tab).
 * replaced loader component with semantic-ui dimmer/loader
+* reimplemented youtube player
+* menu can now load different menu items based on surrounding
 
 ## 0.12.3
 * updated readme
