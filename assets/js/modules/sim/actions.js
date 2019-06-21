@@ -1,7 +1,7 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = (video_id, markers) => ({ type: types.JOIN, video_id, markers })
+const join = (video_id, duration, markers) => ({ type: types.JOIN, video_id, duration, markers })
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
 
@@ -62,9 +62,9 @@ const stop = () => {
 
 }
 const selectAgent = () => ({ type: types.SELECT_AGENT })
-const tick = (time = null) => ({ type: types.TICK, time })
-const update = ( params ) => ({ type: types.UPDATE, params })
-const updateVideo = ( params ) => ({ type: types.UPDATE_VIDEO, params })
+const tick = () => ({ type: types.TICK })
+const update = params => ({ type: types.UPDATE, params })
+const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
 
 export default {
   changePlayerState,

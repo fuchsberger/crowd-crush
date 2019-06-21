@@ -15,6 +15,8 @@ a.b.c
 * replaced loader component with semantic-ui dimmer/loader
 * reimplemented youtube player (has its own component now)
 * menu can now load different menu items based on surrounding
+* improved play / pause / stop mechanics
+* simulation time is now precicely retrieved from video player instead of manually aproximated by REFRESH_INTERVAL
 
 ## 0.12.3
 * updated readme

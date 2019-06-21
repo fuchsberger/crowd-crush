@@ -26,7 +26,7 @@ const updateVideo = actions.updateVideo
  * Also subscribes to channel events and dispatches actions accordingly.
  * @param { number } video_id
  */
-const join = video_id => (dispatch => {
+const join = (video_id, duration) => (dispatch => {
 
   const channel = socket.channel(`sim:${video_id}`, () =>
     ({ last_seen: "2000-01-01T00:00:00.0" }))
@@ -66,7 +66,7 @@ const join = video_id => (dispatch => {
     // if(params.abs)
     //   simParams.markers = simSelectors.convertToRel(simParams.markers)
 
-    dispatch(actions.join(parseInt(video_id), markers))
+    dispatch(actions.join(parseInt(video_id), duration, markers))
   })
   .receive('error', res => {
     dispatch(actions.joinError())

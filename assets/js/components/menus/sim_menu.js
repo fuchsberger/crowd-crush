@@ -1,8 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { Menu } from 'semantic-ui-react'
+import { Icon, Menu } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
+import { SimTime } from '../../pages/sim'
 
 const SimMenu = ({ play, pause, playerState, stop }) => (
   <div>
@@ -12,13 +13,19 @@ const SimMenu = ({ play, pause, playerState, stop }) => (
       : <Menu.Item icon='play' onClick={() => play()}/>
     }
     <Menu.Item icon='stop' onClick={() => stop()} />
+    <Menu.Item>
+      <Icon name='clock outline' />
+      <SimTime />
+    </Menu.Item>
 
     {/* {user && <Menu.Item as={NavLink} to='/video/add' icon='plus' name='Add Video' />}
     {user && <Menu.Item as={NavLink} to='/users' icon='users' name='Users' />} */}
   </div>
 )
 
-const mapStateToProps = store => ({ playerState: Sim.playerState(store) })
+const mapStateToProps = store => ({
+  playerState: Sim.playerState(store)
+})
 
 const mapDispatchToProps = {
   play: simOperations.play,

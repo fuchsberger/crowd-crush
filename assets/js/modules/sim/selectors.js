@@ -1,14 +1,15 @@
 import { createSelector } from 'reselect'
 import { find } from 'lodash/collection'
+import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
 
 const error = state => state.sim.error
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
-const time = state => state.sim.time
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
 const playerState = state => state.sim.player_state
+const time = state => state.sim.time
 const videoRatio = state => state.sim.video.aspectratio
 const windowRatio = state => state.sim.windowRatio
 const video_id = state => state.sim.video_id
@@ -256,6 +257,8 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 });
 
+const roundedTime = createSelector([time], t => round(t, 3))
+
 const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
@@ -272,5 +275,6 @@ export default {
   player,
   playerReady,
   playerState,
+  time: roundedTime,
   youtubeID
 }

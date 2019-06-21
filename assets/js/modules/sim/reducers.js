@@ -5,6 +5,7 @@ import selectors from "./selectors"
 
 const initialState = {
   error: false,
+  duration: 0,
   markers: [],
   playing: false,
   player: null,
@@ -49,6 +50,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.JOIN:
       return {
         ...initialState,
+        duration: payload.duration * 1000,
         markers: [
           ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
           ...payload.markers
@@ -71,6 +73,10 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       state.player.pauseVideo()
       state.player.seekTo(0, true)
       return { ...state, time: 0 }
+
+    // updates the time every few milliseconds (defined in REFRESH_INTERVAL)
+    case types.TICK:
+      return { ...state, time: state.player.getCurrentTime() }
 
     case types.VIDEO_NOT_FOUND:
       return { ...initialState, error: true }
@@ -109,15 +115,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     // case types.SELECT_AGENT:
     //   return { ...state, agentSelected: state.agentHovered }
 
-    // case types.TICK:
-
-    //   if (action.time != null) return { ...state, time: action.time }
-
-    //   let time = state.player
-    //     ? Math.round(state.player.getCurrentTime() * 1000)
-    //     : state.time
-    //   time = time < state.duration ? time + REFRESH_INTERVAL : 0;
-    //   return { ...state, time }
 
     // case types.UPDATE:
     //   return { ...state, ...action.params }
