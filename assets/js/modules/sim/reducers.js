@@ -74,7 +74,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       state.player.seekTo(0, true)
       return { ...state, time: 0 }
 
-    // updates the time every few milliseconds (defined in REFRESH_INTERVAL)
+    // updates the time every few(*) milliseconds (* defined in REFRESH_INTERVAL)
     case types.TICK:
       return { ...state, time: state.player.getCurrentTime() }
 

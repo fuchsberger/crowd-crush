@@ -257,7 +257,7 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 });
 
-const roundedTime = createSelector([time], t => round(t, 3))
+const roundedTime = createSelector([time], t => round(t, 3) || 0)
 
 const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
