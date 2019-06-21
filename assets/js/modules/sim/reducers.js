@@ -6,7 +6,7 @@ import selectors from "./selectors"
 const initialState = {
   error: false,
   markers: [],
-  paused: true,
+  playing: false,
   player: null,
   player_ready: false,
   player_state: -1,
@@ -58,6 +58,19 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.LOAD_PLAYER:
       return { ...state, player: payload.player }
+
+    case types.PLAY:
+      state.player.playVideo()
+      return state
+
+    case types.PAUSE:
+      state.player.pauseVideo()
+      return state
+
+    case types.STOP:
+      state.player.pauseVideo()
+      state.player.seekTo(0, true)
+      return { ...state, time: 0 }
 
     case types.VIDEO_NOT_FOUND:
       return { ...initialState, error: true }

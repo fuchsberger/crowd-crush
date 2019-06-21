@@ -8,7 +8,7 @@ const markers2 = state => state.sim.markers2
 const time = state => state.sim.time
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
-const state = state => state.sim.player_state
+const playerState = state => state.sim.player_state
 const videoRatio = state => state.sim.video.aspectratio
 const windowRatio = state => state.sim.windowRatio
 const video_id = state => state.sim.video_id
@@ -271,6 +271,6 @@ export default {
   getFrameConstraints,
   player,
   playerReady,
-  state,
+  playerState,
   youtubeID
 }

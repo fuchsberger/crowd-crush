@@ -44,10 +44,23 @@ const loadComparison = ( markers ) => {
   return { type: types.LOAD_COMPARISON, markers };
 }
 
-const jump = (forward = true, agent=null) =>
-  ({ type: types.JUMP, forward, agent })
+const jump = (forward = true, agent=null) => ({ type: types.JUMP, forward, agent })
+
+const play = () => ({ type: types.PLAY })
+
+const pause = () => {
+  console.log('hi')
+  clearInterval(window.simTimer)
+  return { type: types.PAUSE }
+}
 
 const resize = () => ({ type: types.RESIZE })
+
+const stop = () => {
+  clearInterval(window.simTimer)
+  return { type: types.STOP }
+
+}
 const selectAgent = () => ({ type: types.SELECT_AGENT })
 const tick = (time = null) => ({ type: types.TICK, time })
 const update = ( params ) => ({ type: types.UPDATE, params })
@@ -62,6 +75,9 @@ export default {
   loadComparison,
   loadPlayer,
   moveCursor,
+  play,
+  pause,
+  stop,
   resize,
   selectAgent,
   tick,

@@ -4,10 +4,10 @@ import { NavLink } from 'react-router-dom'
 import { Menu } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
-const SimMenu = ({ play, pause, state, stop, user }) => (
+const SimMenu = ({ play, pause, playerState, stop }) => (
   <div>
     <Menu.Item header exact as={NavLink} to='/videos' name='Exit Simulation' />
-    {state == 1
+    {playerState == 1
       ? <Menu.Item icon='pause' onClick={() => pause()}/>
       : <Menu.Item icon='play' onClick={() => play()}/>
     }
@@ -18,7 +18,7 @@ const SimMenu = ({ play, pause, state, stop, user }) => (
   </div>
 )
 
-const mapStateToProps = store => ({ state: Sim.state(store) })
+const mapStateToProps = store => ({ playerState: Sim.playerState(store) })
 
 const mapDispatchToProps = {
   play: simOperations.play,
