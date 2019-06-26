@@ -10,7 +10,10 @@ const initialState = {
   player: null,
   player_ready: false,
   player_state: -1,
+  time: 0,
   video_id: null,
+  window_height: window.innerHeight,
+  window_width: window.innerWidth
 
   // agentHovered: null,
   // agentSelected: null,
@@ -28,7 +31,7 @@ const initialState = {
   // markers2: null,
   // overlay: null,
   // overlays: null,
-  // time: 0,
+
   // video: null,
   // windowRatio: window.innerWidth / (window.innerHeight - 110)
 }
@@ -107,11 +110,12 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.LEAVE:           return initialState
 
-    // case types.RESIZE:
-    //   return {
-    //     ...state,
-    //     windowRatio: window.innerWidth / (window.innerHeight - 110)
-    //   }
+    case types.RESIZE:
+      return {
+        ...state,
+        window_height: window.innerHeight - 40,
+        window_width: window.innerWidth
+      }
 
     // case types.SELECT_AGENT:
     //   return { ...state, agentSelected: state.agentHovered }

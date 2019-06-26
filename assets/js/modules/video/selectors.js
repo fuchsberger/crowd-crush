@@ -1,7 +1,6 @@
 import { orderBy } from 'lodash/collection'
 import { createSelector } from 'reselect'
 
-
 const sortColumn = state => state.videos.sortColumn
 const direction = state => state.videos.sortDirection
 const videos = state => state.videos.data

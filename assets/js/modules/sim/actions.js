@@ -50,7 +50,6 @@ const jump = (forward = true, agent=null) => ({ type: types.JUMP, forward, agent
 const play = () => ({ type: types.PLAY })
 
 const pause = () => {
-  console.log('hi')
   clearInterval(window.simTimer)
   return { type: types.PAUSE }
 }

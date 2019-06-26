@@ -11,27 +11,27 @@ const SimMenu = ({ changeMode, mode, play, pause, playerState, stop }) => ([
 
     <Menu.Item>
       Mode:&nbsp;
-      <Icon
-        color={mode == 'play' ? 'teal' : undefined}
-        loading={mode == 'play'}
-        name='play circle outline'
-        onClick={() => changeMode('play')}
-        title='Play Mode'
-      />
-      <Icon
-        color={mode == 'markers' ? 'teal' : undefined}
-        loading={mode == 'markers'}
-        name='compass outline'
-        onClick={() => changeMode('markers')}
-        title='Markers Mode'
-      />
-      <Icon
-        color={mode == 'coords' ? 'teal' : undefined}
-        loading={mode == 'coords'}
-        name='crosshairs'
-        onClick={() => changeMode('coords')}
-        title='Coords Mode'
-      />
+      <a onClick={() => changeMode('play')} title='Play Mode'>
+        <Icon
+          color={mode == 'play' ? 'teal' : undefined}
+          loading={mode == 'play'}
+          name='play circle outline'
+        />
+      </a>
+      <a onClick={() => changeMode('markers')} title='Markers Mode'>
+        <Icon
+          color={mode == 'markers' ? 'teal' : undefined}
+          loading={mode == 'markers'}
+          name='compass outline'
+        />
+      </a>
+      <a onClick={() => changeMode('coords')} title='Coords Mode'>
+        <Icon
+          color={mode == 'coords' ? 'teal' : undefined}
+          loading={mode == 'coords'}
+          name='crosshairs'
+        />
+      </a>
     </Menu.Item>
 
     {playerState == 1
@@ -44,10 +44,12 @@ const SimMenu = ({ changeMode, mode, play, pause, playerState, stop }) => ([
     {user && <Menu.Item as={NavLink} to='/users' icon='users' name='Users' />} */}
   </Menu.Menu>,
   <Menu.Menu key={1} position='right'>
-    <Menu.Item>
-      <Icon name='clock outline' />
-      <SimTime />
-    </Menu.Item>
+    { mode != 'coords' &&
+      <Menu.Item>
+        <Icon name='clock outline' />
+        <SimTime />
+      </Menu.Item>
+    }
   </Menu.Menu>
 ])
 

@@ -12,7 +12,6 @@ class Header extends Component {
 
   render(){
     const { isAuthenticated, username } = this.props
-    console.log(this.props)
 
     return !isAuthenticated
       ? <Menu.Item as={NavLink} to='/login' icon='power' name='Login' />

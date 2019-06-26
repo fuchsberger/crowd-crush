@@ -17,6 +17,8 @@ a.b.c
 * menu can now load different menu items based on surrounding
 * improved play / pause / stop mechanics
 * simulation time is now precicely retrieved from video player instead of manually aproximated by REFRESH_INTERVAL
+* simulation mode can now be changed in navbar
+* markers are now rendered with a more efficient algorithm using lodash
 
 ## 0.12.3
 * updated readme

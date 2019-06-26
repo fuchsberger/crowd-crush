@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { find } from 'lodash/collection'
+import { find, groupBy, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
 
@@ -12,15 +12,17 @@ const playerReady = state => state.sim.player_ready
 const playerState = state => state.sim.player_state
 const time = state => state.sim.time
 const videoRatio = state => state.sim.video.aspectratio
-const windowRatio = state => state.sim.windowRatio
+const windowHeight = state => state.sim.window_height
+const windowWidth = state => state.sim.window_width
 const video_id = state => state.sim.video_id
 
 // DERIVED DATA
 
-const agents = createSelector([ markers, time ], ( markers, time ) => {
-  console.log(markers, time)
-  return agents
-})
+const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
+
+const aspectRatio = createSelector([ video ], v => v ? v.aspectratio : 1)
+
+const sortedMarkers = createSelector([ markers ], markers => sortBy(markers, ['agent', 'time']))
 
 /**
  * Converts an array of abs coordinates to relative coordinates
@@ -69,22 +71,22 @@ const convertToRel = ( markers ) => {
 /**
  * Produces CSS styling for a container to maintain a given aspectratio
  */
-const frameCSS = createSelector( [ player, videoRatio, windowRatio ],
-  ( player, videoRatio ) => {
+const frameCSS = createSelector( [ aspectRatio, windowHeight, windowWidth ],
+  ( aspectRatio, h, w ) => {
+
     let wDist = 0, hDist = 0;
 
-    // get screen size, account for navbars on top and bottom
-    const h = window.innerHeight - 110;
-    const w = player ? window.innerWidth : window.innerWidth / 2
+    // get screen size, account for navbar on top
+    // w = player ? window.innerWidth : window.innerWidth / 2
 
     // if screen is wider than video, center horizontally, otherwise vertically
-    if (w / h > videoRatio) wDist = (w - videoRatio * h) / 2 / w;
-    else hDist = (h - w / videoRatio) / 2 / h;
+    if (w / h > aspectRatio) wDist = (w - aspectRatio * h) / 2 / w;
+    else hDist = (h - w / aspectRatio) / 2 / h;
 
     if(wDist > hDist) return { left: wDist*100+"%", right: wDist*100+"%" }
     return { top: hDist*100+"%", bottom: hDist*100+"%" }
   }
-);
+)
 
 /**
  * Given an aspectratio, calculates scaling values such that relative coords
@@ -104,37 +106,37 @@ const getAdjustments = ( aspectratio ) => {
   return { h_mult, h_offset, w_mult, w_offset }
 }
 
-
 /**
  * returns each agents approximated position at a given time,
  * given a list of markers in the format [agent_id, time, x, y]
  * list must be sorted first by agent_id and second by time
  */
 const getRelPositions = createSelector(
-  [ markers, time], ( markers, time ) => {
+  [ sortedMarkers, time], ( markers, time ) => {
 
-    const pos = {};
-    for(let i = 0; i< markers.length; i++){
+    time *= 1000 // because in database stored as MS
 
-      const m0 = markers[i]
-      const m1 = markers[i + 1]
+    // group markers by agent and calculate approximate position at a given time
+    return map(groupBy(markers, 'agent'), a => {
+      for(let i = 0; i < a.length; i++){
+        const m = a[i]
 
-      // if end of markers reached or next marker belongs to another agent
-      // set m1 to null;
-      if(!m1 || m0[0] != m1[0]){
-        // if current marker matches time set agents position accordingly
-        if(!m1 && m0[1] == time) pos[m0[0]] = { x: m0[2], y: m0[3] }
+        // end of line reached / only one marker available --> always show last/that position
+        if(i+1 == a.length) return { id: m.agent, x: m.x, y: m.y }
+
+        const n = a[i+1]
+
+        // if time is in between this and next marker we approximate the position
+        if(m.time <= time && time <= n.time)
+        return {
+          id: m.agent,
+          x: (m.x + (n.x - m.x) * (time - m.time) / (n.time - m.time)),
+          y: (m.y + (n.y - m.y) * (time - m.time) / (n.time - m.time))
+        }
       }
-
-      // if time is in between this and next marker we approximate the position
-      else if(m0[1] <= time && time <= m1[1]) pos[m0[0]] = {
-        x: (m0[2] + (m1[2] - m0[2]) * (time - m0[1]) / (m1[1] - m0[1])),
-        y: (m0[3] + (m1[3] - m0[3]) * (time - m0[1]) / (m1[1] - m0[1]))
-      }
-    }
-    return pos;
+    })
   }
-);
+)
 
 /**
  * returns each agents approximated position at a given time,
@@ -265,7 +267,7 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
 
 const roundedTime = createSelector([time], t => round(t, 3) || 0)
 
-const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
+
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
 export default {

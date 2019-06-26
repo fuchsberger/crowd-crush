@@ -26,6 +26,7 @@
   z-index: 100;
   overflow: hidden;
 }
+.video-wrapper div { z-index: 101; }
 
 .video-wrapper.left {
   right: 50%;

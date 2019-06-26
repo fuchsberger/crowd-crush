@@ -1,15 +1,15 @@
 import React from 'react'
 import { connect } from 'react-redux'
-// import { simOperations as Sim, simSelectors } from '../../modules/sim'
+import { simOperations, simSelectors as Sim } from '../../modules/sim'
 // import Coordinates from './coordinates'
-// import Markers from './markers'
+import Markers from './markers'
 
 const Overlay = ({ frameCSS, jump, mode, overlay, setMarker }) => {
 
   // prepare background and cursor class
-  // let bgClass = mode !== 'sim' ? ' edit' : '';
-  // if (overlay === false) bgClass += ' bg-dark';
-  // if (overlay === true) bgClass += ' bg-light';
+  let bgClass = mode !== 'sim' ? ' edit' : '';
+  if (overlay === false) bgClass += ' bg-dark';
+  if (overlay === true) bgClass += ' bg-light';
 
   function onClick(e) {
 
@@ -25,20 +25,20 @@ const Overlay = ({ frameCSS, jump, mode, overlay, setMarker }) => {
 
   return (
     <div
-      // className={"overlay" + bgClass}
+      className={"overlay" + bgClass}
       // onClick={onClick}
-      // style={frameCSS}
+      style={frameCSS}
     >
       {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
-      {/* { mode == 'coords' ? null : <Markers /> } */}
+      { mode == 'coords' ? null : <Markers /> }
     </div>
   );
 };
 
 const mapStateToProps = state => ({
-  // frameCSS: simSelectors.frameCSS(state),
-  // mode: state.sim.mode,
-  // overlay: state.sim.overlay
+  frameCSS: Sim.frameCSS(state),
+  mode: Sim.mode(state),
+  overlay: state.sim.overlay
 });
 
 const mapDispatchToProps = {

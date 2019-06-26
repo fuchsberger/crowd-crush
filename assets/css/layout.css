@@ -1,6 +1,7 @@
 /* MENU TWEAKS  */
 /* .ui[class*="top attached"].menu { margin-bottom: 1em!important; } */
 
+a { cursor: pointer; }
 .menu { z-index: 200;}
 .menu .container div { display: flex; }
 
