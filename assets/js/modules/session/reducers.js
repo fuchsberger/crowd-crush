@@ -1,4 +1,4 @@
-import types from "./types"
+import types from './types'
 
 export default function reducer(state = null, { type, username }) {
   switch (type) {
@@ -6,6 +6,7 @@ export default function reducer(state = null, { type, username }) {
     case types.LOGIN:
       return username
 
-    default: return state;
+    default:
+      return state
   }
 }

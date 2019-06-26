@@ -1,12 +1,11 @@
 import { includes, map, reject } from 'lodash/collection'
-import { REFRESH_INTERVAL } from '../../config'
 import types from "./types"
-import selectors from "./selectors"
 
 const initialState = {
   error: false,
   duration: 0,
   markers: [],
+  mode: 'play', // modes: coords, markers, play (default)
   playing: false,
   player: null,
   player_ready: false,
@@ -27,7 +26,6 @@ const initialState = {
   // jumpTime: 1000,
   // markers: null,
   // markers2: null,
-  // mode: 'sim', // modes: coords, markers, sim (default)
   // overlay: null,
   // overlays: null,
   // time: 0,
@@ -37,6 +35,9 @@ const initialState = {
 
 const reducer = ( state = initialState, { type, ...payload} ) => {
   switch ( type ) {
+
+    case types.CHANGE_MODE:
+      return { ...state, mode: payload.mode }
 
     case types.CHANGE_PLAYER_STATE:
       const player_state = state.player.getPlayerState()

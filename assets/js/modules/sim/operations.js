@@ -7,6 +7,7 @@ import { flashOperations as Flash } from '../flash'
 
 // sync actions
 
+const changeMode = actions.changeMode
 const changePlayerState = actions.changePlayerState
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
@@ -108,6 +109,7 @@ const setMode = ( mode ) => {
 }
 
 export default {
+  changeMode,
   changePlayerState,
   join,
   jump,

@@ -5,6 +5,7 @@ const join = (video_id, duration, markers) => ({ type: types.JOIN, video_id, dur
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
 
+const changeMode = mode => ({ type: types.CHANGE_MODE, mode })
 const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
 
 const moveCursor = (x, y) => ({
@@ -67,6 +68,7 @@ const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
 
 export default {
+  changeMode,
   changePlayerState,
   join,
   joinError,

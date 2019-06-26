@@ -1,3 +1,6 @@
-const isAuthenticated = (state) => (state.user != null)
+import { createSelector } from 'reselect'
 
-export default { isAuthenticated}
+const username = state => state.user
+const isAuthenticated = createSelector([username], username => (username != null))
+
+export default { isAuthenticated, username }

@@ -6,6 +6,7 @@ import { videoSelectors as Video } from '../video'
 const error = state => state.sim.error
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
+const mode = state => state.sim.mode
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
 const playerState = state => state.sim.player_state
@@ -15,6 +16,11 @@ const windowRatio = state => state.sim.windowRatio
 const video_id = state => state.sim.video_id
 
 // DERIVED DATA
+
+const agents = createSelector([ markers, time ], ( markers, time ) => {
+  console.log(markers, time)
+  return agents
+})
 
 /**
  * Converts an array of abs coordinates to relative coordinates
@@ -272,6 +278,7 @@ export default {
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
+  mode,
   player,
   playerReady,
   playerState,

@@ -8,6 +8,6 @@
 // export { default as Markers } from './markers'
 // export { default as ModalOverlays } from './modal_overlays'
 // export { default as NavSim } from './nav_sim'
-// export { default as Overlay } from './overlay'
+export { default as Overlay } from './overlay'
 export { default as Player } from './player'
 export { default as SimTime } from './sim_time'

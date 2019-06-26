@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../modules/sim'
-import { Player } from './sim'
+import { Overlay, Player } from './sim'
 //ControlBar, Overlay,
 // import Error from './error'
 
@@ -43,7 +43,8 @@ class Simulation extends Component {
     return (
       <Container className='video-wrapper' fluid>
         <Player />
-        {/* <Overlay modal={showOverlayModal} /> */}
+        <Overlay />
+        {/* modal={showOverlayModal} /> */}
 
         {/* <ControlBar
           showOverlayMenu={showOverlayMenu}

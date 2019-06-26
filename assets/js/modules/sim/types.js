@@ -1,3 +1,4 @@
+const CHANGE_MODE = 'sim/CHANGE_MODE'
 const CHANGE_PLAYER_STATE = 'sim/CHANGE_PLAYER_STATE'
 const JOIN = "sim/JOIN"
 const JUMP = "sim/JUMP"
@@ -14,6 +15,7 @@ const UPDATE_VIDEO = "sim/UPDATE_VIDEO"
 const VIDEO_NOT_FOUND = "sim/VIDEO_NOT_FOUND"
 
 export default {
+  CHANGE_MODE,
   CHANGE_PLAYER_STATE,
   JOIN,
   JUMP,
