@@ -12,7 +12,7 @@ class Simulation extends Component {
   // state = { showOverlayMenu: false, showOverlayModal: false }
 
   componentWillMount() {
-    this.channel = this.props.joinSimulation(this.props.match.params.id)
+    this.channel = this.props.joinSimulation(parseInt(this.props.match.params.id))
   }
 
   componentWillUnmount() {

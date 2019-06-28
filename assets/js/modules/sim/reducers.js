@@ -1,11 +1,13 @@
 import { includes, map, reject } from 'lodash/collection'
 import types from "./types"
+import { REFRESH_INTERVAL } from '../../config'
 
 const initialState = {
   error: false,
-  duration: 0,
   markers: [],
   mode: 'play', // modes: coords, markers, play (default)
+  overlay: null,
+  overlays: null,
   playing: false,
   player: null,
   player_ready: false,
@@ -29,9 +31,6 @@ const initialState = {
   // jumpTime: 1000,
   // markers: null,
   // markers2: null,
-  // overlay: null,
-  // overlays: null,
-
   // video: null,
   // windowRatio: window.innerWidth / (window.innerHeight - 110)
 }
@@ -54,11 +53,11 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.JOIN:
       return {
         ...initialState,
-        duration: payload.duration * 1000,
         markers: [
           ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
           ...payload.markers
         ],
+        overlays: payload.overlays,
         video_id: payload.video_id
       }
 
@@ -66,21 +65,35 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...state, player: payload.player }
 
     case types.PLAY:
-      state.player.playVideo()
-      return state
+      if(state.player) state.player.playVideo()
+      return { ...state, playing: true }
 
     case types.PAUSE:
-      state.player.pauseVideo()
-      return state
+      if(state.player) state.player.pauseVideo()
+      return { ...state, playing: false }
+
+    case types.SET_OVERLAY:
+      return { ...state,
+        overlay: payload.overlay,
+        player: payload.overlay == 'white' ? null : state.player,
+        player_ready: payload.overlay == 'white',
+        playing: false,
+        time: 0
+      }
 
     case types.STOP:
-      state.player.pauseVideo()
-      state.player.seekTo(0, true)
-      return { ...state, time: 0 }
+      if(state.player){
+        state.player.pauseVideo()
+        state.player.seekTo(0, true)
+      }
+      return { ...state, playing: false, time: 0 }
 
-    // updates the time every few(*) milliseconds (* defined in REFRESH_INTERVAL)
     case types.TICK:
-      return { ...state, time: state.player.getCurrentTime() }
+      return { ...state,
+        time: state.player
+          ? state.player.getCurrentTime()
+          : state.time + REFRESH_INTERVAL / 1000
+      }
 
     case types.VIDEO_NOT_FOUND:
       return { ...initialState, error: true }

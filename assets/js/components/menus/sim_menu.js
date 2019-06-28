@@ -4,8 +4,9 @@ import { NavLink } from 'react-router-dom'
 import { Icon, Menu } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 import { SimTime } from '../../pages/sim'
+import { LoginItem, OverlayItem } from './'
 
-const SimMenu = ({ changeMode, mode, play, pause, playerState, stop }) => ([
+const SimMenu = ({ changeMode, mode, play, pause, playing, stop }) => ([
   <Menu.Menu key={0}>
     <Menu.Item header exact as={NavLink} to='/videos' name='Exit Simulation' />
 
@@ -34,11 +35,13 @@ const SimMenu = ({ changeMode, mode, play, pause, playerState, stop }) => ([
       </a>
     </Menu.Item>
 
-    {playerState == 1
+    {playing
       ? <Menu.Item icon='pause' onClick={() => pause()}/>
       : <Menu.Item icon='play' onClick={() => play()}/>
     }
     <Menu.Item icon='stop' onClick={() => stop()} />
+
+    {mode == 'play' && <OverlayItem />}
 
     {/* {user && <Menu.Item as={NavLink} to='/video/add' icon='plus' name='Add Video' />}
     {user && <Menu.Item as={NavLink} to='/users' icon='users' name='Users' />} */}
@@ -50,12 +53,13 @@ const SimMenu = ({ changeMode, mode, play, pause, playerState, stop }) => ([
         <SimTime />
       </Menu.Item>
     }
+    <LoginItem />
   </Menu.Menu>
 ])
 
 const mapStateToProps = store => ({
   mode: Sim.mode(store),
-  playerState: Sim.playerState(store)
+  playing: Sim.playing(store)
 })
 
 const mapDispatchToProps = {

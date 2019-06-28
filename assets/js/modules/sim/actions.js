@@ -1,7 +1,8 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = (video_id, duration, markers) => ({ type: types.JOIN, video_id, duration, markers })
+const join = (video_id, markers, overlays) => ({ type: types.JOIN, video_id, markers, overlays })
+
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
 
@@ -62,6 +63,7 @@ const stop = () => {
 
 }
 const selectAgent = () => ({ type: types.SELECT_AGENT })
+const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
@@ -81,6 +83,7 @@ export default {
   stop,
   resize,
   selectAgent,
+  setOverlay,
   tick,
   update,
   updateVideo

@@ -9,6 +9,7 @@ const PAUSE = 'sim/PAUSE'
 const STOP = 'sim/STOP'
 const RESIZE = "sim/RESIZE"
 const SELECT_AGENT = "sim/SELECT_AGENT"
+const SET_OVERLAY = 'sim/SET_OVERLAY'
 const TICK = "sim/TICK"
 const UPDATE = "sim/UPDATE"
 const UPDATE_VIDEO = "sim/UPDATE_VIDEO"
@@ -26,6 +27,7 @@ export default {
   STOP,
   RESIZE,
   SELECT_AGENT,
+  SET_OVERLAY,
   TICK,
   UPDATE,
   UPDATE_VIDEO,

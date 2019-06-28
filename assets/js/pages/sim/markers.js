@@ -1,12 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { simOperations as Sim, simSelectors } from '../../modules/sim'
+import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
-const Markers = ({ agents, agentSelected, comparisonMode, update }) => (
+const Markers = ({ agents, agentSelected, comparisonMode, overlay, update }) => (
   Object.keys(agents).map(( i ) => {
     const id = parseInt(i)
     let className = 'marker'
-    if(comparisonMode) className += ' static'
+    if(comparisonMode || overlay == 'white') className += ' static'
     if(id == agentSelected) className += ' selected'
 
     return (
@@ -26,17 +26,18 @@ const Markers = ({ agents, agentSelected, comparisonMode, update }) => (
 
 const mapStateToProps = ( state, ownProps ) => ({
   agents: ownProps.right
-    ? simSelectors.getAbsPositionsSynthetic(state)
+    ? Sim.getAbsPositionsSynthetic(state)
     : (
         ownProps.comparisonMode
-        ? simSelectors.getAbsPositionsAnnotated(state)
-        : simSelectors.getRelPositions(state)
+        ? Sim.getAbsPositionsAnnotated(state)
+        : Sim.getRelPositions(state)
       ),
-  agentSelected: state.sim.agentSelected
+  agentSelected: state.sim.agentSelected,
+  overlay: Sim.overlay(state)
 })
 
 const mapDispatchToProps = {
-  update: Sim.update
+  update: simOperations.update
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Markers)

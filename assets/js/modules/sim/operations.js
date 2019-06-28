@@ -15,6 +15,7 @@ const moveCursor = actions.moveCursor
 const pause = actions.pause
 const resize = actions.resize
 const selectAgent = actions.selectAgent
+const setOverlay = actions.setOverlay
 const stop = actions.stop
 const tick = actions.tick
 const update = actions.update
@@ -27,10 +28,9 @@ const updateVideo = actions.updateVideo
  * Also subscribes to channel events and dispatches actions accordingly.
  * @param { number } video_id
  */
-const join = (video_id, duration) => (dispatch => {
+const join = video_id => (dispatch => {
 
-  const channel = socket.channel(`sim:${video_id}`, () =>
-    ({ last_seen: "2000-01-01T00:00:00.0" }))
+  const channel = socket.channel(`sim:${video_id}`, () => ({last_seen: "2000-01-01T00:00:00.0"}))
 
 // if(params.overlays){
 // // channel.on('delete_overlay', overlay =>
@@ -59,7 +59,7 @@ const join = (video_id, duration) => (dispatch => {
 // );
 
   channel.join()
-  .receive('ok', ({ last_seen, markers }) => {
+  .receive('ok', ({ last_seen, markers, overlays }) => {
 
     channel.params.last_seen = last_seen
 
@@ -67,7 +67,7 @@ const join = (video_id, duration) => (dispatch => {
     // if(params.abs)
     //   simParams.markers = simSelectors.convertToRel(simParams.markers)
 
-    dispatch(actions.join(parseInt(video_id), duration, markers))
+    dispatch(actions.join(video_id, markers, overlays))
   })
   .receive('error', res => {
     dispatch(actions.joinError())
@@ -122,6 +122,7 @@ export default {
   selectAgent,
   setMarker,
   setMode,
+  setOverlay,
   stop,
   tick,
   update,

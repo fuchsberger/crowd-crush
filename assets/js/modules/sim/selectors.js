@@ -8,9 +8,11 @@ const error = state => state.sim.error
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
 const mode = state => state.sim.mode
+const overlay = state => state.sim.overlay
+const overlays = state => state.sim.overlays
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
-const playerState = state => state.sim.player_state
+const playing = state => state.sim.playing
 const time = state => state.sim.time
 const videoRatio = state => state.sim.video.aspectratio
 const windowHeight = state => state.sim.window_height
@@ -78,7 +80,6 @@ const frameCSS = createSelector( [ aspectRatio, windowHeight, windowWidth ],
     let wDist = 0, hDist = 0;
 
     // get screen size, account for navbar on top
-    console.log(w / h, aspectRatio)
     // w = player ? window.innerWidth : window.innerWidth / 2
 
     // if screen is wider than video, center horizontally, otherwise vertically
@@ -269,7 +270,13 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
     width: right - left,
     height: bottom - top
   }
-});
+})
+
+const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
+  if (overlay == null) return 'none'
+  if (overlay == 'white') return 'Black and White'
+  return find(overlays, o => o.youtubeID == overlay).title
+})
 
 const roundedTime = createSelector([time], t => round(t, 3) || 0)
 
@@ -286,9 +293,12 @@ export default {
   getAbsPositionsSynthetic,
   getFrameConstraints,
   mode,
+  overlay,
+  overlays,
+  overlayText,
   player,
   playerReady,
-  playerState,
+  playing,
   time: roundedTime,
   youtubeID
 }

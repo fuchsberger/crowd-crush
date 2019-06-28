@@ -101,12 +101,11 @@ defmodule CrowdCrush.Simulation do
     |> Repo.delete_all
   end
 
-  def get_overlays(video_id) do
-    Repo.all from o in Overlay,
-      select: %{ title: o.title, youtubeID: o.youtubeID },
-      order_by: o.title,
-      where: [video_id: ^video_id]
-  end
+  def get_overlays(video), do: Repo.all(
+    from o in Ecto.assoc(video, :overlays),
+    select: map(o, [:title, :youtubeID]),
+    order_by: o.title
+  )
 
   def delete_overlay(video_id, youtubeID) do
     from(o in Overlay, where: [video_id: ^video_id, youtubeID: ^youtubeID])
