@@ -7,18 +7,20 @@ a.b.c
 * b - major updated
 * c - minor updated
 
-## 0.12.4
-* video duration is now retrieved from youtube when adding and video list displays and sorts duration
-* if client gets disconnected for whatever reason, it now syncronizes new / updated videos on reconnect
-* authenticated users can now delete videos from the video list, including all markers and overlays. Deleting a video removes it for all currently connected users (in the video list)
-* title in video list now links to simulation. New action (public) that links to the original youtube page (opens in new tab).
-* replaced loader component with semantic-ui dimmer/loader
+## 0.12.5
 * reimplemented youtube player (has its own component now)
 * menu can now load different menu items based on surrounding
 * improved play / pause / stop mechanics
 * simulation time is now precicely retrieved from video player instead of manually aproximated by REFRESH_INTERVAL
 * simulation mode can now be changed in navbar
 * markers are now rendered with a more efficient algorithm using lodash
+
+## 0.12.4
+* video duration is now retrieved from youtube when adding and video list displays and sorts duration
+* if client gets disconnected for whatever reason, it now syncronizes new / updated videos on reconnect
+* authenticated users can now delete videos from the video list, including all markers and overlays. Deleting a video removes it for all currently connected users (in the video list)
+* title in video list now links to simulation. New action (public) that links to the original youtube page (opens in new tab).
+* replaced loader component with semantic-ui dimmer/loader
 
 ## 0.12.3
 * updated readme
