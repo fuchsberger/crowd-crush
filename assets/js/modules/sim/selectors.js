@@ -77,6 +77,7 @@ const frameCSS = createSelector( [ aspectRatio, windowHeight, windowWidth ],
     let wDist = 0, hDist = 0;
 
     // get screen size, account for navbar on top
+    console.log(w / h, aspectRatio)
     // w = player ? window.innerWidth : window.innerWidth / 2
 
     // if screen is wider than video, center horizontally, otherwise vertically

@@ -113,7 +113,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.RESIZE:
       return {
         ...state,
-        window_height: window.innerHeight - 40,
+        window_height: window.innerHeight,
         window_width: window.innerWidth
       }
 

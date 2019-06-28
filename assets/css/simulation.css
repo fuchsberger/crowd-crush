@@ -15,7 +15,8 @@
   max-width: 150px;
 }
 
-.video-wrapper {
+.video-wrapper,
+iframe {
   position: fixed;
   top: 40px;
   bottom: 0;
@@ -26,6 +27,7 @@
   z-index: 100;
   overflow: hidden;
 }
+
 .video-wrapper div { z-index: 101; }
 
 .video-wrapper.left {

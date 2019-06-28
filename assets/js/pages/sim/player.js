@@ -6,7 +6,6 @@ import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 const Player = ({ changePlayerState, loadPlayer, youtubeID }) => (
   <YouTube
-    className='video-wrapper'
     // videoId={typeof overlay === 'string' ? overlay : youtubeID}
     videoId={youtubeID}
     opts={{ ...YOUTUBE_PLAYER_OPTS, height: "100%", width: "100%" }}

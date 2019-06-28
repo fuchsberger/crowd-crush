@@ -24,22 +24,24 @@ const Overlay = ({ frameCSS, jump, mode, overlay, setMarker }) => {
   }
 
   return (
-    <div
-      className={"overlay" + bgClass}
-      // onClick={onClick}
-      style={frameCSS}
-    >
-      {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
-      { mode == 'coords' ? null : <Markers /> }
+    <div className='video-wrapper'>
+      <div
+        className={"overlay" + bgClass}
+        // onClick={onClick}
+        style={frameCSS}
+      >
+        {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
+        { mode == 'coords' ? null : <Markers /> }
+      </div>
     </div>
-  );
-};
+  )
+}
 
 const mapStateToProps = state => ({
   frameCSS: Sim.frameCSS(state),
   mode: Sim.mode(state),
   overlay: state.sim.overlay
-});
+})
 
 const mapDispatchToProps = {
   // jump: Sim.jump,

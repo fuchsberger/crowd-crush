@@ -41,7 +41,7 @@ class Simulation extends Component {
 
     return (
       <Container className='video-wrapper' fluid>
-        <Player />
+        <Player/>
         <Overlay />
         {/* modal={showOverlayModal} /> */}
 
