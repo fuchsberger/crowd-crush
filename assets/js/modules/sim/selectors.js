@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect'
+import { pull } from 'lodash/array'
 import { find, groupBy, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
@@ -118,12 +119,15 @@ const getRelPositions = createSelector(
     time *= 1000 // because in database stored as MS
 
     // group markers by agent and calculate approximate position at a given time
-    return map(groupBy(markers, 'agent'), a => {
+    const agents = map(groupBy(markers, 'agent'), a => {
       for(let i = 0; i < a.length; i++){
         const m = a[i]
 
-        // end of line reached / only one marker available --> always show last/that position
-        if(i+1 == a.length) return { id: m.agent, x: m.x, y: m.y }
+        // if current time matches an agents markers time exactly show agent
+        if(m.time == time) return { id: m.agent, x: m.x, y: m.y }
+
+        // end of line reached / only one marker available --> do not show inactive agents
+        if(i+1 == a.length) return null
 
         const n = a[i+1]
 
@@ -136,6 +140,7 @@ const getRelPositions = createSelector(
         }
       }
     })
+    return pull(agents, null)
   }
 )
 
@@ -267,7 +272,6 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
 });
 
 const roundedTime = createSelector([time], t => round(t, 3) || 0)
-
 
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
