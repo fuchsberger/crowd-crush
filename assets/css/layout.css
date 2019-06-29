@@ -46,5 +46,7 @@ a { cursor: pointer; }
   overflow:hidden;
 }
 
+.ui.modal > .content.table { padding: 0; }
+
 /* LOGIN FORM */
 #login-container .column { max-width: 400px; }

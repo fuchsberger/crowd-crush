@@ -13,14 +13,14 @@ class Header extends Component {
   render(){
     const { isAuthenticated, username } = this.props
 
-    return !isAuthenticated
-      ? <Menu.Item as={NavLink} to='/login' icon='power' name='Login' />
-      : <Dropdown item icon='caret down' text={username}>
+    return isAuthenticated
+      ? <Dropdown item icon='caret down' text={username}>
           <Dropdown.Menu>
             <Dropdown.Item as={NavLink} to='/settings' icon='cog' content='Settings' />
             <Dropdown.Item as='a' href='/logout' icon='power' content='Sign Out' />
           </Dropdown.Menu>
         </Dropdown>
+      : <Menu.Item as={NavLink} to='/login' icon='power' name='Login' />
   }
 }
 

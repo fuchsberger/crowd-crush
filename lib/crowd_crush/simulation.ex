@@ -101,17 +101,22 @@ defmodule CrowdCrush.Simulation do
     |> Repo.delete_all
   end
 
+  def get_overlay!(id), do: Repo.get!(Overlay, id)
+
   def get_overlays(video), do: Repo.all(
     from o in Ecto.assoc(video, :overlays),
-    select: map(o, [:title, :youtubeID]),
+    select: map(o, [:id, :title, :youtubeID]),
     order_by: o.title
   )
 
-  def delete_overlay(video_id, youtubeID) do
-    from(o in Overlay, where: [video_id: ^video_id, youtubeID: ^youtubeID])
-    |> Repo.one
-    |> Repo.delete
+  def create_overlay(%Video{} = video, attrs \\ %{}) do
+    %Overlay{}
+    |> Video.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:video, video)
+    |> Repo.insert()
   end
+
+  def delete_overlay(%Overlay{} = overlay), do: Repo.delete(overlay)
 
   @doc """
   Gets all markers, sorted by  first agent, then time.
@@ -148,19 +153,6 @@ defmodule CrowdCrush.Simulation do
   def remove_all_markers (video_id) do
     from(m in Marker, where: m.video_id == ^video_id)
       |> Repo.delete_all
-  end
-
-  def create_overlay(video_id, params) do
-    case Repo.get_by(Overlay, youtubeID: params["youtubeID"] ) do
-      nil  -> %Overlay{}  # Overlay not found, we build new one
-      overlay -> overlay  # Overlay exists, let's use it
-    end
-    |> Overlay.changeset(%{
-        title: params["title"],
-        video_id: video_id,
-        youtubeID: params["youtubeID"]
-      })
-    |> Repo.insert_or_update
   end
 
   @doc """

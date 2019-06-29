@@ -35,21 +35,25 @@ defmodule CrowdCrushWeb.SimChannel do
     end
   end
 
+
+  def handle_in("create_overlay", params, socket) do
+    video = Simulation.get_video!(socket.assigns.video_id)
+
+    case Simulation.create_overlay(video, params) do
+      {:ok, overlay} ->
+        broadcast! socket, "add_overlay", View.render_one(overlay, OverlayView, "overlay.json")
+        return_success socket
+
+      {:error, _changeset} ->
+        return_error socket, "Overlay could not be created."
+    end
+  end
+
   # def handle_in("delete-overlay", %{"youtubeID" => youtubeID}, socket) do
   #   case delete_overlay(socket.assigns.video_id, youtubeID) do
   #     {:ok, _res} ->
   #       broadcast! socket, "delete_overlay", %{youtubeID: youtubeID}
   #       return_ok socket, "Overlay deleted."
-  #     {:error, _changeset} ->
-  #       return_error socket, "Overlay data not valid."
-  #   end
-  # end
-
-  # def handle_in("set_overlay", overlay, socket) do
-  #   case create_overlay(socket.assigns.video_id, overlay) do
-  #     {:ok, _res} ->
-  #       broadcast! socket, "set_overlay", overlay
-  #       return_ok socket
   #     {:error, _changeset} ->
   #       return_error socket, "Overlay data not valid."
   #   end

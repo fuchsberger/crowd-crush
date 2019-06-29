@@ -7,6 +7,9 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.12.6
+
+
 ## 0.12.5
 * reimplemented youtube player (has its own component now)
 * menu can now load different menu items based on surrounding

@@ -1,6 +1,7 @@
 import socket from '../socket'
 // import { Api } from "../../utils"
 import { REFRESH_INTERVAL } from '../../config'
+import { privateChannel } from '../socket'
 import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
 // import { simSelectors } from "."
@@ -67,7 +68,7 @@ const join = video_id => (dispatch => {
     // if(params.abs)
     //   simParams.markers = simSelectors.convertToRel(simParams.markers)
 
-    dispatch(actions.join(video_id, markers, overlays))
+    dispatch(actions.join(video_id, channel, markers, overlays))
   })
   .receive('error', res => {
     dispatch(actions.joinError())
@@ -86,6 +87,10 @@ const play = () => (dispatch => {
   dispatch(actions.play())
   window.simTimer = setInterval(() => dispatch(tick()), REFRESH_INTERVAL)
 })
+
+// Overlays
+const createOverlay = (channel, data) => channel.push('create_overlay', data)
+const deleteOverlay = id => privateChannel.push(`remove_overlay:${id}`)
 
 const setMarker = ( x, y ) => {
   return (dispatch, store) => {
@@ -109,8 +114,10 @@ const setMode = ( mode ) => {
 }
 
 export default {
+  createOverlay,
   changeMode,
   changePlayerState,
+  deleteOverlay,
   join,
   jump,
   leave,

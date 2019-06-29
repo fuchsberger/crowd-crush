@@ -4,7 +4,7 @@ defmodule CrowdCrush.Mixfile do
   def project do
     [
       app: :crowd_crush,
-      version: "0.12.5",
+      version: "0.12.6",
       elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,

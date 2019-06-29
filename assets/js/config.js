@@ -16,6 +16,8 @@ export const YOUTUBE_PLAYER_OPTS = {
   }
 }
 
+export const YOUTUBE_URL_REGEX = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/
+
 // URLS
 export const URL_LOGIN = '/login'
 export const URL_LOGOUT = '/logout'

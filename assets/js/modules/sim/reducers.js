@@ -3,6 +3,7 @@ import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
 
 const initialState = {
+  channel: null,
   error: false,
   markers: [],
   mode: 'play', // modes: coords, markers, play (default)
@@ -53,6 +54,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.JOIN:
       return {
         ...initialState,
+        channel: payload.channel,
         markers: [
           ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
           ...payload.markers

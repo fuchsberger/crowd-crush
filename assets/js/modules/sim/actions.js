@@ -1,7 +1,7 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = (video_id, markers, overlays) => ({ type: types.JOIN, video_id, markers, overlays })
+const join = (video_id, channel, markers, overlays) => ({ type: types.JOIN, video_id, channel, markers, overlays })
 
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })

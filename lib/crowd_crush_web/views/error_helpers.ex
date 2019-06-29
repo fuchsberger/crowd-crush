@@ -73,6 +73,8 @@ defmodule CrowdCrushWeb.ErrorHelpers do
   end
 
   def return_error(socket, message), do: {:reply, {:error, %{ error: message}}, socket}
+
+  def return_success(socket), do: {:reply, {:ok, %{}}, socket}
   def return_success(socket, message, opts \\ []) do
     response =
       [success: message]
