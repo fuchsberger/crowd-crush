@@ -9,6 +9,9 @@ const leave = () => ({ type: types.LEAVE })
 const changeMode = mode => ({ type: types.CHANGE_MODE, mode })
 const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
 
+const clearError = () => ({ type: types.CLEAR_ERROR })
+const error = () => ({ type: types.ERROR })
+
 const moveCursor = (x, y) => ({
   type: types.MOVE_CURSOR,
   cursorX: x,
@@ -63,7 +66,7 @@ const stop = () => {
 
 }
 const selectAgent = () => ({ type: types.SELECT_AGENT })
-const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
+const addOverlay = overlay => ({ type: types.ADD_OVERLAY, overlay })
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
@@ -71,6 +74,8 @@ const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
 export default {
   changeMode,
   changePlayerState,
+  clearError,
+  error,
   join,
   joinError,
   jump,
@@ -83,7 +88,7 @@ export default {
   stop,
   resize,
   selectAgent,
-  setOverlay,
+  addOverlay,
   tick,
   update,
   updateVideo

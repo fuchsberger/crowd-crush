@@ -39,6 +39,9 @@ const initialState = {
 const reducer = ( state = initialState, { type, ...payload} ) => {
   switch ( type ) {
 
+    case types.ADD_OVERLAY:
+      return { ...state, overlays: [ ...state.overlays, payload.overlay ]}
+
     case types.CHANGE_MODE:
       return { ...state, mode: payload.mode }
 
@@ -50,6 +53,12 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         return { ...state, player_ready: true, player_state }
       }
       return { ...state, player_state }
+
+    case types.CLEAR_ERROR:
+      return { ...state, error: false }
+
+    case types.ERROR:
+      return { ...state, error: true }
 
     case types.JOIN:
       return {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Button, Dropdown, Form, Input, Modal, Table } from 'semantic-ui-react'
+import { Dropdown, Input, Modal, Table } from 'semantic-ui-react'
 import { YOUTUBE_URL_REGEX } from '../../config'
 import { sessionSelectors as Session } from '../../modules/session'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
@@ -14,13 +14,27 @@ class OverlayItem extends Component {
     const id = match && match[7].length == 11 ? match[7] : false
     this.setState({ youtubeID: id || false })
   }
+
   changeTitle = e => this.setState({ title: e.target.value })
-  close = () => this.setState({ modal: false })
+
+  close = () => {
+    this.setState({ modal: false })
+    if(this.props.error) this.props.clearError()
+  }
+
+  createOverlay = () => {
+    const { title, youtubeID } = this.state
+    this.props.createOverlay(this.props.simChannel, { title, youtubeID })
+    if(this.props.error) this.props.clearError()
+    this.setState({ title: '', youtubeID: null })
+  }
+
   show = () => this.setState({ modal: true })
+
   toggle = () => this.setState({ open: !this.state.open })
 
   render(){
-    const { authenticated, createOverlay, deleteOverlay, overlays, overlayText, setOverlay, simChannel } = this.props
+    const { authenticated, deleteOverlay, error, overlays, overlayText, setOverlay } = this.props
     const { title, youtubeID } = this.state
 
     const overlay_list = overlays.map((o, i) =>
@@ -61,8 +75,9 @@ class OverlayItem extends Component {
                       action={{
                         icon: 'plus',
                         content: 'Add Overlay',
-                        onClick: () => createOverlay(simChannel, { title, youtubeID })
+                        onClick: () => this.createOverlay()
                       }}
+                      error={error}
                       onChange={this.changeTitle}
                       fluid
                       placeholder='Overlay Title'
@@ -95,12 +110,14 @@ class OverlayItem extends Component {
 
 const mapStateToProps = store => ({
   authenticated: Session.isAuthenticated(store),
+  error: Sim.error(store),
   simChannel: Sim.channel(store),
   overlays: Sim.overlays(store),
   overlayText: Sim.overlayText(store)
 })
 
 const mapDispatchToProps = {
+  clearError: simOperations.clearError,
   createOverlay: simOperations.createOverlay,
   deleteOverlay: simOperations.deleteOverlay,
   setOverlay: simOperations.setOverlay

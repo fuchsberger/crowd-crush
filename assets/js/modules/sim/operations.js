@@ -10,6 +10,8 @@ import { flashOperations as Flash } from '../flash'
 
 const changeMode = actions.changeMode
 const changePlayerState = actions.changePlayerState
+const clearError = actions.clearError
+const error = actions.error
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
 const moveCursor = actions.moveCursor
@@ -41,11 +43,7 @@ const join = video_id => (dispatch => {
 // //   })
 // // );
 
-// // channel.on('set_overlay', overlay =>
-// //   dispatch({ type: SET_OVERLAY, overlay })
-// // );
-// }
-
+  channel.on('add_overlay', overlay => dispatch(actions.addOverlay(overlay)))
 
 // // listen for new/updated markers
 // channel.on('set_marker', marker =>
@@ -89,7 +87,11 @@ const play = () => (dispatch => {
 })
 
 // Overlays
-const createOverlay = (channel, data) => channel.push('create_overlay', data)
+const createOverlay = (channel, data) => dispatch => {
+  channel.push('create_overlay', data)
+  .receive('error', () => dispatch(actions.error()))
+}
+
 const deleteOverlay = id => privateChannel.push(`remove_overlay:${id}`)
 
 const setMarker = ( x, y ) => {
@@ -114,10 +116,14 @@ const setMode = ( mode ) => {
 }
 
 export default {
+  // overlays
   createOverlay,
+  deleteOverlay,
+
   changeMode,
   changePlayerState,
-  deleteOverlay,
+
+  clearError,
   join,
   jump,
   leave,

@@ -101,6 +101,8 @@ defmodule CrowdCrush.Simulation do
     |> Repo.delete_all
   end
 
+  # OVERLAYS
+
   def get_overlay!(id), do: Repo.get!(Overlay, id)
 
   def get_overlays(video), do: Repo.all(
@@ -111,7 +113,7 @@ defmodule CrowdCrush.Simulation do
 
   def create_overlay(%Video{} = video, attrs \\ %{}) do
     %Overlay{}
-    |> Video.changeset(attrs)
+    |> Overlay.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:video, video)
     |> Repo.insert()
   end

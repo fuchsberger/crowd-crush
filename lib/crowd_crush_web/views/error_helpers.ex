@@ -72,6 +72,7 @@ defmodule CrowdCrushWeb.ErrorHelpers do
     if integer > 1, do: "s", else: ""
   end
 
+  def return_error(socket), do: {:reply, {:error, %{}}, socket}
   def return_error(socket, message), do: {:reply, {:error, %{ error: message}}, socket}
 
   def return_success(socket), do: {:reply, {:ok, %{}}, socket}
