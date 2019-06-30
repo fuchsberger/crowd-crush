@@ -100,17 +100,4 @@ defmodule CrowdCrushWeb.PrivateChannel do
         return_error socket, "Could not update video in database."
     end
   end
-
-  def handle_in("remove_overlay:" <> overlay_id, _params, socket) do
-    overlay = Simulation.get_overlay!(overlay_id)
-
-    case Simulation.delete_overlay(overlay) do
-      {:ok, _overlay} ->
-        Endpoint.broadcast "public", "delete_overlay", %{ id: overlay.id }
-        return_success socket
-
-      {:error, _changeset} ->
-        return_error socket, "Could not delete overlay \"#{overlay.title}\""
-    end
-  end
 end

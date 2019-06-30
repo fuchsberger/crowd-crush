@@ -20,6 +20,8 @@ const VIDEO_NOT_FOUND = "sim/VIDEO_NOT_FOUND"
 export default {
   // overlays
   ADD_OVERLAY: 'sim/ADD_OVERLAY',
+  REMOVE_OVERLAY: 'sim/REMOVE_OVERLAY',
+
   CHANGE_MODE,
   CHANGE_PLAYER_STATE,
   CLEAR_ERROR,

@@ -3,12 +3,12 @@
 The versioning sheme is as following:
 a.b.c
 
-* a - major complete overhaul (likely only 0 beta, and 1 final)
+* a - major complete overhaul
 * b - major updated
 * c - minor updated
 
 ## 0.12.6
-
+* overlays can now again be added and removed by authenticated users
 
 ## 0.12.5
 * reimplemented youtube player (has its own component now)

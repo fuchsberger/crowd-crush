@@ -29,12 +29,14 @@ class OverlayItem extends Component {
     this.setState({ title: '', youtubeID: null })
   }
 
+  deleteOverlay = id => this.props.deleteOverlay(this.props.simChannel, id)
+
   show = () => this.setState({ modal: true })
 
   toggle = () => this.setState({ open: !this.state.open })
 
   render(){
-    const { authenticated, deleteOverlay, error, overlays, overlayText, setOverlay } = this.props
+    const { authenticated, error, overlays, overlayText, setOverlay } = this.props
     const { title, youtubeID } = this.state
 
     const overlay_list = overlays.map((o, i) =>
@@ -55,13 +57,16 @@ class OverlayItem extends Component {
               <Modal.Content className='table'>
                 <Table compact>
                   <Table.Body>
-                    {
-                      overlays.map(o =>
+                    { overlays.map(o =>
                       <Table.Row key={o.id}>
                         <Table.Cell>{o.title}</Table.Cell>
+                        <Table.Cell>{o.youtubeID}</Table.Cell>
                         <Table.Cell
-                          icon='trash'
-                          onClick={() => deleteOverlay(o.id)}
+                          icon={{
+                            className: 'pointer',
+                            name: 'trash',
+                            onClick: () => this.deleteOverlay(o.id)
+                          }}
                           textAlign='right'
                         />
                       </Table.Row>
@@ -112,7 +117,7 @@ const mapStateToProps = store => ({
   authenticated: Session.isAuthenticated(store),
   error: Sim.error(store),
   simChannel: Sim.channel(store),
-  overlays: Sim.overlays(store),
+  overlays: Sim.sortedOverlays(store),
   overlayText: Sim.overlayText(store)
 })
 

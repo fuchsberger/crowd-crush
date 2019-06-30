@@ -1,7 +1,6 @@
 import socket from '../socket'
 // import { Api } from "../../utils"
 import { REFRESH_INTERVAL } from '../../config'
-import { privateChannel } from '../socket'
 import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
 // import { simSelectors } from "."
@@ -44,6 +43,7 @@ const join = video_id => (dispatch => {
 // // );
 
   channel.on('add_overlay', overlay => dispatch(actions.addOverlay(overlay)))
+  channel.on('remove_overlay', overlay => dispatch(actions.removeOverlay(overlay)))
 
 // // listen for new/updated markers
 // channel.on('set_marker', marker =>
@@ -92,7 +92,7 @@ const createOverlay = (channel, data) => dispatch => {
   .receive('error', () => dispatch(actions.error()))
 }
 
-const deleteOverlay = id => privateChannel.push(`remove_overlay:${id}`)
+const deleteOverlay = (channel, id) => _dispatch => channel.push(`delete_overlay:${id}`)
 
 const setMarker = ( x, y ) => {
   return (dispatch, store) => {

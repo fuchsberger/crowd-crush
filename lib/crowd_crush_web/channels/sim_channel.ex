@@ -16,12 +16,13 @@ defmodule CrowdCrushWeb.SimChannel do
         {:error, %{ error: "No video with this ID."}}
       video ->
         last_seen = NaiveDateTime.from_iso8601!(params["last_seen"])
-        markers = Simulation.list_markers( video, last_seen )
+        markers = Simulation.list_markers(video, last_seen)
+        overlays = Simulation.get_overlays(video)
 
         res = %{
           last_seen: last_seen,
           markers: View.render_many(markers, MarkerView, "marker.json"),
-          overlays: Simulation.get_overlays(video)
+          overlays: View.render_many(overlays, OverlayView, "overlay.json")
         }
 
         # if abs=true in params, convert markers to abs, otherwise leave rel
@@ -50,15 +51,18 @@ defmodule CrowdCrushWeb.SimChannel do
     end
   end
 
-  # def handle_in("delete-overlay", %{"youtubeID" => youtubeID}, socket) do
-  #   case delete_overlay(socket.assigns.video_id, youtubeID) do
-  #     {:ok, _res} ->
-  #       broadcast! socket, "delete_overlay", %{youtubeID: youtubeID}
-  #       return_ok socket, "Overlay deleted."
-  #     {:error, _changeset} ->
-  #       return_error socket, "Overlay data not valid."
-  #   end
-  # end
+  def handle_in("delete_overlay:" <> overlay_id, _params, socket) do
+    overlay = Simulation.get_overlay!(overlay_id)
+
+    case Simulation.delete_overlay(overlay) do
+      {:ok, _overlay} ->
+        broadcast! socket, "remove_overlay", %{ id: overlay.id }
+        return_success socket
+
+      {:error, _changeset} ->
+        return_error socket
+    end
+  end
 
   # def handle_in("remove_all_agents", _params, socket) do
   #   remove_all_markers(socket.assigns.video_id)

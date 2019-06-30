@@ -104,12 +104,7 @@ defmodule CrowdCrush.Simulation do
   # OVERLAYS
 
   def get_overlay!(id), do: Repo.get!(Overlay, id)
-
-  def get_overlays(video), do: Repo.all(
-    from o in Ecto.assoc(video, :overlays),
-    select: map(o, [:id, :title, :youtubeID]),
-    order_by: o.title
-  )
+  def get_overlays(video), do: Repo.all(from o in Ecto.assoc(video, :overlays))
 
   def create_overlay(%Video{} = video, attrs \\ %{}) do
     %Overlay{}

@@ -66,7 +66,12 @@ const stop = () => {
 
 }
 const selectAgent = () => ({ type: types.SELECT_AGENT })
+
+// Overlays
 const addOverlay = overlay => ({ type: types.ADD_OVERLAY, overlay })
+const removeOverlay = overlay => ({ type: types.REMOVE_OVERLAY, overlay })
+
+
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
@@ -88,7 +93,11 @@ export default {
   stop,
   resize,
   selectAgent,
+
+  // overlays
   addOverlay,
+  removeOverlay,
+
   tick,
   update,
   updateVideo

@@ -42,6 +42,14 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.ADD_OVERLAY:
       return { ...state, overlays: [ ...state.overlays, payload.overlay ]}
 
+    case types.REMOVE_OVERLAY:
+      return {
+        ...state,
+        // If currently selected overlay is being deleted show normal video instead.
+        overlay: state.overlay == payload.overlay.youtubeID ? null : state.overlay,
+        overlays: reject(state.overlays, o => o.id == payload.overlay.id)
+      }
+
     case types.CHANGE_MODE:
       return { ...state, mode: payload.mode }
 

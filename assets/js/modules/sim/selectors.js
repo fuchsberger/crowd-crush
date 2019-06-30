@@ -27,6 +27,7 @@ const video = createSelector([Video.all, video_id], (videos, id) => find(videos,
 const aspectRatio = createSelector([ video ], v => v ? v.aspectratio : 1)
 
 const sortedMarkers = createSelector([ markers ], markers => sortBy(markers, ['agent', 'time']))
+const sortedOverlays = createSelector([ overlays ], overlays => sortBy(overlays, 'title'))
 
 /**
  * Converts an array of abs coordinates to relative coordinates
@@ -296,7 +297,7 @@ export default {
   getFrameConstraints,
   mode,
   overlay,
-  overlays,
+  sortedOverlays,
   overlayText,
   player,
   playerReady,
