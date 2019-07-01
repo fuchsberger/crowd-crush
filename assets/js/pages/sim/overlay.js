@@ -4,30 +4,18 @@ import { simOperations, simSelectors as Sim } from '../../modules/sim'
 // import Coordinates from './coordinates'
 import Markers from './markers'
 
-const Overlay = ({ frameCSS, jump, mode, overlay, setMarker }) => {
+const Overlay = ({ frameCSS, mode, overlay, setMarker }) => {
 
   // prepare background and cursor class
-  let bgClass = mode !== 'sim' ? ' edit' : '';
-  if (overlay === false) bgClass += ' bg-dark';
-  if (overlay === true) bgClass += ' bg-light';
-
-  function onClick(e) {
-
-    e.stopPropagation()
-
-    if (mode == 'markers'){
-      const rect = e.target.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      setMarker(x, y)
-    }
-  }
+  let bgClass = mode !== 'sim' ? ' edit' : ''
+  if (overlay === false) bgClass += ' bg-dark'
+  if (overlay === true) bgClass += ' bg-light'
 
   return (
     <div className='video-wrapper'>
       <div
         className={"overlay" + bgClass}
-        // onClick={onClick}
+        onClick={e => mode == 'markers' ? setMarker(e) : null}
         style={frameCSS}
       >
         {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
@@ -40,12 +28,10 @@ const Overlay = ({ frameCSS, jump, mode, overlay, setMarker }) => {
 const mapStateToProps = state => ({
   frameCSS: Sim.frameCSS(state),
   mode: Sim.mode(state),
-  overlay: state.sim.overlay
+  overlay: Sim.overlay(state)
 })
 
 const mapDispatchToProps = {
-  // jump: Sim.jump,
-  // moveCursor: Sim.moveCursor,
-  // setMarker: Sim.setMarker
+  setMarker: simOperations.setMarker
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Overlay)

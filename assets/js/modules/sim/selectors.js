@@ -4,8 +4,10 @@ import { find, groupBy, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
 
+const agentSelected = state => state.sim.agentSelected
 const channel = state => state.sim.channel
 const error = state => state.sim.error
+const jumpTime = state => state.sim.jumpTime
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
 const mode = state => state.sim.mode
@@ -285,6 +287,7 @@ const roundedTime = createSelector([time], t => round(t, 3) || 0)
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
 export default {
+  agentSelected,
   channel,
   error,
   convertToRel,
@@ -295,6 +298,7 @@ export default {
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
+  jumpTime,
   mode,
   overlay,
   sortedOverlays,

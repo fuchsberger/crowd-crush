@@ -3,10 +3,12 @@ import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
 
 const initialState = {
+  agentSelected: null,
   channel: null,
   error: false,
+  jumpTime: 1000,
   markers: [],
-  mode: 'play', // modes: coords, markers, play (default)
+  mode: 'markers', // modes: coords, markers, play (default)
   overlay: null,
   overlays: null,
   playing: false,
@@ -19,7 +21,7 @@ const initialState = {
   window_width: window.innerWidth
 
   // agentHovered: null,
-  // agentSelected: null,
+
   // coordSelected: null,
   // channel: null,
   // cursorX: null,
@@ -29,7 +31,7 @@ const initialState = {
   // frameScaleX: 1,
   // frameScaleY: 1,
   // frameTop: 0,
-  // jumpTime: 1000,
+
   // markers: null,
   // markers2: null,
   // video: null,
@@ -38,6 +40,8 @@ const initialState = {
 
 const reducer = ( state = initialState, { type, ...payload} ) => {
   switch ( type ) {
+
+    // OVERLAYS ----------------------------------------------------------------------------------
 
     case types.ADD_OVERLAY:
       return { ...state, overlays: [ ...state.overlays, payload.overlay ]}
@@ -50,8 +54,16 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         overlays: reject(state.overlays, o => o.id == payload.overlay.id)
       }
 
+    case types.SET_OVERLAY:
+      return { ...state, overlay: payload.overlay }
+
+    // OTHER -------------------------------------------------------------------------------------
+
     case types.CHANGE_MODE:
       return { ...state, mode: payload.mode }
+
+    case types.CHANGE_JUMP_INTERVAL:
+      return { ...state, jumpTime: payload.time }
 
     case types.CHANGE_PLAYER_STATE:
       const player_state = state.player.getPlayerState()
@@ -70,7 +82,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.JOIN:
       return {
-        ...initialState,
+        ...state,
         channel: payload.channel,
         markers: [
           ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
@@ -79,6 +91,9 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         overlays: payload.overlays,
         video_id: payload.video_id
       }
+
+    case types.LEAVE:
+      return initialState
 
     case types.LOAD_PLAYER:
       return { ...state, player: payload.player }
@@ -117,30 +132,29 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.VIDEO_NOT_FOUND:
       return { ...initialState, error: true }
 
-    // case types.JUMP:
-    //   let nTime;
+    case types.JUMP:
+      // let nTime;
 
-    //   if (action.agent) {
-    //     // find time of first or last agent marker
-    //     nTime = action.forward
-    //       ? endTime(state.agentSelected, state.markers)
-    //       : startTime(state.agentSelected, state.markers)
-    //   } else {
-    //     // get last jumpMarkerTime and jump forward or backward to next interval
-    //     const last = parseInt(state.time / state.jumpTime, 10) * state.jumpTime;
-    //     nTime = action.forward
-    //       ? Math.min(last + state.jumpTime, state.duration)
-    //       : Math.max(last - state.jumpTime, 0);
-    //   }
+      // if (action.agent) {
+      //   // find time of first or last agent marker
+      //   nTime = action.forward
+      //     ? endTime(state.agentSelected, state.markers)
+      //     : startTime(state.agentSelected, state.markers)
+      // } else {
+      //   // get last jumpMarkerTime and jump forward or backward to next interval
+      //   const last = parseInt(state.time / state.jumpTime, 10) * state.jumpTime;
+      //   nTime = action.forward
+      //     ? Math.min(last + state.jumpTime, state.duration)
+      //     : Math.max(last - state.jumpTime, 0);
+      // }
 
-    //   // jump to time and update player state
-    //   if(state.player) {
-    //     state.player.pauseVideo();
-    //     state.player.seekTo(nTime / 1000, true);
-    //   }
-    //   return { ...state, time: nTime }
-
-    case types.LEAVE:           return initialState
+      // // jump to time and update player state
+      // if(state.player) {
+      //   state.player.pauseVideo();
+      //   state.player.seekTo(nTime / 1000, true);
+      // }
+      // return { ...state, time: nTime }
+      return state
 
     case types.RESIZE:
       return {

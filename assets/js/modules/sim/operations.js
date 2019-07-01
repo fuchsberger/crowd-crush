@@ -7,6 +7,7 @@ import { flashOperations as Flash } from '../flash'
 
 // sync actions
 
+const changeJumpInterval = actions.changeJumpInterval
 const changeMode = actions.changeMode
 const changePlayerState = actions.changePlayerState
 const clearError = actions.clearError
@@ -91,16 +92,19 @@ const createOverlay = (channel, data) => dispatch => {
   channel.push('create_overlay', data)
   .receive('error', () => dispatch(actions.error()))
 }
-
 const deleteOverlay = (channel, id) => _dispatch => channel.push(`delete_overlay:${id}`)
 
-const setMarker = ( x, y ) => {
+const setMarker = e => {
   return (dispatch, store) => {
+
+    e.stopPropagation()
+
+    const rect = e.target.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
     const { sim } = store()
-    sim.channel.push(
-      'set_marker',
-      { agent: sim.agentSelected, time: sim.time, x, y }
-    )
+
+    sim.channel.push('set_marker', { agent: sim.agentSelected, time: sim.time, x, y })
     .receive('ok', marker => {
       dispatch(update({ agentSelected: marker.agent }))
       dispatch(jump())
@@ -119,25 +123,29 @@ export default {
   // overlays
   createOverlay,
   deleteOverlay,
+  setOverlay,
 
+  // simulation controls
+  changeJumpInterval,
   changeMode,
+  setMode,
+
+  // player
   changePlayerState,
+  loadPlayer,
+  play,
+  pause,
+  stop,
+  tick,
 
   clearError,
   join,
   jump,
   leave,
-  loadPlayer,
   moveCursor,
-  play,
-  pause,
   resize,
   selectAgent,
   setMarker,
-  setMode,
-  setOverlay,
-  stop,
-  tick,
   update,
   updateVideo
 };

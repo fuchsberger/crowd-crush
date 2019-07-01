@@ -11,6 +11,14 @@
   min-width: 780px;
 }
 
+#inputJumpInterval{
+  width: 45px;
+  text-align: center;
+  padding: 0;
+  background-color: #1b1c1d;
+  color: cornflowerblue;
+}
+
 .jumpControls {
   max-width: 150px;
 }

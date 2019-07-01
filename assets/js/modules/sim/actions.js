@@ -6,6 +6,7 @@ const join = (video_id, channel, markers, overlays) => ({ type: types.JOIN, vide
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
 
+const changeJumpInterval = time => ({ type: types.CHANGE_JUMP_INTERVAL, time })
 const changeMode = mode => ({ type: types.CHANGE_MODE, mode })
 const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
 
@@ -70,13 +71,14 @@ const selectAgent = () => ({ type: types.SELECT_AGENT })
 // Overlays
 const addOverlay = overlay => ({ type: types.ADD_OVERLAY, overlay })
 const removeOverlay = overlay => ({ type: types.REMOVE_OVERLAY, overlay })
-
+const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
 
 export default {
+  changeJumpInterval,
   changeMode,
   changePlayerState,
   clearError,
@@ -97,6 +99,7 @@ export default {
   // overlays
   addOverlay,
   removeOverlay,
+  setOverlay,
 
   tick,
   update,

@@ -9,6 +9,9 @@ a.b.c
 
 ## 0.12.6
 * overlays can now again be added and removed by authenticated users
+* in play mode moving mouse or clicking no longer triggers any events
+* separated player, marker and coords controls
+* jumpInterval can now be set again
 
 ## 0.12.5
 * reimplemented youtube player (has its own component now)

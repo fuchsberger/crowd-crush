@@ -7,7 +7,7 @@ import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 class OverlayItem extends Component {
 
-  state = { open: false, modal: true, title: '', youtubeID: null }
+  state = { open: false, modal: false, title: '', youtubeID: null }
 
   changeUrl = e => {
     const match = e.target.value.match(YOUTUBE_URL_REGEX)
@@ -39,15 +39,24 @@ class OverlayItem extends Component {
     const { authenticated, error, overlays, overlayText, setOverlay } = this.props
     const { title, youtubeID } = this.state
 
-    const overlay_list = overlays.map((o, i) =>
-      <Dropdown.Item content={o.title} icon='youtube' key={i} onClick={() => setOverlay(o.youtubeID)} />)
-
     return (
       <Dropdown item icon='caret down' text={`Overlay: ${overlayText}`}>
         <Dropdown.Menu>
           <Dropdown.Item content='none' icon='ban' onClick={() => setOverlay(null)} />
-          <Dropdown.Item content='Black & White' icon='blackberry' onClick={() => setOverlay('white')} />
-          {overlay_list}
+          <Dropdown.Item
+            content='Black & White'
+            icon='blackberry'
+            onClick={() => setOverlay('white')}
+          />
+
+          {overlays.map((o, i) =>
+            <Dropdown.Item
+              content={o.title}
+              icon='youtube'
+              key={i}
+              onClick={() => setOverlay(o.youtubeID)}
+            />
+          )}
 
           { authenticated && [
             <Dropdown.Divider key={0}/>,
