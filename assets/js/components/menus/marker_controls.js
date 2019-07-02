@@ -6,6 +6,22 @@ import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 class MarkerControls extends Component {
 
+  componentDidMount(){
+    document.addEventListener('keyup', e => this.keyUp(e.keyCode))
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener('keyup', this.keyDown);
+  }
+
+  keyUp(key){
+    const { selectAgent } = this.props
+    switch(key){
+      // s (select / deselect agent)
+      case 83: selectAgent()
+    }
+  }
+
   render(){
     const { backwardPossible, changeJumpInterval, forwardPossible, jump, jumpTime } = this.props
     return(

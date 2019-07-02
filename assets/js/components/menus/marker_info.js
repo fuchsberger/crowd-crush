@@ -8,9 +8,14 @@ const MarkerInfo = ({ agentSelected }) => (
   <Menu.Menu position='right'>
     <Popup
       inverted
-      trigger={<Menu.Item icon='user' content={agentSelected || '-'} />}
+      trigger={
+        <Menu.Item
+          icon={{ name: 'user', color: agentSelected != null ? 'teal' : null }}
+          content={agentSelected != null ? ` ${agentSelected}` : '-'}
+        />
+      }
       header='Selected Agent'
-      content='To select an agent: Hover agent and press SPACE'
+      content='To select an agent: Hover agent and press S'
       position='bottom center'
     />
     <TimeItem />

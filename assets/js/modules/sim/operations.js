@@ -7,18 +7,20 @@ import { flashOperations as Flash } from '../flash'
 
 // sync actions
 
+// marker actions
+const hoverAgent = actions.hoverAgent
+const selectAgent = actions.selectAgent
+
 const changeJumpInterval = actions.changeJumpInterval
 const changeMode = actions.changeMode
 const changePlayerState = actions.changePlayerState
 const clearError = actions.clearError
 const error = actions.error
-const hoverAgent = actions.hoverAgent
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
 const moveCursor = actions.moveCursor
 const pause = actions.pause
 const resize = actions.resize
-const selectAgent = actions.selectAgent
 const setOverlay = actions.setOverlay
 const stop = actions.stop
 const tick = actions.tick
@@ -133,6 +135,7 @@ export default {
 
   // marker controls
   hoverAgent,
+  selectAgent,
 
   // player
   changePlayerState,
@@ -148,7 +151,7 @@ export default {
   leave,
   moveCursor,
   resize,
-  selectAgent,
+
   setMarker,
   update,
   updateVideo

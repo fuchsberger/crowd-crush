@@ -66,9 +66,12 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         player_ready: payload.overlay == 'white',
       }
 
-    // SIMULATION
+    // SIMULATION --------------------------------------------------------------------------------
     case types.HOVER_AGENT:
       return { ...state, agentHovered: payload.id}
+
+    case types.SELECT_AGENT:
+        return { ...state, agentSelected: state.agentHovered }
 
     // OTHER -------------------------------------------------------------------------------------
 
@@ -185,8 +188,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         window_width: window.innerWidth
       }
 
-    // case types.SELECT_AGENT:
-    //   return { ...state, agentSelected: state.agentHovered }
+
 
 
     // case types.UPDATE:
