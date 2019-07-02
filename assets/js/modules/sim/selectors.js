@@ -24,6 +24,8 @@ const video_id = state => state.sim.video_id
 
 // DERIVED DATA
 
+const channelReady = createSelector([video_id], id => id != null)
+
 const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
 
 const aspectRatio = createSelector([ video ], v => v ? v.aspectratio : 1)
@@ -279,6 +281,7 @@ const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 export default {
   agentSelected,
   channel,
+  channelReady,
   error,
   convertToRel,
   duration,

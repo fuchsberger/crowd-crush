@@ -8,7 +8,7 @@ const initialState = {
   error: false,
   jumpTime: 1.0,
   markers: [],
-  mode: 'markers', // modes: coords, markers, play (default)
+  mode: 'play', // modes: coords, markers, play (default)
   overlay: null,
   overlays: null,
   playing: false,
@@ -55,12 +55,33 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       }
 
     case types.SET_OVERLAY:
-      return { ...state, overlay: payload.overlay }
+      if(payload.overlay == state.overlay) return state
+      clearInterval(window.simTimer)
+      return {
+        ...state,
+        overlay: payload.overlay,
+        player: payload.overlay == 'white' ? null : state.player,
+        playing: false,
+        player_ready: payload.overlay == 'white',
+      }
 
     // OTHER -------------------------------------------------------------------------------------
 
     case types.CHANGE_MODE:
-      return { ...state, mode: payload.mode }
+      clearInterval(window.simTimer)
+      if(state.playing && state.player){
+        state.player.pauseVideo()
+        state.player.seekTo(0, true)
+      }
+      return {
+        ...state,
+        mode: payload.mode,
+        overlay: null,
+        // player: state.overlay == null ? state.player : null,
+        playing: false,
+        player_ready: state.overlay == null ? true : false,
+        time: 0
+      }
 
     case types.CHANGE_JUMP_INTERVAL:
       return { ...state, jumpTime: payload.time }
@@ -99,21 +120,13 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...state, player: payload.player }
 
     case types.PLAY:
+      console.log(state.player)
       if(state.player) state.player.playVideo()
       return { ...state, playing: true }
 
     case types.PAUSE:
       if(state.player) state.player.pauseVideo()
       return { ...state, playing: false }
-
-    case types.SET_OVERLAY:
-      return { ...state,
-        overlay: payload.overlay,
-        player: payload.overlay == 'white' ? null : state.player,
-        player_ready: payload.overlay == 'white',
-        playing: false,
-        time: 0
-      }
 
     case types.STOP:
       if(state.player){
