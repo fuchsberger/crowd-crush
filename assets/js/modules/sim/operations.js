@@ -12,6 +12,7 @@ const changeMode = actions.changeMode
 const changePlayerState = actions.changePlayerState
 const clearError = actions.clearError
 const error = actions.error
+const hoverAgent = actions.hoverAgent
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
 const moveCursor = actions.moveCursor
@@ -129,6 +130,9 @@ export default {
   changeJumpInterval,
   changeMode,
   setMode,
+
+  // marker controls
+  hoverAgent,
 
   // player
   changePlayerState,

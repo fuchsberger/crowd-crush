@@ -10,6 +10,12 @@ const changeJumpInterval = time => ({ type: types.CHANGE_JUMP_INTERVAL, time })
 const changeMode = mode => ({ type: types.CHANGE_MODE, mode })
 const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
 
+// Simulation
+const hoverAgent = id => ({ type: types.HOVER_AGENT, id })
+
+
+
+
 const clearError = () => ({ type: types.CLEAR_ERROR })
 const error = () => ({ type: types.ERROR })
 
@@ -83,6 +89,7 @@ export default {
   changePlayerState,
   clearError,
   error,
+  hoverAgent,
   join,
   joinError,
   jump,

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
-const Markers = ({ agents, agentSelected, comparisonMode, mode, overlay, update }) => (
+const Markers = ({ agents, agentSelected, comparisonMode, hover, mode, overlay }) => (
   Object.keys(agents).map(( i ) => {
     const id = parseInt(i)
     let className = 'marker'
@@ -13,8 +13,8 @@ const Markers = ({ agents, agentSelected, comparisonMode, mode, overlay, update 
       <div
         key={id}
         className={ className }
-        onMouseEnter={() => mode == 'markers' ? update({ agentHovered: id }) : null }
-        onMouseLeave={() => mode == 'markers' ? update({ agentHovered: null }) : null }
+        onMouseEnter={() => mode == 'markers' ? hover(id) : null }
+        onMouseLeave={() => mode == 'markers' ? hover(null) : null }
         style={{
           left: 100 * agents[i].x+"%",
           top: 100 * agents[i].y+"%"
@@ -38,7 +38,7 @@ const mapStateToProps = ( state, ownProps ) => ({
 })
 
 const mapDispatchToProps = {
-  update: simOperations.update
+  hover: simOperations.hoverAgent
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Markers)

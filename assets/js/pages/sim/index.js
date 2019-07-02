@@ -8,4 +8,4 @@
 // export { default as NavSim } from './nav_sim'
 export { default as Overlay } from './overlay'
 export { default as Player } from './player'
-export { default as SimTime } from './sim_time'
+export { default as SimTime } from '../../components/menus/time_item'

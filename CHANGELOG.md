@@ -10,6 +10,7 @@ a.b.c
 ## 0.12.7
 * jumping forward and backward now possible again with improvement: cannot jump outside video duration
 * fixed some bugs causing player to play video when switching between overlays and / or modes
+* agents can now be hovered again
 
 
 ## 0.12.6

@@ -12,6 +12,9 @@ export default {
   STOP: 'sim/STOP',
   TICK: 'sim/TICK',
 
+  // simulation
+  HOVER_AGENT: 'sim/HOVER_AGENT',
+
   CHANGE_JUMP_INTERVAL: 'sim/CHANGE_JUMP_INTERVAL',
   CHANGE_MODE: 'sim/CHANGE_MODE',
   CLEAR_ERROR: 'sim/CLEAR_ERROR',

@@ -3,12 +3,13 @@ import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
 
 const initialState = {
+  agentHovered: null,
   agentSelected: null,
   channel: null,
   error: false,
   jumpTime: 1.0,
   markers: [],
-  mode: 'play', // modes: coords, markers, play (default)
+  mode: 'markers', // modes: coords, markers, play (default)
   overlay: null,
   overlays: null,
   playing: false,
@@ -20,7 +21,7 @@ const initialState = {
   window_height: window.innerHeight,
   window_width: window.innerWidth
 
-  // agentHovered: null,
+
 
   // coordSelected: null,
   // channel: null,
@@ -65,6 +66,10 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         player_ready: payload.overlay == 'white',
       }
 
+    // SIMULATION
+    case types.HOVER_AGENT:
+      return { ...state, agentHovered: payload.id}
+
     // OTHER -------------------------------------------------------------------------------------
 
     case types.CHANGE_MODE:
@@ -77,7 +82,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         ...state,
         mode: payload.mode,
         overlay: null,
-        // player: state.overlay == null ? state.player : null,
         playing: false,
         player_ready: state.overlay == null ? true : false,
         time: 0
