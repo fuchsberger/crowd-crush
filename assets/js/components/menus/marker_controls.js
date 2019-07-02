@@ -1,26 +1,55 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Icon, Input, Menu } from 'semantic-ui-react'
+import { Icon, Input, Menu, Popup } from 'semantic-ui-react'
 import { keyOperations, keySelectors as Keys } from '../../modules/keys'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 class MarkerControls extends Component {
 
   render(){
-    const { changeJumpInterval, jump, jumpTime } = this.props
+    const { backwardPossible, changeJumpInterval, forwardPossible, jump, jumpTime } = this.props
     return(
       <Menu.Menu>
-        <Menu.Item icon='step backward' onClick={() => jump('backward')}/>
-        <Menu.Item icon='step forward' onClick={() => jump('forward')}/>
-        <Menu.Item title='Jump Interval'>
-          <Icon name='stopwatch' />
-          <Input
-            id='inputJumpInterval'
-            inverted
-            onChange={e => changeJumpInterval(parseInt(e.target.value, 10))}
-            value={jumpTime}
-          />
-        </Menu.Item>
+        <Popup
+          inverted
+          trigger={
+            <Menu.Item
+              disabled={!backwardPossible}
+              icon='step backward'
+              onClick={() => jump('backward')}
+            />
+          }
+          content='jump backwards (interval)'
+          position='bottom center'
+        />
+        <Popup
+          inverted
+          trigger={
+            <Menu.Item
+              disabled={!forwardPossible}
+              icon='step forward'
+              onClick={() => jump('forward')}
+            />
+          }
+          content='jump forwards (interval)'
+          position='bottom center'
+        />
+        <Popup
+          inverted
+          trigger={
+            <Menu.Item title='Jump Interval'>
+              <Icon name='stopwatch' />
+              <Input
+                id='inputJumpInterval'
+                inverted
+                onChange={e => changeJumpInterval(parseInt(e.target.value, 10))}
+                value={jumpTime}
+              />
+            </Menu.Item>
+          }
+          content='Jump Inteval'
+          position='bottom center'
+        />
       </Menu.Menu>
     )
   }
@@ -28,6 +57,8 @@ class MarkerControls extends Component {
 
 const mapStateToProps = store => ({
   agentSelected: Sim.agentSelected(store),
+  backwardPossible: Sim.backwardPossible(store),
+  forwardPossible: Sim.forwardPossible(store),
   jumpTime: Sim.jumpTime(store),
   keys: Keys.pressed(store)
 })

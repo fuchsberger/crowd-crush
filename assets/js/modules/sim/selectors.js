@@ -27,6 +27,11 @@ const video_id = state => state.sim.video_id
 const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
 
 const aspectRatio = createSelector([ video ], v => v ? v.aspectratio : 1)
+const duration = createSelector([ video ], v => v ? v.duration: 1)
+
+const backwardPossible = createSelector([jumpTime, time], (j, t) => t - j >= 0 ? true : false)
+const forwardPossible = createSelector([ duration, jumpTime, time ],
+  (d, j, t) => t + j <= d ? true : false)
 
 const sortedMarkers = createSelector([ markers ], markers => sortBy(markers, ['agent', 'time']))
 const sortedOverlays = createSelector([ overlays ], overlays => sortBy(overlays, 'title'))
@@ -226,21 +231,6 @@ const getAbsPositionsSynthetic = createSelector(
   }
 );
 
-/**
- * Calculates the duration of the simulation, either from youtube video (sim),
- * or from markers (comparison)
- */
-const duration = createSelector([ markers, player ], ( markers, player ) => {
-  if( player ) return player.getDuration() * 1000;
-  let duration = 0;
-  if ( markers ) {
-    for(let i = 0; i < markers.length; i++){
-      if(markers[i][1] > duration) duration = markers[i][1];
-    }
-  }
-  return duration;
-});
-
 ( aspectratio ) => {
 
   let h_mult = 1, h_offset = 0, w_mult = 1, w_offset = 0;
@@ -292,6 +282,8 @@ export default {
   error,
   convertToRel,
   duration,
+  backwardPossible,
+  forwardPossible,
   frameCSS,
   getAdjustments,
   getRelPositions,

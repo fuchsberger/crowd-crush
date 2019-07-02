@@ -6,7 +6,7 @@ const initialState = {
   agentSelected: null,
   channel: null,
   error: false,
-  jumpTime: 1000,
+  jumpTime: 1.0,
   markers: [],
   mode: 'markers', // modes: coords, markers, play (default)
   overlay: null,
@@ -133,6 +133,19 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...initialState, error: true }
 
     case types.JUMP:
+      let time
+      switch(payload.direction){
+        case 'forward': time = state.time + state.jumpTime; break
+        case 'backward': time = Math.max(0, state.time - state.jumpTime); break
+      }
+
+      // jump to time and update player state
+      if(state.player_ready) {
+        state.player.pauseVideo()
+        state.player.seekTo(time, true)
+      }
+      return { ...state, time }
+
       // let nTime;
 
       // if (action.agent) {
@@ -147,14 +160,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       //     ? Math.min(last + state.jumpTime, state.duration)
       //     : Math.max(last - state.jumpTime, 0);
       // }
-
-      // // jump to time and update player state
-      // if(state.player) {
-      //   state.player.pauseVideo();
-      //   state.player.seekTo(nTime / 1000, true);
-      // }
-      // return { ...state, time: nTime }
-      return state
 
     case types.RESIZE:
       return {

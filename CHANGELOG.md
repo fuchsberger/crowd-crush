@@ -7,6 +7,9 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.12.7
+* jumping forward and backward now possible again with improvement: cannot jump outside video duration
+
 ## 0.12.6
 * overlays can now again be added and removed by authenticated users
 * in play mode moving mouse or clicking no longer triggers any events

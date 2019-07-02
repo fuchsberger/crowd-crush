@@ -50,7 +50,7 @@ const loadComparison = ( markers ) => {
   return { type: types.LOAD_COMPARISON, markers };
 }
 
-const jump = (forward = true, agent=null) => ({ type: types.JUMP, forward, agent })
+const jump = direction => ({ type: types.JUMP, direction })
 
 const play = () => ({ type: types.PLAY })
 
