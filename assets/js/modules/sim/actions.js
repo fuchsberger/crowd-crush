@@ -12,18 +12,8 @@ const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
 
 // Simulation
 const hoverAgent = id => ({ type: types.HOVER_AGENT, id })
-
-
-
-
 const clearError = () => ({ type: types.CLEAR_ERROR })
 const error = () => ({ type: types.ERROR })
-
-const moveCursor = (x, y) => ({
-  type: types.MOVE_CURSOR,
-  cursorX: x,
-  cursorY: y
-})
 
 const loadPlayer = player => ({ type: types.LOAD_PLAYER, player })
 
@@ -57,6 +47,8 @@ const loadComparison = ( markers ) => {
 }
 
 const jump = direction => ({ type: types.JUMP, direction })
+
+const moveCursor = (x, y) => ({ type: types.MOVE_CURSOR, x, y })
 
 const play = () => ({ type: types.PLAY })
 

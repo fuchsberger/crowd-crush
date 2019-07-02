@@ -18,7 +18,6 @@ const clearError = actions.clearError
 const error = actions.error
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
-const moveCursor = actions.moveCursor
 const pause = actions.pause
 const resize = actions.resize
 const setOverlay = actions.setOverlay
@@ -122,6 +121,18 @@ const setMode = ( mode ) => {
   }
 }
 
+const moveCursor = e => dispatch => {
+  if(!e) return dispatch(actions.moveCursor(null, null))
+
+  e = e.nativeEvent
+  const container = e.target.getBoundingClientRect()
+
+  var x = (e.clientX - container.x) / container.width
+  var y = (e.clientY - container.y) / container.height
+
+  dispatch(actions.moveCursor(x, y))
+}
+
 export default {
   // overlays
   createOverlay,
@@ -137,6 +148,9 @@ export default {
   hoverAgent,
   selectAgent,
 
+  // marker/coords controls
+  moveCursor,
+
   // player
   changePlayerState,
   loadPlayer,
@@ -149,9 +163,7 @@ export default {
   join,
   jump,
   leave,
-  moveCursor,
   resize,
-
   setMarker,
   update,
   updateVideo

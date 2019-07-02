@@ -19,14 +19,16 @@ const initialState = {
   time: 0,
   video_id: null,
   window_height: window.innerHeight,
-  window_width: window.innerWidth
+  window_width: window.innerWidth,
 
+  // markers & coords
+  cursorX: null,
+  cursorY: null,
 
 
   // coordSelected: null,
   // channel: null,
-  // cursorX: null,
-  // cursorY: null,
+
   // error: false,
   // frameLeft: 0,
   // frameScaleX: 1,
@@ -71,7 +73,10 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...state, agentHovered: payload.id}
 
     case types.SELECT_AGENT:
-        return { ...state, agentSelected: state.agentHovered }
+      return { ...state, agentSelected: state.agentHovered }
+
+    case types.MOVE_CURSOR:
+      return { ...state, cursorX: payload.x, cursorY: payload.y }
 
     // OTHER -------------------------------------------------------------------------------------
 

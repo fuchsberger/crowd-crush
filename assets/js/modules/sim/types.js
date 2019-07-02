@@ -14,6 +14,7 @@ export default {
 
   // simulation
   HOVER_AGENT: 'sim/HOVER_AGENT',
+  MOVE_CURSOR: 'sim/MOVE_CURSOR',
 
   CHANGE_JUMP_INTERVAL: 'sim/CHANGE_JUMP_INTERVAL',
   CHANGE_MODE: 'sim/CHANGE_MODE',

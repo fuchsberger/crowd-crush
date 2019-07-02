@@ -5,6 +5,8 @@ import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
 
 const agentSelected = state => state.sim.agentSelected
+const cursorX = state => state.sim.cursorX
+const cursorY = state => state.sim.cursorY
 const channel = state => state.sim.channel
 const error = state => state.sim.error
 const jumpTime = state => state.sim.jumpTime
@@ -23,6 +25,9 @@ const windowWidth = state => state.sim.window_width
 const video_id = state => state.sim.video_id
 
 // DERIVED DATA
+
+const x = createSelector([cursorX], x => x == null ? '-- x --' : round(x, 3))
+const y = createSelector([cursorY], y => y == null ? '-- y --' : round(y, 3))
 
 const channelReady = createSelector([video_id], id => id != null)
 
@@ -302,5 +307,7 @@ export default {
   playerReady,
   playing,
   time: roundedTime,
+  x,
+  y,
   youtubeID
 }

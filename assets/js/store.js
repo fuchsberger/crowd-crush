@@ -15,9 +15,7 @@ if (window.debug) {
     predicate: (_getState, action) => ![
       'sim/CHANGE_PLAYER_STATE',
       'sim/TICK',
-      'keys/KEY_DOWN',
-      'keys/KEY_UP',
-      'sessions/START_OPERATION'
+      'sim/MOVE_CURSOR'
     ].includes(action.type)
   });
   middlewares.push(loggerMiddleware);

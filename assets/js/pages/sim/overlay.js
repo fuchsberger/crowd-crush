@@ -4,7 +4,7 @@ import { simOperations, simSelectors as Sim } from '../../modules/sim'
 // import Coordinates from './coordinates'
 import Markers from './markers'
 
-const Overlay = ({ frameCSS, mode, overlay, setMarker }) => {
+const Overlay = ({ frameCSS, mode, moveCursor, overlay, setMarker }) => {
 
   // prepare background and cursor class
   let bgClass = mode !== 'sim' ? ' edit' : ''
@@ -16,6 +16,8 @@ const Overlay = ({ frameCSS, mode, overlay, setMarker }) => {
       <div
         className={"overlay" + bgClass}
         onClick={e => mode == 'markers' ? setMarker(e) : null}
+        onMouseMove={e => mode != 'play' ? moveCursor(e) : null}
+        onMouseLeave={e => mode != 'play' ? moveCursor(null) : null}
         style={frameCSS}
       >
         {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
@@ -32,6 +34,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  setMarker: simOperations.setMarker
+  setMarker: simOperations.setMarker,
+  moveCursor: simOperations.moveCursor
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Overlay)
