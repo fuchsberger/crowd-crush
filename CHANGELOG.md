@@ -12,6 +12,7 @@ a.b.c
 * jumpTime now displayed in seconds
 * fixed some bugs causing player to play video when switching between overlays and / or modes
 * agents can now be hovered and selected / deselected again
+* moving mouse now updates cursor position again and implemented widget to display it
 
 ## 0.12.6
 * overlays can now again be added and removed by authenticated users
