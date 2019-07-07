@@ -64,12 +64,15 @@ const stop = () => {
   return { type: types.STOP }
 
 }
-const selectAgent = () => ({ type: types.SELECT_AGENT })
+const selectAgent = (agent = null) => ({ type: types.SELECT_AGENT, agent })
 
 // Overlays
 const addOverlay = overlay => ({ type: types.ADD_OVERLAY, overlay })
 const removeOverlay = overlay => ({ type: types.REMOVE_OVERLAY, overlay })
 const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
+
+// markers
+const removeMarkers = markerIds => ({ type: types.REMOVE_MARKERS, markerIds })
 
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
@@ -99,6 +102,9 @@ export default {
   addOverlay,
   removeOverlay,
   setOverlay,
+
+  // markers
+  removeMarkers,
 
   tick,
   update,

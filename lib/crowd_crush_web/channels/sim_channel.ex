@@ -64,32 +64,35 @@ defmodule CrowdCrushWeb.SimChannel do
     end
   end
 
-  # def handle_in("remove_all_agents", _params, socket) do
-  #   remove_all_markers(socket.assigns.video_id)
-  #   broadcast! socket, "remove_all_agents", %{}
-  #   {:noreply, socket}
-  # end
+  def handle_in("delete_markers:all", _params, socket) do
+    socket.assigns.video_id
+    |> Simulation.get_video!()
+    |> Simulation.delete_markers()
 
-  # def handle_in("remove_agent", %{"id"=>id}, socket) do
-  #   case remove_agent(socket.assigns.video_id, id) do
-  #     {_count, _} ->
-  #       broadcast! socket, "remove_agent", %{ agent_id: id }
-  #       {:noreply, socket}
-  #     _ ->
-  #       {:noreply, socket}
-  #   end
-  # end
+    broadcast! socket, "remove_markers", %{}
 
-  # def handle_in("set_marker", marker, socket) do
-  #   case create_marker(socket.assigns.video_id, marker) do
-  #     {:ok, marker} ->
-  #       marker = Map.take(marker, ~w(id agent time x y)a)
-  #       broadcast! socket, "set_marker", marker
-  #       return_ok socket, marker
-  #     {:error, _changeset} ->
-  #       {:noreply, socket}
-  #   end
-  # end
+    {:noreply, socket}
+  end
+
+  def handle_in("delete_markers:" <> agent, _params, socket) do
+    socket.assigns.video_id
+    |> Simulation.get_video!()
+    |> Simulation.delete_markers(agent)
+
+    broadcast! socket, "remove_markers", %{ agent: agent }
+
+    {:noreply, socket}
+  end
+
+  def handle_in("set_marker", marker_params, socket) do
+    case Simulation.set_marker(socket.assigns.video_id, marker_params) do
+      {:ok, marker} ->
+        broadcast! socket, "set_marker", View.render_one(marker, MarkerView, "marker.json")
+        {:reply, {:ok, %{ agent: marker.agent }}, socket}
+      {:error, _changeset} ->
+        {:noreply, socket}
+    end
+  end
 
   # def handle_in("update_video", params, socket) do
   #   case update_video socket.assigns.video_id, params do

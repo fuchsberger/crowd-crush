@@ -5,7 +5,7 @@ defmodule CrowdCrushWeb.MarkerView do
     %{
       id: m.id,
       agent: m.agent,
-      time: m.time,
+      time: m.time / 1000,
       x: m.x,
       y: m.y
     }

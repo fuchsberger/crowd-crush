@@ -23,7 +23,7 @@ class MarkerControls extends Component {
   }
 
   render(){
-    const { backwardPossible, changeJumpInterval, forwardPossible, jump, jumpTime } = this.props
+    const { backwardPossible, channel, changeJumpInterval, deleteMarkers, forwardPossible, jump, jumpTime } = this.props
     return(
       <Menu.Menu>
         <Popup
@@ -53,7 +53,7 @@ class MarkerControls extends Component {
         <Popup
           inverted
           trigger={
-            <Menu.Item title='Jump Interval'>
+            <Menu.Item>
               <Icon name='stopwatch' />
               <Input
                 id='inputJumpInterval'
@@ -66,6 +66,19 @@ class MarkerControls extends Component {
           content='Jump Inteval'
           position='bottom center'
         />
+        <Popup
+          inverted
+          trigger={
+            <Menu.Item onClick={() => deleteMarkers(channel)}>
+              <Icon.Group>
+                <Icon name='users' />
+                <Icon corner color='red' name='dont' />
+              </Icon.Group>
+            </Menu.Item>
+          }
+          content='Delete All Markers'
+          position='bottom center'
+        />
       </Menu.Menu>
     )
   }
@@ -74,6 +87,7 @@ class MarkerControls extends Component {
 const mapStateToProps = store => ({
   agentSelected: Sim.agentSelected(store),
   backwardPossible: Sim.backwardPossible(store),
+  channel: Sim.channel(store),
   forwardPossible: Sim.forwardPossible(store),
   jumpTime: Sim.jumpTime(store),
   keys: Keys.pressed(store)
@@ -81,11 +95,10 @@ const mapStateToProps = store => ({
 
 const mapDispatchToProps = {
   changeJumpInterval: simOperations.changeJumpInterval,
+  deleteMarkers: simOperations.deleteMarkers,
   keyDown: keyOperations.down,
   keyUp: keyOperations.up,
   jump: simOperations.jump,
-  removeAgent: simOperations.removeAgent,
-  removeAllAgents: simOperations.removeAllAgents,
   selectAgent: simOperations.selectAgent
 }
 

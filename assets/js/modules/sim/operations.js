@@ -56,9 +56,7 @@ const join = video_id => (dispatch => {
 //   dispatch({ type: DELETE_AGENT, ...res })
 // );
 
-// channel.on('remove_all_agents', () =>
-//   dispatch({ type: DELETE_ALL_AGENTS })
-// );
+  channel.on('remove_markers', ({ agent }) => dispatch(actions.removeMarkers(agent)))
 
   channel.join()
   .receive('ok', ({ last_seen, markers, overlays }) => {
@@ -96,23 +94,26 @@ const createOverlay = (channel, data) => dispatch => {
 }
 const deleteOverlay = (channel, id) => _dispatch => channel.push(`delete_overlay:${id}`)
 
+// markers
+
 const setMarker = e => {
   return (dispatch, store) => {
 
     e.stopPropagation()
 
-    const rect = e.target.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    const { sim } = store()
+    const { agentSelected, channel, x, y, time } = store().sim
 
-    sim.channel.push('set_marker', { agent: sim.agentSelected, time: sim.time, x, y })
-    .receive('ok', marker => {
-      dispatch(update({ agentSelected: marker.agent }))
-      dispatch(jump())
+    channel.push('set_marker', { agent: agentSelected, time, x, y })
+    .receive('ok', ({ agent }) => {
+      dispatch(selectAgent(agent))
+      dispatch(jump('forward'))
     })
   }
 }
+
+const deleteMarkers = (channel, agent=null) => _dispatch => agent
+  ? channel.push(`delete_markers:${agent}`)
+  : channel.push(`delete_markers:all`)
 
 const setMode = ( mode ) => {
   return (dispatch) => {
@@ -147,6 +148,7 @@ export default {
   // marker controls
   hoverAgent,
   selectAgent,
+  deleteMarkers,
 
   // marker/coords controls
   moveCursor,

@@ -31,14 +31,6 @@ defmodule CrowdCrush.Simulation do
     |> Repo.get(video_id)
   end
 
-  def list_markers(%Video{} = video, last_seen) do
-    Repo.all(
-      from m in Ecto.assoc(video, :markers),
-        limit: 100000,
-        where: m.updated_at > ^last_seen
-    )
-  end
-
   def render_video(video) do
     video
     |> Repo.preload(:markers)
@@ -92,14 +84,7 @@ defmodule CrowdCrush.Simulation do
     end
   end
 
-  @doc """
-  Removes a agent with a given video_id and agent_id
-  Returns {#_deleted_markers, nil}
-  """
-  def remove_agent(video_id, agent) do
-    from(m in Marker, where: [agent: ^agent, video_id: ^video_id])
-    |> Repo.delete_all
-  end
+
 
   # OVERLAYS
 
@@ -134,29 +119,30 @@ defmodule CrowdCrush.Simulation do
     |> Enum.into([], fn {_k, x} -> Enum.concat(List.first(x), List.last(x)) end)
   end
 
-  @doc """
-  Gets all markers of a given agent, sorted by time.
-  """
-  def get_markers(agent_id) do
-    Repo.all from m in Marker,
-      select: [m.time, m.x, m.y],
-      order_by: m.time,
-      where: m.agent == ^agent_id
+  def list_markers(%Video{} = video, last_seen) do
+    Repo.all(
+      from m in Ecto.assoc(video, :markers),
+        limit: 100000,
+        where: m.updated_at > ^last_seen
+    )
   end
 
   @doc """
-  Removes all agents of a given video
+  Deletes all markers of a given video
   """
-  def remove_all_markers (video_id) do
-    from(m in Marker, where: m.video_id == ^video_id)
-      |> Repo.delete_all
-  end
+  def delete_markers(%Video{} = video), do: Repo.delete_all(from(m in Ecto.assoc(video, :markers)))
 
   @doc """
-  Attempts to creates a marker
+  Deletes all markers of a given video that belong to the given agent
+  """
+  def delete_markers(%Video{} = video, agent),
+    do: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent))
+
+  @doc """
+  Attempts to create or update a marker
   get_agent_id is used when a new agent is created (gives highest id + 1)
   """
-  def create_marker(video_id, params) do
+  def set_marker(video_id, params) do
     agent = params["agent"] || get_agent_id(video_id)
     get_marker(video_id, agent, params["time"])
       |> Marker.changeset(%{

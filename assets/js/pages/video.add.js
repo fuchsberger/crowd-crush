@@ -75,7 +75,7 @@ class VideoAdd extends Component {
     const { aspectratio, duration, submitted, title, youtubeID } = this.state
 
     this.validator.message('aspectratio', aspectratio, 'required|numeric|between:0.1,3,num')
-    this.validator.message('duration', duration, 'required|integer|min:1')
+    this.validator.message('duration', duration, 'required|integer')
     this.validator.message('title', title, 'required|alpha_num_dash_space|between:5,100')
     this.validator.message('youtubeID', youtubeID, 'required|string|size:11', {
       messages: { default: 'Does not seem to be a a valid YouTube URL.'}

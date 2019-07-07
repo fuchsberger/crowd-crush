@@ -30,7 +30,7 @@ const mapStateToProps = ( state, ownProps ) => ({
     : (
         ownProps.comparisonMode
         ? Sim.getAbsPositionsAnnotated(state)
-        : Sim.getRelPositions(state)
+        : Sim.agents(state)
       ),
   agentSelected: state.sim.agentSelected,
   mode: Sim.mode(state),

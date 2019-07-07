@@ -12,6 +12,7 @@ export const YOUTUBE_PLAYER_OPTS = {
     fs: 0,
     iv_load_policy: 3,
     modestbranding: 1,
+    mute: 1,
     rel: 0
   }
 }

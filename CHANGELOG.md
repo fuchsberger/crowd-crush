@@ -7,6 +7,12 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.12.8
+* Fixed Bug that prevented videos from being added
+* videos are now played muted
+* markers can now be deleted again
+* number of agents is now displayed in marker mode
+
 ## 0.12.7
 * jumping forward and backward now possible again with improvement: cannot jump outside video duration
 * jumpTime now displayed in seconds

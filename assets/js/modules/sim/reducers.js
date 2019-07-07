@@ -22,8 +22,8 @@ const initialState = {
   window_width: window.innerWidth,
 
   // markers & coords
-  cursorX: null,
-  cursorY: null,
+  x: null,
+  y: null,
 
 
   // coordSelected: null,
@@ -73,10 +73,10 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...state, agentHovered: payload.id}
 
     case types.SELECT_AGENT:
-      return { ...state, agentSelected: state.agentHovered }
+      return { ...state, agentSelected: payload.agent || state.agentHovered }
 
     case types.MOVE_CURSOR:
-      return { ...state, cursorX: payload.x, cursorY: payload.y }
+      return { ...state, x: payload.x, y: payload.y }
 
     // OTHER -------------------------------------------------------------------------------------
 
@@ -186,15 +186,21 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       //     : Math.max(last - state.jumpTime, 0);
       // }
 
+    case types.REMOVE_MARKERS:
+      return payload.agent
+        ? {
+            ...state,
+            selectedAgent: null,
+            markers: reject(state.markers, {'agent' : payload.agent})
+          }
+        : { ...state, selectedAgent: null, markers: [] }
+
     case types.RESIZE:
       return {
         ...state,
         window_height: window.innerHeight,
         window_width: window.innerWidth
       }
-
-
-
 
     // case types.UPDATE:
     //   return { ...state, ...action.params }

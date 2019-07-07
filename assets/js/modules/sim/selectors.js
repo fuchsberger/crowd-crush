@@ -1,12 +1,12 @@
 import { createSelector } from 'reselect'
-import { pull } from 'lodash/array'
+import { uniq, pull } from 'lodash/array'
 import { find, groupBy, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
 
 const agentSelected = state => state.sim.agentSelected
-const cursorX = state => state.sim.cursorX
-const cursorY = state => state.sim.cursorY
+const x = state => state.sim.x
+const y = state => state.sim.y
 const channel = state => state.sim.channel
 const error = state => state.sim.error
 const jumpTime = state => state.sim.jumpTime
@@ -26,8 +26,8 @@ const video_id = state => state.sim.video_id
 
 // DERIVED DATA
 
-const x = createSelector([cursorX], x => x == null ? '-- x --' : round(x, 3))
-const y = createSelector([cursorY], y => y == null ? '-- y --' : round(y, 3))
+const xRounded = createSelector([x], x => x == null ? '-- x --' : round(x, 3))
+const yRounded = createSelector([y], y => y == null ? '-- y --' : round(y, 3))
 
 const channelReady = createSelector([video_id], id => id != null)
 
@@ -130,10 +130,8 @@ const getAdjustments = ( aspectratio ) => {
  * given a list of markers in the format [agent_id, time, x, y]
  * list must be sorted first by agent_id and second by time
  */
-const getRelPositions = createSelector(
+const agents = createSelector(
   [ sortedMarkers, time], ( markers, time ) => {
-
-    time *= 1000 // because in database stored as MS
 
     // group markers by agent and calculate approximate position at a given time
     const agents = map(groupBy(markers, 'agent'), a => {
@@ -195,9 +193,9 @@ const getAbsPositionsAnnotated = createSelector(
           (m0[3] + (m1[3] - m0[3]) * (time - m0[1]) / (m1[1] - m0[1]))
       }
     }
-    return pos;
+    return pos
   }
-);
+)
 
 /**
  * returns each agents approximated position at a given time,
@@ -273,6 +271,8 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 })
 
+const agentCount = createSelector([markers], markers => uniq(map(markers, m => m.agent)).length)
+
 const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
   if (overlay == null) return 'none'
   if (overlay == 'white') return 'Black and White'
@@ -284,6 +284,8 @@ const roundedTime = createSelector([time], t => round(t, 3) || 0)
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
 
 export default {
+  agents,
+  agentCount,
   agentSelected,
   channel,
   channelReady,
@@ -294,7 +296,6 @@ export default {
   forwardPossible,
   frameCSS,
   getAdjustments,
-  getRelPositions,
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
@@ -307,7 +308,7 @@ export default {
   playerReady,
   playing,
   time: roundedTime,
-  x,
-  y,
+  xRounded,
+  yRounded,
   youtubeID
 }
