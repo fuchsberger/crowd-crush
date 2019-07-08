@@ -25,20 +25,14 @@ const initialState = {
   x: null,
   y: null,
 
-
   // coordSelected: null,
-  // channel: null,
 
-  // error: false,
   // frameLeft: 0,
   // frameScaleX: 1,
   // frameScaleY: 1,
   // frameTop: 0,
 
-  // markers: null,
   // markers2: null,
-  // video: null,
-  // windowRatio: window.innerWidth / (window.innerHeight - 110)
 }
 
 const reducer = ( state = initialState, { type, ...payload} ) => {
@@ -186,27 +180,26 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       //     : Math.max(last - state.jumpTime, 0);
       // }
 
+    case types.SET_MARKER:
+      return {
+        ...state,
+        markers: [
+          ...reject(state.markers, {agent: payload.marker.agent, time: payload.marker.time }),
+          payload.marker
+        ]
+      }
+
     case types.REMOVE_MARKERS:
       return payload.agent
         ? {
             ...state,
-            selectedAgent: null,
+            agentSelected: null,
             markers: reject(state.markers, {'agent' : payload.agent})
           }
-        : { ...state, selectedAgent: null, markers: [] }
+        : { ...state, agentSelected: null, markers: [] }
 
     case types.RESIZE:
-      return {
-        ...state,
-        window_height: window.innerHeight,
-        window_width: window.innerWidth
-      }
-
-    // case types.UPDATE:
-    //   return { ...state, ...action.params }
-
-    // case types.UPDATE_VIDEO:
-    //   return { ...state, video: { ...state.video, ...action.params }}
+      return { ...state, window_height: window.innerHeight, window_width: window.innerWidth }
 
     default:
       return state

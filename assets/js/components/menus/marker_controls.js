@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Icon, Input, Menu, Popup } from 'semantic-ui-react'
-import { keyOperations, keySelectors as Keys } from '../../modules/keys'
+import { sessionSelectors as Session } from '../../modules/session'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 class MarkerControls extends Component {
@@ -15,39 +15,51 @@ class MarkerControls extends Component {
   }
 
   keyUp(key){
-    const { selectAgent } = this.props
+    const { agentSelected, channel, deleteMarkers, isAuthenticated, jump, selectAgent, setMarker } = this.props
     switch(key){
-      // s (select / deselect agent)
-      case 83: selectAgent()
+      case 32: // SPACE
+        return isAuthenticated && setMarker()
+      case 68: // D
+        return agentSelected && isAuthenticated ? deleteMarkers(channel, agentSelected) : null
+      case 69: // E
+        return jump('forward')
+      case 81: // Q
+        return jump('backward')
+      case 82: // R
+        return isAuthenticated && deleteMarkers(channel)
+      case 83: // S
+        return selectAgent()
     }
   }
 
   render(){
-    const { backwardPossible, channel, changeJumpInterval, deleteMarkers, forwardPossible, jump, jumpTime } = this.props
+    const { agentCount, agentSelected, backwardPossible, channel, changeJumpInterval, deleteMarkers, forwardPossible, isAuthenticated, jump, jumpTime } = this.props
     return(
       <Menu.Menu>
         <Popup
           inverted
           trigger={
             <Menu.Item
+              color={backwardPossible ? null : 'grey'}
               disabled={!backwardPossible}
               icon='step backward'
               onClick={() => jump('backward')}
             />
           }
-          content='jump backwards (interval)'
+          content='Jump Backward (Hotkey: Q)'
           position='bottom center'
         />
         <Popup
           inverted
           trigger={
             <Menu.Item
+              color={forwardPossible ? null : 'grey'}
               disabled={!forwardPossible}
               icon='step forward'
               onClick={() => jump('forward')}
             />
           }
-          content='jump forwards (interval)'
+          content='Jump Forward (Hotkey: E)'
           position='bottom center'
         />
         <Popup
@@ -66,40 +78,63 @@ class MarkerControls extends Component {
           content='Jump Inteval'
           position='bottom center'
         />
-        <Popup
-          inverted
-          trigger={
-            <Menu.Item onClick={() => deleteMarkers(channel)}>
-              <Icon.Group>
-                <Icon name='users' />
-                <Icon corner color='red' name='dont' />
-              </Icon.Group>
-            </Menu.Item>
-          }
-          content='Delete All Markers'
-          position='bottom center'
-        />
+        { isAuthenticated &&
+          <Popup
+            inverted
+            trigger={
+              <Menu.Item
+                disabled={agentSelected == null}
+                onClick={() => deleteMarkers(channel, agentSelected)}
+              >
+                <Icon.Group>
+                <Icon color={agentSelected == null ? 'grey' : null} name='user' />
+                  <Icon corner color='red' name='dont' />
+                </Icon.Group>
+              </Menu.Item>
+            }
+            content='Delete Current Agent (Hotkey: D)'
+            position='bottom center'
+          />
+        }
+        { isAuthenticated &&
+          <Popup
+            inverted
+            trigger={
+              <Menu.Item
+                disabled={agentCount == 0}
+                onClick={() => deleteMarkers(channel)}
+              >
+                <Icon.Group>
+                  <Icon color={agentCount == 0 ? 'grey' : null} name='users' />
+                  <Icon corner color='red' name='dont' />
+                </Icon.Group>
+              </Menu.Item>
+            }
+            content='Delete All Markers (Hotkey: R)'
+            position='bottom center'
+          />
+        }
       </Menu.Menu>
     )
   }
 }
 
 const mapStateToProps = store => ({
+  isAuthenticated: Session.isAuthenticated(store),
+  agentCount: Sim.agentCount(store),
   agentSelected: Sim.agentSelected(store),
   backwardPossible: Sim.backwardPossible(store),
   channel: Sim.channel(store),
   forwardPossible: Sim.forwardPossible(store),
-  jumpTime: Sim.jumpTime(store),
-  keys: Keys.pressed(store)
+  jumpTime: Sim.jumpTime(store)
 })
 
 const mapDispatchToProps = {
   changeJumpInterval: simOperations.changeJumpInterval,
   deleteMarkers: simOperations.deleteMarkers,
-  keyDown: keyOperations.down,
-  keyUp: keyOperations.up,
   jump: simOperations.jump,
-  selectAgent: simOperations.selectAgent
+  selectAgent: simOperations.selectAgent,
+  setMarker: simOperations.setMarker
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MarkerControls)

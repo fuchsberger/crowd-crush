@@ -71,21 +71,6 @@ defmodule CrowdCrush.Simulation do
     {agents, Enum.count(agents), Enum.count(markers)}
   end
 
-  @doc """
-  Returns a new agent_id (that has not been used before)
-  """
-  def get_agent_id(video_id) do
-    case Repo.one from m in Marker,
-      select: max(m.agent),
-      where: m.video_id == ^video_id
-    do
-      nil -> 0
-      max -> max + 1
-    end
-  end
-
-
-
   # OVERLAYS
 
   def get_overlay!(id), do: Repo.get!(Overlay, id)
@@ -143,16 +128,25 @@ defmodule CrowdCrush.Simulation do
   get_agent_id is used when a new agent is created (gives highest id + 1)
   """
   def set_marker(video_id, params) do
-    agent = params["agent"] || get_agent_id(video_id)
+    agent = params["agent"] || get_next_agent(video_id)
+
     get_marker(video_id, agent, params["time"])
       |> Marker.changeset(%{
           agent:    agent,
-          time:     params["time"],
+          time:     params["time"] * 1000,
           video_id: video_id,
           x:        params["x"],
           y:        params["y"],
         })
       |> Repo.insert_or_update
+  end
+
+  # Returns a new agent_id (that has not been used before)
+  defp get_next_agent(video_id) do
+    case Repo.one(from m in Marker, select: max(m.agent), where: m.video_id == ^video_id) do
+      nil -> 1
+      max -> max + 1
+    end
   end
 
   @doc """

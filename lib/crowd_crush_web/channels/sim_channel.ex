@@ -79,7 +79,7 @@ defmodule CrowdCrushWeb.SimChannel do
     |> Simulation.get_video!()
     |> Simulation.delete_markers(agent)
 
-    broadcast! socket, "remove_markers", %{ agent: agent }
+    broadcast! socket, "remove_markers", %{ agent: String.to_integer(agent) }
 
     {:noreply, socket}
   end

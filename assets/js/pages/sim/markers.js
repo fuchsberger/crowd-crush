@@ -3,17 +3,17 @@ import { connect } from 'react-redux'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 const Markers = ({ agents, agentSelected, comparisonMode, hover, mode, overlay }) => (
-  Object.keys(agents).map(( i ) => {
-    const id = parseInt(i)
+  Object.keys(agents).map(i => {
+
     let className = 'marker'
     if(comparisonMode || overlay == 'white') className += ' static'
-    if(id == agentSelected) className += ' selected'
+    if(agents[i].id == agentSelected) className += ' selected'
 
     return (
       <div
-        key={id}
+        key={agents[i].id}
         className={ className }
-        onMouseEnter={() => mode == 'markers' ? hover(id) : null }
+        onMouseEnter={() => mode == 'markers' ? hover(agents[i].id) : null }
         onMouseLeave={() => mode == 'markers' ? hover(null) : null }
         style={{
           left: 100 * agents[i].x+"%",

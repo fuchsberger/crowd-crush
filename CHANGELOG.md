@@ -10,8 +10,11 @@ a.b.c
 ## 0.12.8
 * Fixed Bug that prevented videos from being added
 * videos are now played muted
-* markers can now be deleted again
+* all markers or a specific agent can now be deleted again
 * number of agents is now displayed in marker mode
+* enabled hotkeys for several features
+* hide features for anonymous users that should not be enabled
+* UI improvements
 
 ## 0.12.7
 * jumping forward and backward now possible again with improvement: cannot jump outside video duration

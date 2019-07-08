@@ -4,7 +4,7 @@ import { Menu, Popup } from 'semantic-ui-react'
 import { simSelectors as Sim } from '../../modules/sim'
 import { LoginItem, PositionItem, TimeItem } from './'
 
-const MarkerInfo = ({ agentCount, agentSelected }) => (
+const MarkerInfo = ({ agentCount, agentSelected, isAuthenticated }) => (
   <Menu.Menu position='right'>
     <PositionItem />
     <Popup
@@ -18,8 +18,7 @@ const MarkerInfo = ({ agentCount, agentSelected }) => (
           }
         />
       }
-      header='Selected Agent / # of Agents'
-      content='To select an agent: Hover agent and press S'
+      content='Selected Agent / # of Agents (Hotkey: S)'
       position='bottom center'
     />
     <TimeItem />
