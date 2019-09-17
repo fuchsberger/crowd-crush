@@ -19,6 +19,7 @@ defmodule CrowdCrushWeb.Router do
     post "/login", SessionController, :create
     get "/logout", SessionController, :delete
 
+    get "/test", PageController, :test
     get "/", PageController, :index
     get "/*path", PageController, :index
   end

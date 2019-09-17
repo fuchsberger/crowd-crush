@@ -51,15 +51,19 @@ const RootHtml =
   </Provider>
 
 // render react app
-render(RootHtml, document.getElementById( "react-root" ) );
+let container = document.getElementById( "react-root" )
+if(container) {
 
-// initially check for server flash messages to display
-store.dispatch(flashOperations.get(window.flash))
+  render(RootHtml, container);
 
-// listen for window resizes
-let resizeTimeout;
-const resize = () => store.dispatch(Sim.resize())
-window.addEventListener("resize", () => {
-  if(!!resizeTimeout) clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(resize, 200);
-});
+  // initially check for server flash messages to display
+  store.dispatch(flashOperations.get(window.flash))
+
+  // listen for window resizes
+  let resizeTimeout;
+  const resize = () => store.dispatch(Sim.resize())
+  window.addEventListener("resize", () => {
+    if(!!resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resize, 200);
+  });
+}
