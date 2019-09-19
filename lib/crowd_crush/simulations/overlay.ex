@@ -1,8 +1,6 @@
 defmodule CrowdCrush.Simulations.Overlay do
   use CrowdCrush, :schema
 
-  @primary_key {:id, CrowdCrush.Permalink, autogenerate: true}
-
   schema "overlays" do
     field :title, :string
     field :youtubeID, :string

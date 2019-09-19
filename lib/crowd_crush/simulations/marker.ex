@@ -1,8 +1,6 @@
 defmodule CrowdCrush.Simulations.Marker do
   use CrowdCrush, :schema
 
-  @primary_key {:id, CrowdCrush.Permalink, autogenerate: true}
-
   schema "markers" do
     field :agent, :integer
     field :time, :integer
