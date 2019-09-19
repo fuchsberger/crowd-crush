@@ -16,3 +16,11 @@ Currently the following features are implemented:
 * Downloading of Data files that serve as input for succeeding research projects
 
 If you want to report any bugs or report on the research tool please submit an issue on Github
+
+
+# note on how to backup / restore a database:
+backup:
+pg_dump -F tar crowd_crush_dev > backup.tar
+
+restore:
+pg_restore -U postgres -h localhost --create --exit-on-error --verbose --dbname=postgres backup.tar
