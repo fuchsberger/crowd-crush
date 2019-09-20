@@ -2,3 +2,6 @@
 <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 <div id="player"></div>
 <button id="stopBtn">Stop</button>
+
+
+<canvas id="heatmap">Heat Map cannot be displayed...</canvas>

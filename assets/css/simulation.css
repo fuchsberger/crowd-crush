@@ -126,3 +126,11 @@ iframe {
   font-size: 12px;
   padding: 0;
 }
+
+/* Canvas */
+canvas {
+  top: 0;
+  left:0;
+  position: fixed;
+}
+
