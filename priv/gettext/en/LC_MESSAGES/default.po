@@ -12,6 +12,6 @@ msgstr ""
 "Plural-Forms: nplurals=2\n"
 
 #, elixir-format
-#: lib/crowd_crush_web/templates/page/index.html.eex:7
+#: lib/crowd_crush_web/templates/layout/app.html.eex:7
 msgid "A research Tool"
 msgstr ""
