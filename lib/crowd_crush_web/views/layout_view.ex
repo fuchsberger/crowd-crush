@@ -14,6 +14,6 @@ defmodule CrowdCrushWeb.LayoutView do
 
     view_module
     |> Phoenix.Naming.resource_name()
-    |> String.replace("view", action)
+    |> String.replace("_view", "/#{action}")
   end
 end
