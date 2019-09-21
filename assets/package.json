@@ -7,6 +7,7 @@
     "watch": "webpack --mode development --watch-stdin"
   },
   "dependencies": {
+    "heatmap.js": "^2.0.5",
     "history": "^4.9.0",
     "iso8601-duration": "^1.2.0",
     "jquery": "^3.4.1",
