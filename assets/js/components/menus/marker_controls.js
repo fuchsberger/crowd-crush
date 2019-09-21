@@ -47,7 +47,19 @@ class MarkerControls extends Component {
   }
 
   render(){
-    const { agentCount, agentSelected, backwardPossible, channel, changeJumpInterval, deleteMarkers, forwardPossible, isAuthenticated, jump, jumpTime } = this.props
+    const {
+      agentCount,
+      agentSelected,
+      backwardPossible,
+      channel,
+      changeJumpInterval,
+      deleteMarkers,
+      forwardPossible,
+      isAuthenticated,
+      jump,
+      jumpTime
+    } = this.props
+
     return(
       <Menu.Menu>
         <Popup

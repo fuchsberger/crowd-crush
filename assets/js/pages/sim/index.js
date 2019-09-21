@@ -1,6 +1,5 @@
 // export { default as ControlBar } from './controlbar'
 // export { default as ControlsCoords } from './controls_coords'
-// export { default as ControlsMarkers } from './controls_markers'
 // export { default as ControlsPlayer } from './controls_player'
 // export { default as Coordinates } from './coordinates'
 // export { default as Markers } from './markers'
