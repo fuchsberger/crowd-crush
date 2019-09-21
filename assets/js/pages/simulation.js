@@ -4,26 +4,20 @@ import { Redirect } from 'react-router-dom'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../modules/sim'
 import { Overlay, Player } from './sim'
-//ControlBar, Overlay,
 // import Error from './error'
 
 class Simulation extends Component {
 
-  state = {
-    // showOverlayMenu: false,
-    // showOverlayModal: false,
-    channel: null
-  }
+  // showOverlayMenu: false,
+  // showOverlayModal: false,
 
   componentDidMount() {
     // load async data
-    this.setState({
-      channel: this.props.joinSimulation(parseInt(this.props.match.params.id))
-    })
+    this.props.joinSimulation(parseInt(this.props.match.params.id))
   }
 
   componentWillUnmount() {
-    this.props.leaveSimulation(this.channel)
+    this.props.leaveSimulation()
   }
 
   // // updates a single state value from a lower component

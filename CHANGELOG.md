@@ -7,6 +7,11 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.13
+* Improved keystroke event handling during simulations and removed an old (redundant) module
+* added layouts back and a test page where anything can be tested
+* added heatmap.js and applied on test page.
+
 ## 0.12.8
 * Fixed Bug that prevented videos from being added
 * videos are now played muted

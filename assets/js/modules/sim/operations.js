@@ -33,7 +33,7 @@ const updateVideo = actions.updateVideo
  * Also subscribes to channel events and dispatches actions accordingly.
  * @param { number } video_id
  */
-const join = video_id => (dispatch => {
+const join = video_id => dispatch => {
 
   const channel = socket.channel(`sim:${video_id}`, () => ({last_seen: "2000-01-01T00:00:00.0"}))
 
@@ -70,14 +70,13 @@ const join = video_id => (dispatch => {
     dispatch(actions.joinError())
     dispatch(Flash.get(res))
   })
+}
 
-  return channel
-})
-
-const leave = channel => (dispatch => {
-  channel.leave()
+const leave = () => (dispatch, getState) => {
+  const { sim } = getState()
+  sim.channel.leave()
   dispatch(actions.leave())
-})
+}
 
 const play = () => (dispatch => {
   dispatch(actions.play())
