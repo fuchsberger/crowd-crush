@@ -9,10 +9,17 @@ import { Overlay, Player } from './sim'
 
 class Simulation extends Component {
 
-  // state = { showOverlayMenu: false, showOverlayModal: false }
+  state = {
+    // showOverlayMenu: false,
+    // showOverlayModal: false,
+    channel: null
+  }
 
-  componentWillMount() {
-    this.channel = this.props.joinSimulation(parseInt(this.props.match.params.id))
+  componentDidMount() {
+    // load async data
+    this.setState({
+      channel: this.props.joinSimulation(parseInt(this.props.match.params.id))
+    })
   }
 
   componentWillUnmount() {

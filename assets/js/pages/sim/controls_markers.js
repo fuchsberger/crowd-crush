@@ -6,10 +6,10 @@ import { simOperations as Sim } from '../../modules/sim'
 
 class ControlsMarkers extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.keyDown = this.keyDown.bind(this)
-    this.keyUp = this.keyUp.bind(this)
+  state = {
+    keys: {},
+    keyDown: this.keyDown.bind(this),
+    keyUp: this.keyUp.bind(this)
   }
 
   componentDidMount(){
@@ -18,29 +18,29 @@ class ControlsMarkers extends React.Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.keyDown);
-    document.removeEventListener('keyup', this.keyUp);
+    document.removeEventListener('keydown', this.keyDown)
+    document.removeEventListener('keyup', this.keyUp)
   }
 
-  componentWillReceiveProps(nProps) {
-
-    const { E, S, Q, SHIFT } = nProps.keys;
-    const { agentSelected, jump, keys, selectAgent } = this.props;
+  static getDerivedStateFromProps(props, state) {
 
     // listen for key events in order of priority (one at at time)
+    const { agentSelected, jump, keys, selectAgent } = props
 
     // 1. if an agent is hovered, select it, otherwise deselect it
-    if (!keys.S && S) return selectAgent();
+    if (!state.keys.S && keys.S) selectAgent()
 
     // 2. allow to jump to time of first marker for given agent
-    if (agentSelected && Q && SHIFT) return jump(false, agentSelected);
+    else if (agentSelected && keys.Q && keys.SHIFT) jump(false, agentSelected)
 
     // 3. allow to jump to time of last marker for given agent
-    if (agentSelected && E && SHIFT) return jump(true, agentSelected);
+    else if (agentSelected && keys.E && keys.SHIFT) jump(true, agentSelected)
 
     // 4. allow to move forward and backward by a single interval
-    if (Q && !SHIFT) return jump(false);
-    if (E && !SHIFT) return jump(true);
+    else if (keys.Q && !keys.SHIFT) jump(false)
+    else if (keys.E && !keys.SHIFT) jump(true)
+
+    return { keys }
   }
 
   keyDown(e){

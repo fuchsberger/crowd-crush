@@ -6,17 +6,31 @@ import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 class MarkerControls extends Component {
 
+  constructor(props){
+    super(props)
+    this.keyUp = this.keyUp.bind(this)
+  }
+
   componentDidMount(){
-    document.addEventListener('keyup', e => this.keyUp(e.keyCode))
+    document.addEventListener('keyup', this.keyUp)
   }
 
   componentWillUnmount(){
-    document.removeEventListener('keyup', this.keyDown);
+    document.removeEventListener('keyup', this.keyUp)
   }
 
-  keyUp(key){
-    const { agentSelected, channel, deleteMarkers, isAuthenticated, jump, selectAgent, setMarker } = this.props
-    switch(key){
+  keyUp(e){
+    const {
+      agentSelected,
+      channel,
+      deleteMarkers,
+      isAuthenticated,
+      jump,
+      selectAgent,
+      setMarker
+    } = this.props
+
+    switch(e.keyCode){
       case 32: // SPACE
         return isAuthenticated && setMarker()
       case 68: // D
