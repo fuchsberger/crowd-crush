@@ -17,10 +17,5 @@ export const YOUTUBE_PLAYER_OPTS = {
   }
 }
 
-export const YOUTUBE_URL_REGEX = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/
-
-// URLS
-export const URL_LOGIN = '/login'
-export const URL_LOGOUT = '/logout'
-export const URL_REGISTER = '/register'
-export const URL_RESET_PASSWORD = '/account/reset_password'
+export const YOUTUBE_URL_REGEX =
+  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/

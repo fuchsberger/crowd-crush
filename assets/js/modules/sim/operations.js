@@ -10,12 +10,10 @@ import { flashOperations as Flash } from '../flash'
 // marker actions
 const hoverAgent = actions.hoverAgent
 const selectAgent = actions.selectAgent
-
 const changeJumpInterval = actions.changeJumpInterval
 const changeMode = actions.changeMode
 const changePlayerState = actions.changePlayerState
 const clearError = actions.clearError
-const error = actions.error
 const jump = actions.jump
 const loadPlayer = actions.loadPlayer
 const pause = actions.pause
@@ -33,7 +31,7 @@ const updateVideo = actions.updateVideo
  * Also subscribes to channel events and dispatches actions accordingly.
  * @param { number } video_id
  */
-const join = video_id => dispatch => {
+const join = (video_id, redirect) => dispatch => {
 
   const channel = socket.channel(`sim:${video_id}`, () => ({last_seen: "2000-01-01T00:00:00.0"}))
 
@@ -67,15 +65,17 @@ const join = video_id => dispatch => {
     dispatch(actions.join(video_id, channel, markers, overlays))
   })
   .receive('error', res => {
-    dispatch(actions.joinError())
+    channel.leave()
+    redirect('/videos')
     dispatch(Flash.get(res))
   })
 }
 
-const leave = () => (dispatch, getState) => {
+const leave = redirect => (dispatch, getState) => {
   const { sim } = getState()
-  sim.channel.leave()
+  if(sim.channel) sim.channel.leave()
   dispatch(actions.leave())
+  redirect('/videos')
 }
 
 const play = () => (dispatch => {

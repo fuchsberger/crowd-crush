@@ -126,7 +126,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...state, player: payload.player }
 
     case types.PLAY:
-      console.log(state.player)
       if(state.player) state.player.playVideo()
       return { ...state, playing: true }
 

@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../modules/sim'
 import { Overlay, Player } from './sim'
-// import Error from './error'
 
 class Simulation extends Component {
 
@@ -13,11 +11,11 @@ class Simulation extends Component {
 
   componentDidMount() {
     // load async data
-    this.props.joinSimulation(parseInt(this.props.match.params.id))
+    this.props.joinSimulation(parseInt(this.props.match.params.id), this.props.history.push)
   }
 
   componentWillUnmount() {
-    this.props.leaveSimulation()
+    this.props.leaveSimulation(this.props.history.push)
   }
 
   // // updates a single state value from a lower component
@@ -27,8 +25,6 @@ class Simulation extends Component {
   // }
 
   render() {
-
-    if(this.props.error) return <Redirect to='/videos' />
 
     const { playerReady } = this.props
 
@@ -60,7 +56,6 @@ class Simulation extends Component {
 const mapStateToProps = store => ({
   // agent_hovered: store.sim.agent_hovered,
   // agent_selected: store.sim.agentSelected,
-  error: Sim.error(store),
   // overlay: store.sim.overlay,
   player: Sim.player(store),
   playerReady: Sim.playerReady(store),
@@ -72,4 +67,4 @@ const mapDispatchToProps = {
   leaveSimulation: simOperations.leave
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Simulation);
+export default connect(mapStateToProps, mapDispatchToProps)(Simulation)
