@@ -17,6 +17,14 @@ Currently the following features are implemented:
 
 If you want to report any bugs or report on the research tool please submit an issue on Github
 
+# Recommended Browser Settings
+it is recommended to use Chrome and install uBlock Origin extension to block related videos from overlaying content. Here is the recommend list of custom filters (uBlock Origin -> insert in Options -> My Filters):
+```
+! Crowd Crush custom filters
+www.youtube.com##.ytp-pause-overlay
+www.youtube.com##.ytp-chrome-top
+www.youtube.com##.ytp-gradient-top
+```
 
 # note on how to backup / restore a database:
 backup:
