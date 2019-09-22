@@ -5,6 +5,7 @@ import Markers from './markers'
 import { Heatmap } from '.'
 
 class Overlay extends Component {
+
   render(){
     const { frameCSS, mode, moveCursor, overlay, setMarker } = this.props
 
@@ -13,19 +14,29 @@ class Overlay extends Component {
     if (overlay === false) bgClass += ' bg-dark'
     if (overlay === true) bgClass += ' bg-light'
 
+    // decide what to display on the overlay
+    let renderCoords = false, renderMap=false, renderMarkers=false
+    switch(mode){
+      case 'coords': renderCoords= true; break
+      case 'mapStart': renderMap = true; break
+      case 'markers': renderMarkers = true; break
+      case 'play': renderMarkers = true; break
+    }
+
     return (
       <div className='video-wrapper'>
         <div
+          id='overlay'
           className={"overlay" + bgClass}
           onClick={e => mode == 'markers' ? setMarker(e) : null}
           onMouseMove={e => mode != 'play' ? moveCursor(e) : null}
           onMouseLeave={e => mode != 'play' ? moveCursor(null) : null}
           style={frameCSS}
         >
-          {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
-          { mode == 'coords' ? null : <Markers /> }
+          {/* { renderCoords && <Coordinates />} */}
+          { renderMarkers && <Markers /> }
         </div>
-        {mode == 'mapStart' && <Heatmap />}
+        { renderMap && <Heatmap />}
       </div>
     )
   }

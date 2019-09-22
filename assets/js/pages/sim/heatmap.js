@@ -4,35 +4,21 @@ import { simSelectors as Sim } from '../../modules/sim'
 import h337 from 'heatmap.js'
 import $ from 'jquery'
 
-class Overlay extends Component {
+class Heatmap extends Component {
+  constructor(props){
+    super(props)
+    this.heatmapInstance = null
+  }
 
   componentDidMount(){
-    // configure heatmap
-    var config = {
-      container: $('.overlay')[0],
+    this.heatmapInstance = h337.create({
+      container: document.getElementById('overlay'),
       radius: 45,
-      maxOpacity: .8,
+      maxOpacity: .7,
       minOpacity: 0,
       blur: .75
-    }
-
-    // create data points
-    let datapoints = []
-    for(let i=0; i<300; i++){
-      datapoints.push({
-        x: Math.floor(Math.random() * window.innerWidth),
-        y: Math.floor(Math.random() * window.innerHeight),
-        value: Math.floor(Math.random() * 101)
-      })
-    }
-
-    var data = { max: 100, min: 0, data: datapoints }
-
-    setTimeout(() => {
-      // create heatmap with configuration
-      this.heatmapInstance = h337.create(config)
-      this.heatmapInstance.setData(data)
-    }, 1000)
+    })
+    this.forceUpdate()
   }
 
   componentWillUnmount(){
@@ -40,14 +26,15 @@ class Overlay extends Component {
   }
 
   render(){
+    if(this.heatmapInstance){
+      // create heatmap with configuration
+      this.heatmapInstance.setData({ max: 100, min: 0, data: this.props.mappedMarkers })
+    }
     return null
   }
 }
 
-const mapStateToProps = state => ({
-  mode: Sim.mode(state)
-})
-
+const mapStateToProps = state => ({ mappedMarkers: Sim.mappedMarkers(state) })
 const mapDispatchToProps = {}
 
-export default connect(mapStateToProps, mapDispatchToProps)(Overlay)
+export default connect(mapStateToProps, mapDispatchToProps)(Heatmap)

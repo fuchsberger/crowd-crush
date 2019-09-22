@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 import { uniq, pull } from 'lodash/array'
-import { find, groupBy, map, sortBy } from 'lodash/collection'
+import { filter, find, groupBy, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 import { videoSelectors as Video } from '../video'
 
@@ -42,6 +42,20 @@ const forwardPossible = createSelector([ duration, jumpTime, time ],
 
 const sortedMarkers = createSelector([ markers ], markers => sortBy(markers, ['agent', 'time']))
 const sortedOverlays = createSelector([ overlays ], overlays => sortBy(overlays, 'title'))
+
+/**
+ * Gets the positions of markers in heatmap format
+ */
+const mappedMarkers = createSelector([mode, markers], (mode, markers) => {
+  if(mode == 'mapStart') markers = filter(markers, { time: 0 })
+  else return null
+
+  return map(markers, m => ({
+    x: parseInt(m.x * window.innerHeight),
+    y: parseInt(m.y * window.innerHeight),
+    value: 80
+  }))
+})
 
 /**
  * Converts an array of abs coordinates to relative coordinates
@@ -301,6 +315,7 @@ export default {
   getFrameConstraints,
   jumpTime,
   mode,
+  mappedMarkers,
   overlay,
   sortedOverlays,
   overlayText,
