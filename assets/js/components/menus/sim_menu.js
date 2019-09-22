@@ -5,42 +5,33 @@ import { Icon, Menu, Popup } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 import { MarkerControls, MarkerInfo, PlayerControls, PlayInfo } from './'
 
-const SimMenu = ({ changeMode, mode }) => (
+const Item = connect(
+  store => ({ currentMode: Sim.mode(store) }), { changeMode: simOperations.changeMode })(
+    ({ animated, mode, title, icon, changeMode, currentMode }) =>
+    <Popup inverted content={title} position="bottom center" trigger={
+      <a onClick={() => changeMode(mode)}>
+        <Icon
+          color={currentMode == mode ? 'teal' : undefined}
+          loading={animated && currentMode == mode}
+          name={icon}
+        />
+      </a>
+    } />
+  )
+
+const SimMenu = ({ mode }) => (
   <div style={{ width: '100%' }}>
     <Menu.Menu>
       <Menu.Item header exact as={NavLink} to='/videos' name='Exit Simulation' />
-      <Popup
-        inverted
-        trigger={
-          <Menu.Item as='div'>
-            <a onClick={() => changeMode('play')} title='Play Mode'>
-              <Icon
-                color={mode == 'play' ? 'teal' : undefined}
-                loading={mode == 'play'}
-                name='play circle outline'
-              />
-            </a>
-            <a onClick={() => changeMode('markers')} title='Markers Mode'>
-              <Icon
-                color={mode == 'markers' ? 'teal' : undefined}
-                loading={mode == 'markers'}
-                name='compass outline'
-              />
-            </a>
-            <a onClick={() => changeMode('coords')} title='Coords Mode'>
-              <Icon
-                color={mode == 'coords' ? 'teal' : undefined}
-                loading={mode == 'coords'}
-                name='crosshairs'
-              />
-            </a>
-          </Menu.Item>
-        }
-        content='Simulation Mode'
-        position='bottom center'
-      />
-      {mode == 'play' && <PlayerControls />}
-      {mode == 'markers' && <MarkerControls />}
+        <Menu.Item as='div'>
+          <Item mode='play' icon='play circle outline' title='Play Mode' animated />
+          <Item mode='markers' icon='compass outline' title='Markers Mode' animated/>
+          <Item mode='coords' icon='crosshairs' title='Coords Mode' animated/>
+          <Item mode='mapStart' icon='street view' title='Heatmap: Starting Agents' />
+        </Menu.Item>
+
+        {mode == 'play' && <PlayerControls />}
+        {mode == 'markers' && <MarkerControls />}
     </Menu.Menu>
     { mode == 'play' && <PlayInfo /> }
     { mode == 'markers' && <MarkerInfo /> }
@@ -48,5 +39,4 @@ const SimMenu = ({ changeMode, mode }) => (
 )
 
 const mapStateToProps = store => ({ mode: Sim.mode(store) })
-const mapDispatchToProps = { changeMode: simOperations.changeMode }
-export default connect(mapStateToProps, mapDispatchToProps)(SimMenu)
+export default connect(mapStateToProps)(SimMenu)

@@ -1,30 +1,34 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
-// import Coordinates from './coordinates'
 import Markers from './markers'
+import { Heatmap } from '.'
 
-const Overlay = ({ frameCSS, mode, moveCursor, overlay, setMarker }) => {
+class Overlay extends Component {
+  render(){
+    const { frameCSS, mode, moveCursor, overlay, setMarker } = this.props
 
-  // prepare background and cursor class
-  let bgClass = mode !== 'sim' ? ' edit' : ''
-  if (overlay === false) bgClass += ' bg-dark'
-  if (overlay === true) bgClass += ' bg-light'
+    // prepare background and cursor class
+    let bgClass = mode !== 'sim' ? ' edit' : ''
+    if (overlay === false) bgClass += ' bg-dark'
+    if (overlay === true) bgClass += ' bg-light'
 
-  return (
-    <div className='video-wrapper'>
-      <div
-        className={"overlay" + bgClass}
-        onClick={e => mode == 'markers' ? setMarker(e) : null}
-        onMouseMove={e => mode != 'play' ? moveCursor(e) : null}
-        onMouseLeave={e => mode != 'play' ? moveCursor(null) : null}
-        style={frameCSS}
-      >
-        {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
-        { mode == 'coords' ? null : <Markers /> }
+    return (
+      <div className='video-wrapper'>
+        <div
+          className={"overlay" + bgClass}
+          onClick={e => mode == 'markers' ? setMarker(e) : null}
+          onMouseMove={e => mode != 'play' ? moveCursor(e) : null}
+          onMouseLeave={e => mode != 'play' ? moveCursor(null) : null}
+          style={frameCSS}
+        >
+          {/* { mode == 'coords' ? <Coordinates /> : <Markers /> } */}
+          { mode == 'coords' ? null : <Markers /> }
+        </div>
+        {mode == 'mapStart' && <Heatmap />}
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 const mapStateToProps = state => ({
