@@ -1,5 +1,13 @@
 use Mix.Config
 
+# Configure your database
+config :crowd_crush, CrowdCrush.Repo,
+  username: "postgres",
+  password: "postgres",
+  database: "crowd_crush_dev",
+  hostname: "localhost",
+  pool_size: 10
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -39,10 +47,5 @@ config :logger, :console, format: "[$level] $message\n"
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
-# Configure your database
-config :crowd_crush, CrowdCrush.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "crowd_crush_dev",
-  hostname: "localhost",
-  pool_size: 1
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime

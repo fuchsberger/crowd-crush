@@ -3,16 +3,17 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
 
 # General application configuration
+use Mix.Config
+
 config :crowd_crush,
   ecto_repos: [CrowdCrush.Repo],
-  env: Mix.env,
   youtube_api_key: System.get_env("YOUTUBE_DATA_API_KEY")
 
 # Configures the endpoint
 config :crowd_crush, CrowdCrushWeb.Endpoint,
+  url: [host: "localhost"],
   secret_key_base: "L2gUqlkhyHjMBx2ARefpXbQ81cdr00NRtdrelH8v35A5/VQbFm9VxKm0GKufNoWo",
   render_errors: [view: CrowdCrushWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: CrowdCrush.PubSub, adapter: Phoenix.PubSub.PG2]

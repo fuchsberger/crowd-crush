@@ -26,7 +26,19 @@ www.youtube.com##.ytp-chrome-top
 www.youtube.com##.ytp-gradient-top
 ```
 
-# note on how to backup / restore a database:
+## Installation
+This project is best deployed on a debain-based linux distribution (such as Ubuntu). The following requirements have to be met:
+* erlang 22.2.1
+* elixir 1.9.4
+* nodejs 13.5.0
+
+first clone the project:
+```
+git clone https://github.com/fuchsberger/crowd-crush.git
+```
+
+
+## Backup / Resore Database
 backup:
 pg_dump -F tar crowd_crush_dev > backup.tar
 
