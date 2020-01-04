@@ -22,7 +22,7 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
-config :lotd, CrowdCrushWeb.Endpoint,
+config :crowd_crush, CrowdCrushWeb.Endpoint,
   http: [port: System.get_env("CROWD_CRUSH_PORT") || 4000],
   secret_key_base: secret_key_base
 
@@ -31,7 +31,7 @@ config :lotd, CrowdCrushWeb.Endpoint,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-config :lotd, LotdWeb.Endpoint, server: true
+config :crowd_crush, CrowdCrushWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.

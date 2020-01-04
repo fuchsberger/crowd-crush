@@ -10,7 +10,7 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 
-config :lotd, LotdWeb.Endpoint,
+config :crowd_crush, CrowdCrushWeb.Endpoint,
   url:  [scheme: "https", host: "crowd.fuchsberger.us", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 

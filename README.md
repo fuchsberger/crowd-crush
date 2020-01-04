@@ -36,7 +36,13 @@ first clone the project:
 ```
 git clone https://github.com/fuchsberger/crowd-crush.git
 ```
-
+Then set environment variables. You may want to store them in .zshenv or .bashenv:
+```
+$ mix phx.gen.secret
+REALLY_LONG_SECRET
+$ export SECRET_KEY_BASE=REALLY_LONG_SECRET
+$ export CROWD_CRUSH_DATABASE_URL=ecto://USER:PASS@HOST/DATABASE
+```
 
 ## Backup / Resore Database
 backup:
