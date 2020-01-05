@@ -18,7 +18,9 @@ defmodule CrowdCrushWeb.VideoView do
       mR_x: v.mR_x,
       mR_y: v.mR_y,
       dist_x: v.dist_x,
-      dist_y: v.dist_y
+      dist_y: v.dist_y,
+      markers: v.markers,
+      overlays: v.overlays
     }
   end
 end

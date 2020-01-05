@@ -24,7 +24,7 @@ class Overlay extends Component {
     }
 
     return (
-      <div className='video-wrapper'>
+      <div className='overlay'>
         <div
           id='overlay'
           className={"overlay" + bgClass}

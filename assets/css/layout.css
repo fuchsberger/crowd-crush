@@ -1,5 +1,5 @@
 /* MENU TWEAKS  */
-/* .ui[class*="top attached"].menu { margin-bottom: 1em!important; } */
+body { margin-top: 40px; height: auto; }
 
 a, .pointer { cursor: pointer; }
 .menu { z-index: 200;}

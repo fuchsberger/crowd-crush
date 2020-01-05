@@ -33,7 +33,7 @@ const updateVideo = actions.updateVideo
  */
 const join = (video_id, redirect) => dispatch => {
 
-  const channel = socket.channel(`sim:${video_id}`, () => ({last_seen: "2000-01-01T00:00:00.0"}))
+  const channel = socket.channel(`sim:${video_id}`)
 
 // if(params.overlays){
 // // channel.on('delete_overlay', overlay =>
@@ -54,15 +54,11 @@ const join = (video_id, redirect) => dispatch => {
   channel.on('remove_markers', ({ agent }) => dispatch(actions.removeMarkers(agent)))
 
   channel.join()
-  .receive('ok', ({ last_seen, markers, overlays }) => {
+  .receive('ok', ({ video }) => {
 
-    channel.params.last_seen = last_seen
-
-    // // if markers are in absolute coords convert to relative first
-    // if(params.abs)
-    //   simParams.markers = simSelectors.convertToRel(simParams.markers)
-
-    dispatch(actions.join(video_id, channel, markers, overlays))
+    // if markers are in absolute coords convert to relative first
+    // if(params.abs) simParams.markers = simSelectors.convertToRel(simParams.markers)
+    dispatch(actions.join(channel, video))
   })
   .receive('error', res => {
     channel.leave()

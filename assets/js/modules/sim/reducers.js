@@ -2,6 +2,8 @@ import { includes, map, reject } from 'lodash/collection'
 import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
 
+const get_window_ratio = () => window.innerWidth / (window.innerHeight - 40)
+
 const initialState = {
   agentHovered: null,
   agentSelected: null,
@@ -17,9 +19,7 @@ const initialState = {
   player_ready: false,
   player_state: -1,
   time: 0,
-  video_id: null,
-  window_height: window.innerHeight,
-  window_width: window.innerWidth,
+  video: null,
 
   // markers & coords
   x: null,
@@ -111,12 +111,12 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return {
         ...state,
         channel: payload.channel,
-        markers: [
-          ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
-          ...payload.markers
-        ],
-        overlays: payload.overlays,
-        video_id: payload.video_id
+        video: payload.video
+        // markers: [
+        //   ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
+        //   ...payload.markers
+        // ],
+        // overlays: payload.overlays,
       }
 
     case types.LEAVE:
@@ -198,7 +198,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         : { ...state, agentSelected: null, markers: [] }
 
     case types.RESIZE:
-      return { ...state, window_height: window.innerHeight, window_width: window.innerWidth }
+      return { ...state, window_ratio: get_window_ratio() }
 
     default:
       return state

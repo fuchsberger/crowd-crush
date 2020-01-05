@@ -20,9 +20,13 @@ const playerReady = state => state.sim.player_ready
 const playing = state => state.sim.playing
 const time = state => state.sim.time
 const videoRatio = state => state.sim.video.aspectratio
-const windowHeight = state => state.sim.window_height
-const windowWidth = state => state.sim.window_width
-const video_id = state => state.sim.video_id
+const videoReady = state => state.sim.video != null
+
+const video = state => state.sim.video
+const duration = createSelector([ video ], v => v.duration)
+const video_id = state => state.sim.video.id
+const video_height = createSelector([ video ], v => v != null ? v.height : window.innerHeight-40)
+const video_width = createSelector([ video ], v => v != null ? v.width : window.innerWidth)
 
 // DERIVED DATA
 
@@ -30,11 +34,6 @@ const xRounded = createSelector([x], x => x == null ? '-- x --' : round(x, 3))
 const yRounded = createSelector([y], y => y == null ? '-- y --' : round(y, 3))
 
 const channelReady = createSelector([video_id], id => id != null)
-
-const video = createSelector([Video.all, video_id], (videos, id) => find(videos, v => v.id == id))
-
-const aspectRatio = createSelector([ video ], v => v ? v.aspectratio : 1)
-const duration = createSelector([ video ], v => v ? v.duration: 1)
 
 const backwardPossible = createSelector([jumpTime, time], (j, t) => t - j >= 0 ? true : false)
 const forwardPossible = createSelector([ duration, jumpTime, time ],
@@ -103,20 +102,27 @@ const convertToRel = ( markers ) => {
 
 /**
  * Produces CSS styling for a container to maintain a given aspectratio
+ * @param {number} videoRatio
+ * @param {number} windowRatio
  */
-const frameCSS = createSelector( [ aspectRatio, windowHeight, windowWidth ],
-  ( aspectRatio, h, w ) => {
+const frameCSS = createSelector( [ video_height, video_width ], ( h, w ) => {
+
+    console.log(h, w)
 
     let wDist = 0, hDist = 0;
 
     // get screen size, account for navbar on top
-    // w = player ? window.innerWidth : window.innerWidth / 2
+    w = player ? window.innerWidth : window.innerWidth / 2
 
     // if screen is wider than video, center horizontally, otherwise vertically
-    if (w / h > aspectRatio) wDist = (w - aspectRatio * h) / 2 / w;
-    else hDist = (h - w / aspectRatio) / 2 / h;
+    if (w / h > videoRatio) wDist = (w - videoRatio * h) / 2 / w;
+    else hDist = (h - w / videoRatio) / 2 / h;
 
     if(wDist > hDist) return { left: wDist*100+"%", right: wDist*100+"%" }
+
+    // fix to account for 40 px more on top black area
+
+
     return { top: hDist*100+"%", bottom: hDist*100+"%" }
   }
 )
@@ -323,6 +329,9 @@ export default {
   playerReady,
   playing,
   time: roundedTime,
+  videoReady,
+  video_height,
+  video_width,
   xRounded,
   yRounded,
   youtubeID

@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { simSelectors as Sim } from '../../modules/sim'
 import h337 from 'heatmap.js'
-import $ from 'jquery'
 
 class Heatmap extends Component {
   constructor(props){
@@ -22,7 +21,7 @@ class Heatmap extends Component {
   }
 
   componentWillUnmount(){
-    $('canvas.heatmap-canvas').remove()
+    document.getElementsByTagName('canvas')[0].remove()
   }
 
   render(){

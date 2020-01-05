@@ -20,28 +20,33 @@ defmodule CrowdCrush.Simulation do
 
   def delete_video(video), do: Repo.delete(video)
 
-  def get_video(id), do: Repo.get Video, id
+  def get_video(id) do
+
+    overlay_query = from(o in Overlay, select: [ o.title, o.youtubeID ])
+
+    marker_query = from(m in Marker,
+      select: [m.agent, m.time, m.x, m.y],
+      order_by: [m.agent, m.time]
+    )
+
+    from(v in Video, preload: [overlays: ^overlay_query, markers: ^marker_query])
+    |> Repo.get(id)
+  end
+
   def get_video!(id), do: Repo.get! Video, id
 
-  def list_videos(last_seen), do: Repo.all(from(v in Video, where: v.updated_at > ^last_seen))
+  def list_videos(last_seen) do
+    from(v in Video,
+      select: map(v, ~w(id title duration inserted_at)a),
+      where: v.updated_at > ^last_seen
+    )
+    |> Repo.all()
+  end
 
   def get_video_details(video_id) do
     from(v in Video, select: map(v, ~w(aspectratio m0_x m0_y mX_x mX_y mY_x mY_y
       mR_x mR_y dist_x dist_y youtubeID)a))
     |> Repo.get(video_id)
-  end
-
-  def render_video(video) do
-    video
-    |> Repo.preload(:markers)
-    |> View.render_one(VideoView, "video.json")
-  end
-
-  def render_videos(videos) do
-    videos
-    |> Repo.preload(:markers)
-    |> View.render_many(VideoView, "video.json")
-    |> Enum.into(%{}, fn v -> {v.id, Map.delete(v, :id)} end)
   end
 
   def lock_videos(videos, status) do
@@ -74,7 +79,6 @@ defmodule CrowdCrush.Simulation do
   # OVERLAYS
 
   def get_overlay!(id), do: Repo.get!(Overlay, id)
-  def get_overlays(video), do: Repo.all(from o in Ecto.assoc(video, :overlays))
 
   def create_overlay(%Video{} = video, attrs \\ %{}) do
     %Overlay{}
@@ -102,14 +106,6 @@ defmodule CrowdCrush.Simulation do
     markers
     |> Enum.group_by( &List.first/1, fn x -> List.delete_at(x, 0) end)
     |> Enum.into([], fn {_k, x} -> Enum.concat(List.first(x), List.last(x)) end)
-  end
-
-  def list_markers(%Video{} = video, last_seen) do
-    Repo.all(
-      from m in Ecto.assoc(video, :markers),
-        limit: 100000,
-        where: m.updated_at > ^last_seen
-    )
   end
 
   @doc """

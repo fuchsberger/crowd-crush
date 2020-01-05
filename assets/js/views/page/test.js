@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import h337 from 'heatmap.js'
 import MainView from '../main'
 
@@ -13,7 +12,7 @@ const drawHeatmap = canvas => {
 
 // resize the canvas to fill browser window dynamically
 const resize = () => {
-  let canvas = $('#heatmap')[0]
+  let canvas = document.getElementById("heatmap")
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
   // drawHeatmap(canvas)
@@ -25,7 +24,7 @@ export default class View extends MainView {
 
     // configure heatmap
     var config = {
-      container: $('body')[0],
+      container: document.getElementsByTagName("body")[0],
       radius: 45,
       maxOpacity: .8,
       minOpacity: 0,
