@@ -18,9 +18,9 @@ class Simulation extends Component {
   }
 
   render() {
-    const { video_ready, height, width } = this.props
+    const { id, height, width } = this.props
 
-    if(!video_ready) return <Dimmer active><Loader inverted/></Dimmer>
+    if(!id) return <Dimmer active><Loader inverted/></Dimmer>
 
     return (
       <Container className='video-wrapper' style={{width: `${width}px`, height: `${height}px`}}>
@@ -37,7 +37,7 @@ class Simulation extends Component {
 const mapStateToProps = store => ({
   player: Sim.player(store),
   playerReady: Sim.playerReady(store),
-  video_ready: Sim.videoReady(store),
+  id: Sim.video_id(store),
   height: Sim.video_height(store),
   width: Sim.video_width(store)
 });

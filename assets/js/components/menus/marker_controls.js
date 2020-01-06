@@ -20,27 +20,15 @@ class MarkerControls extends Component {
   }
 
   keyUp(e){
-    const {
-      agentSelected,
-      channel,
-      deleteMarkers,
-      isAuthenticated,
-      jump,
-      selectAgent,
-      setMarker
-    } = this.props
+    const { isAuthenticated, jump, selectAgent, setMarker } = this.props
 
     switch(e.keyCode){
       case 32: // SPACE
         return isAuthenticated && setMarker()
-      case 68: // D
-        return agentSelected && isAuthenticated ? deleteMarkers(channel, agentSelected) : null
       case 69: // E
         return jump('forward')
       case 81: // Q
         return jump('backward')
-      case 82: // R
-        return isAuthenticated && deleteMarkers(channel)
       case 83: // S
         return selectAgent()
     }
@@ -118,7 +106,7 @@ class MarkerControls extends Component {
                 </Icon.Group>
               </Menu.Item>
             }
-            content='Delete Current Agent (Hotkey: D)'
+            content='Delete Current Agent'
             position='bottom center'
           />
         }
@@ -136,7 +124,7 @@ class MarkerControls extends Component {
                 </Icon.Group>
               </Menu.Item>
             }
-            content='Delete All Markers (Hotkey: R)'
+            content='Delete All Markers'
             position='bottom center'
           />
         }

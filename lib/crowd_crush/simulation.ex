@@ -25,7 +25,7 @@ defmodule CrowdCrush.Simulation do
     overlay_query = from(o in Overlay, select: [ o.title, o.youtubeID ])
 
     marker_query = from(m in Marker,
-      select: [m.agent, m.time, m.x, m.y],
+      select: {m.agent, m.time, m.x, m.y},
       order_by: [m.agent, m.time]
     )
 

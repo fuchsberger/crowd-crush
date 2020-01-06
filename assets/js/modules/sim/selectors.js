@@ -1,8 +1,6 @@
 import { createSelector } from 'reselect'
-import { uniq, pull } from 'lodash/array'
-import { filter, find, groupBy, map, sortBy } from 'lodash/collection'
+import { filter, find, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
-import { videoSelectors as Video } from '../video'
 
 const agentSelected = state => state.sim.agentSelected
 const x = state => state.sim.x
@@ -20,11 +18,10 @@ const playerReady = state => state.sim.player_ready
 const playing = state => state.sim.playing
 const time = state => state.sim.time
 const videoRatio = state => state.sim.video.aspectratio
-const videoReady = state => state.sim.video != null
 
 const video = state => state.sim.video
-const duration = createSelector([ video ], v => v.duration)
-const video_id = state => state.sim.video.id
+const video_id = createSelector([ video ], v => v != null ? v.id : null )
+const video_duration = createSelector([ video ], v => v != null ? v.duration : null)
 const video_height = createSelector([ video ], v => v != null ? v.height : window.innerHeight-40)
 const video_width = createSelector([ video ], v => v != null ? v.width : window.innerWidth)
 
@@ -36,10 +33,9 @@ const yRounded = createSelector([y], y => y == null ? '-- y --' : round(y, 3))
 const channelReady = createSelector([video_id], id => id != null)
 
 const backwardPossible = createSelector([jumpTime, time], (j, t) => t - j >= 0 ? true : false)
-const forwardPossible = createSelector([ duration, jumpTime, time ],
+const forwardPossible = createSelector([ video_duration, jumpTime, time ],
   (d, j, t) => t + j <= d ? true : false)
 
-const sortedMarkers = createSelector([ markers ], markers => sortBy(markers, ['agent', 'time']))
 const sortedOverlays = createSelector([ overlays ], overlays => sortBy(overlays, 'title'))
 
 /**
@@ -107,8 +103,6 @@ const convertToRel = ( markers ) => {
  */
 const frameCSS = createSelector( [ video_height, video_width ], ( h, w ) => {
 
-    console.log(h, w)
-
     let wDist = 0, hDist = 0;
 
     // get screen size, account for navbar on top
@@ -119,9 +113,6 @@ const frameCSS = createSelector( [ video_height, video_width ], ( h, w ) => {
     else hDist = (h - w / videoRatio) / 2 / h;
 
     if(wDist > hDist) return { left: wDist*100+"%", right: wDist*100+"%" }
-
-    // fix to account for 40 px more on top black area
-
 
     return { top: hDist*100+"%", bottom: hDist*100+"%" }
   }
@@ -146,38 +137,46 @@ const getAdjustments = ( aspectratio ) => {
 }
 
 /**
- * returns each agents approximated position at a given time,
- * given a list of markers in the format [agent_id, time, x, y]
- * list must be sorted first by agent_id and second by time
+ * Returns each agents approximated position at a given time.
+ * Markers are already grouped and sorted (server side)
  */
 const agents = createSelector(
-  [ sortedMarkers, time], ( markers, time ) => {
+  [ video, time], ( video, time ) => {
+    let agents = []
 
-    // group markers by agent and calculate approximate position at a given time
-    const agents = map(groupBy(markers, 'agent'), a => {
-      for(let i = 0; i < a.length; i++){
-        const m = a[i]
+    for (let [agent, markers] of Object.entries(video.agents)) {
+      for(let i = 0; i < markers.length; i++){
+        const curr = markers[i]
 
         // if current time matches an agents markers time exactly show agent
-        if(m.time == time) return { id: m.agent, x: m.x, y: m.y }
+        if(curr[0] == time){
+          agents.push({ id: agent, x: curr[1], y: curr[2] })
+          break
+        }
 
-        // end of line reached / only one marker available --> do not show inactive agents
-        if(i+1 == a.length) return null
-
-        const n = a[i+1]
+        // end of line reached / only one marker (at different time) --> do not show agent
+        if(i+1 == markers.length) break
 
         // if time is in between this and next marker we approximate the position
-        if(m.time <= time && time <= n.time)
-        return {
-          id: m.agent,
-          x: (m.x + (n.x - m.x) * (time - m.time) / (n.time - m.time)),
-          y: (m.y + (n.y - m.y) * (time - m.time) / (n.time - m.time))
+        const next = markers[i+1]
+        if(curr[0] <= time && time <= next[0]){
+          agents.push({
+            id: agent,
+            x: (curr[1] + (next[1] - curr[1]) * (time - curr[0]) / (next[0] - curr[0])),
+            y: (curr[2] + (next[2] - curr[2]) * (time - curr[0]) / (next[0] - curr[0]))
+          })
+          break
         }
       }
-    })
-    return pull(agents, null)
+    }
+    return agents
   }
 )
+
+/**
+ * Returns the number of agents the simulation has.
+ */
+const agentCount = createSelector([video], v => Object.keys(v.agents).length)
 
 /**
  * returns each agents approximated position at a given time,
@@ -291,7 +290,7 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 })
 
-const agentCount = createSelector([markers], markers => uniq(map(markers, m => m.agent)).length)
+
 
 const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
   if (overlay == null) return 'none'
@@ -311,7 +310,6 @@ export default {
   channelReady,
   error,
   convertToRel,
-  duration,
   backwardPossible,
   forwardPossible,
   frameCSS,
@@ -329,7 +327,8 @@ export default {
   playerReady,
   playing,
   time: roundedTime,
-  videoReady,
+  video_id,
+  video_duration,
   video_height,
   video_width,
   xRounded,
