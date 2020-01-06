@@ -160,10 +160,12 @@ const agents = createSelector(
         // if time is in between this and next marker we approximate the position
         const next = markers[i+1]
         if(curr[0] <= time && time <= next[0]){
+          let percentage = (time - curr[0]) / (next[0] - curr[0]) * 1000
+
           agents.push({
             id: agent,
-            x: (curr[1] + (next[1] - curr[1]) * (time - curr[0]) / (next[0] - curr[0])),
-            y: (curr[2] + (next[2] - curr[2]) * (time - curr[0]) / (next[0] - curr[0]))
+            x: (curr[1] + (next[1] - curr[1]) * percentage),
+            y: (curr[2] + (next[2] - curr[2]) * percentage)
           })
           break
         }

@@ -2,27 +2,26 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
-const Markers = ({ agents, agentSelected, comparisonMode, hover, mode, overlay }) => (
-  Object.keys(agents).map(i => {
+const Markers = ({ agents, agentSelected, comparisonMode, hover, mode, overlay }) =>
+agents.map(agent => {
 
-    let className = 'marker'
-    if(comparisonMode || overlay == 'white') className += ' static'
-    if(agents[i].id == agentSelected) className += ' selected'
+  let className = 'marker'
+  if(comparisonMode || overlay == 'white') className += ' static'
+  if(agent.id == agentSelected) className += ' selected'
 
-    return (
-      <div
-        key={agents[i].id}
-        className={ className }
-        onMouseEnter={() => mode == 'markers' ? hover(agents[i].id) : null }
-        onMouseLeave={() => mode == 'markers' ? hover(null) : null }
-        style={{
-          left: 100 * agents[i].x+"%",
-          top: 100 * agents[i].y+"%"
-        }}
-      />
-    )
-  })
-)
+  return(
+    <div
+      className={className}
+      key={agent.id}
+      onMouseEnter={() => mode == 'markers' ? hover(agent.id) : null }
+      onMouseLeave={() => mode == 'markers' ? hover(null) : null }
+      style={{
+        left: 100 * agent.x+"%",
+        top: 100 * agent.y+"%"
+      }}
+    />
+  )
+})
 
 const mapStateToProps = ( state, ownProps ) => ({
   agents: ownProps.right
