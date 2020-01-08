@@ -79,7 +79,7 @@ const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 
 // markers
 const setMarker = marker => ({ type: types.SET_MARKER, marker })
-const removeMarkers = agent => ({ type: types.REMOVE_MARKERS, agent })
+const removeMarkers = () => ({ type: types.REMOVE_MARKERS })
 
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })

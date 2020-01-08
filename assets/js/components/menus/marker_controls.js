@@ -97,34 +97,18 @@ class MarkerControls extends Component {
             inverted
             trigger={
               <Menu.Item
-                disabled={agentSelected == null}
-                onClick={() => deleteMarkers(channel, agentSelected)}
-              >
-                <Icon.Group>
-                <Icon color={agentSelected == null ? 'grey' : null} name='user' />
-                  <Icon corner color='red' name='dont' />
-                </Icon.Group>
-              </Menu.Item>
-            }
-            content='Delete Current Agent'
-            position='bottom center'
-          />
-        }
-        { isAuthenticated &&
-          <Popup
-            inverted
-            trigger={
-              <Menu.Item
                 disabled={agentCount == 0}
                 onClick={() => deleteMarkers(channel)}
               >
                 <Icon.Group>
-                  <Icon color={agentCount == 0 ? 'grey' : null} name='users' />
+                <Icon
+                  color={agentCount == 0 ? 'grey' : null}
+                  name={agentSelected ? "user" : "users"} />
                   <Icon corner color='red' name='dont' />
                 </Icon.Group>
               </Menu.Item>
             }
-            content='Delete All Markers'
+            content={agentSelected ? "Delete Current Agent" : "Delete all Agents"}
             position='bottom center'
           />
         }

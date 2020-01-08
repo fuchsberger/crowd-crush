@@ -3,9 +3,8 @@ defmodule CrowdCrushWeb.MarkerView do
 
   def render("marker.json", %{marker: m}) do
     %{
-      id: m.id,
       agent: m.agent,
-      time: m.time / 1000,
+      time: m.time,
       x: m.x,
       y: m.y
     }

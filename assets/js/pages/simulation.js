@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Container, Dimmer, Loader } from 'semantic-ui-react'
+import { Dimmer, Loader } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../modules/sim'
 import { Overlay, Player } from './sim'
 
@@ -18,9 +18,8 @@ class Simulation extends Component {
   }
 
   render() {
-    const { id, height, width } = this.props
 
-    if(!id) return <Dimmer active><Loader inverted/></Dimmer>
+    if(!this.props.id) return <Dimmer active><Loader inverted/></Dimmer>
 
     return <div className='video-wrapper'>
       <Player/>
@@ -33,12 +32,10 @@ class Simulation extends Component {
 }
 
 const mapStateToProps = store => ({
-  player: Sim.player(store),
-  playerReady: Sim.playerReady(store),
   id: Sim.video_id(store),
-  height: Sim.video_height(store),
-  width: Sim.video_width(store)
-});
+  player: Sim.player(store),
+  playerReady: Sim.playerReady(store)
+})
 
 const mapDispatchToProps = {
   joinSimulation: simOperations.join,

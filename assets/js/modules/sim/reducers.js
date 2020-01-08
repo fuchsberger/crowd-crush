@@ -11,7 +11,7 @@ const initialState = {
   error: false,
   jumpTime: 1.0,
   markers: [],
-  mode: 'markers', // modes: coords, markers, play (default)
+  mode: 'mapStart', // modes: coords, markers, play (default), mapStart
   overlay: null,
   overlays: null,
   playing: false,
@@ -112,10 +112,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         ...state,
         channel: payload.channel,
         video: payload.video
-        // markers: [
-        //   ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
-        //   ...payload.markers
-        // ],
         // overlays: payload.overlays,
       }
 
@@ -180,22 +176,45 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       // }
 
     case types.SET_MARKER:
+
+      const {agent, ...marker } = payload.marker
+
+      // agent exists, so insert the marker at correct position
+      if(state.video.agents.hasOwnProperty(agent)){
+
+        // go through all markers and find index where to insert/update
+        let replace = 0
+        for(var i = 0; i< state.video.agents[agent].length; i++){
+          console.log(state.video.agents[agent])
+          // current index matches time ==> replace marker here
+          if(state.video.agents[agent][i][0] == state.time){
+            replace = 1
+            break
+          }
+          // marker's time already passed current time --> pick previous index
+          if(state.video.agents[agent][i][0] > state.time){
+            i--
+            break
+          }
+          // end of list reached --> index will be last one in list
+        }
+
+        // add marker and optionally remove previous marker at that time
+        state.video.agents[agent].splice(i, replace, [marker.time, marker.x, marker.y])
+      }
+
+      // agent does not exist so create it with a single marker:
+      else state.video.agents[agent] = [[marker.time, marker.x, marker.y]]
+
       return {
         ...state,
-        markers: [
-          ...reject(state.markers, {agent: payload.marker.agent, time: payload.marker.time }),
-          payload.marker
-        ]
+        video: state.video
       }
 
     case types.REMOVE_MARKERS:
-      return payload.agent
-        ? {
-            ...state,
-            agentSelected: null,
-            markers: reject(state.markers, {'agent' : payload.agent})
-          }
-        : { ...state, agentSelected: null, markers: [] }
+      if(state.agentSelected) delete state.video.agents[state.agentSelected]
+      else state.video.agents = []
+      return { ...state, agentSelected: null, video: state.video }
 
     case types.RESIZE:
       return { ...state, window_ratio: get_window_ratio() }
