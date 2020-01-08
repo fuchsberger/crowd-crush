@@ -141,16 +141,21 @@ const getAdjustments = ( aspectratio ) => {
  * Markers are already grouped and sorted (server side)
  */
 const agents = createSelector(
-  [ video, time], ( video, time ) => {
+  [ agentSelected, overlay, time, video], ( selected, overlay, time, video ) => {
     let agents = []
 
     for (let [agent, markers] of Object.entries(video.agents)) {
       for(let i = 0; i < markers.length; i++){
         const curr = markers[i]
 
+        // get correct marker class
+        let marker_class = 'marker'
+        if(overlay == 'white') marker_class += ' static'
+        if(agent == selected) marker_class += ' selected'
+
         // if current time matches an agents markers time exactly show agent
         if(curr[0] == time){
-          agents.push({ id: agent, x: curr[1], y: curr[2] })
+          agents.push({ id: agent, class: marker_class, x: curr[1], y: curr[2] })
           break
         }
 
@@ -164,6 +169,7 @@ const agents = createSelector(
 
           agents.push({
             id: agent,
+            class: marker_class,
             x: (curr[1] + (next[1] - curr[1]) * percentage),
             y: (curr[2] + (next[2] - curr[2]) * percentage)
           })
