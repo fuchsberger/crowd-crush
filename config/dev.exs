@@ -1,5 +1,8 @@
 use Mix.Config
 
+# expose enviroment to enable react debugging
+config :crowd_crush, :environment, :dev
+
 # Configure your database
 config :crowd_crush, CrowdCrush.Repo,
   username: "postgres",

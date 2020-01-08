@@ -10,6 +10,9 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 
+# expose enviroment to enable react debugging
+config :crowd_crush, :environment, :prod
+
 config :crowd_crush, CrowdCrushWeb.Endpoint,
   url:  [scheme: "https", host: "crowd.fuchsberger.us", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"

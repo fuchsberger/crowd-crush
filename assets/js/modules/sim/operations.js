@@ -51,8 +51,6 @@ const join = (video_id, redirect) => dispatch => {
 //   dispatch({ type: DELETE_AGENT, ...res })
 // );
 
-  channel.on('remove_markers', ({ agent }) => dispatch(actions.removeMarkers(agent)))
-
   channel.join()
   .receive('ok', ({ video }) => {
 
@@ -101,8 +99,12 @@ const setMarker = e => {
   }
 }
 
-const deleteMarkers = (channel, agent='all') => _dispatch =>
-  channel.push(`delete_markers:${agent}`)
+const deleteMarkers = (channel, agent) => {
+  return dispatch => {
+    channel.push("delete_markers", { agent })
+    .receive('ok', () => dispatch(actions.removeMarkers()))
+  }
+}
 
 const setMode = ( mode ) => {
   return (dispatch) => {

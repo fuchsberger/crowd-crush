@@ -11,7 +11,7 @@ const initialState = {
   error: false,
   jumpTime: 1.0,
   markers: [],
-  mode: 'mapStart', // modes: coords, markers, play (default), mapStart
+  mode: "markers", // 'mapStart', // modes: coords, markers, play (default), mapStart
   overlay: null,
   overlays: null,
   playing: false,

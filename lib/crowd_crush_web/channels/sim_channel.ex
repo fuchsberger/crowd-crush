@@ -54,24 +54,12 @@ defmodule CrowdCrushWeb.SimChannel do
     end
   end
 
-  def handle_in("delete_markers:all", _params, socket) do
-    socket.assigns.video_id
-    |> Simulation.get_video!()
-    |> Simulation.delete_markers()
-
-    broadcast! socket, "remove_markers", %{}
-
-    {:noreply, socket}
-  end
-
-  def handle_in("delete_markers:" <> agent, _params, socket) do
+  def handle_in("delete_markers", %{"agent" => agent}, socket) do
     socket.assigns.video_id
     |> Simulation.get_video!()
     |> Simulation.delete_markers(agent)
 
-    broadcast! socket, "remove_markers", %{ agent: String.to_integer(agent) }
-
-    {:noreply, socket}
+    {:reply, {:ok, %{}}, socket}
   end
 
   def handle_in("set_marker", marker_params, socket) do

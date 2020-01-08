@@ -109,15 +109,14 @@ defmodule CrowdCrush.Simulation do
   end
 
   @doc """
-  Deletes all markers of a given video
+  Deletes all markers of a given video that belong to the given agent.
+  If no agent is given, deletes all markers of all agents.
   """
-  def delete_markers(%Video{} = video), do: Repo.delete_all(from(m in Ecto.assoc(video, :markers)))
-
-  @doc """
-  Deletes all markers of a given video that belong to the given agent
-  """
-  def delete_markers(%Video{} = video, agent),
-    do: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent))
+  def delete_markers(%Video{} = video, agent) do
+    if is_nil(agent),
+      do: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent)),
+      else: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent))
+  end
 
   @doc """
   Attempts to create or update a marker
