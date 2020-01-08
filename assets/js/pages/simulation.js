@@ -22,15 +22,13 @@ class Simulation extends Component {
 
     if(!id) return <Dimmer active><Loader inverted/></Dimmer>
 
-    return (
-      <Container className='video-wrapper' style={{width: `${width}px`, height: `${height}px`}}>
-        <Player/>
-        <Overlay />
-        {/* modal={showOverlayModal} /> */}
-        {/* <ModalOverlays /> */}
-        {!this.props.playerReady && <Dimmer active><Loader inverted/></Dimmer>}
-      </Container>
-    )
+    return <div className='video-wrapper'>
+      <Player/>
+      <Overlay />
+      {/* modal={showOverlayModal} /> */}
+      {/* <ModalOverlays /> */}
+      {!this.props.playerReady && <Dimmer active><Loader inverted/></Dimmer>}
+    </div>
   }
 }
 

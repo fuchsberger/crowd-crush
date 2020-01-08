@@ -97,28 +97,6 @@ const convertToRel = ( markers ) => {
 }
 
 /**
- * Produces CSS styling for a container to maintain a given aspectratio
- * @param {number} videoRatio
- * @param {number} windowRatio
- */
-const frameCSS = createSelector( [ video_height, video_width ], ( h, w ) => {
-
-    let wDist = 0, hDist = 0;
-
-    // get screen size, account for navbar on top
-    w = player ? window.innerWidth : window.innerWidth / 2
-
-    // if screen is wider than video, center horizontally, otherwise vertically
-    if (w / h > videoRatio) wDist = (w - videoRatio * h) / 2 / w;
-    else hDist = (h - w / videoRatio) / 2 / h;
-
-    if(wDist > hDist) return { left: wDist*100+"%", right: wDist*100+"%" }
-
-    return { top: hDist*100+"%", bottom: hDist*100+"%" }
-  }
-)
-
-/**
  * Given an aspectratio, calculates scaling values such that relative coords
  * are not stretched and centered in the available space
  * @param {number} aspectratio
@@ -306,6 +284,19 @@ const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
   return find(overlays, o => o.youtubeID == overlay).title
 })
 
+// Decide what to display on the overlay based on mode.
+const render_coords = createSelector([mode], mode => mode == 'coords' ? true : false)
+const render_map = createSelector([mode], mode => mode == 'mapStart' ? true : false)
+const render_markers = createSelector([mode], mode => {
+  switch(mode){
+    case 'markers':
+    case 'play':
+      return true
+    default:
+      return false
+  }
+})
+
 const roundedTime = createSelector([time], t => round(t, 3) || 0)
 
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
@@ -320,7 +311,6 @@ export default {
   convertToRel,
   backwardPossible,
   forwardPossible,
-  frameCSS,
   getAdjustments,
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
@@ -334,6 +324,9 @@ export default {
   player,
   playerReady,
   playing,
+  render_coords,
+  render_map,
+  render_markers,
   time: roundedTime,
   video_id,
   video_duration,

@@ -8,10 +8,9 @@ const Player = ({ changePlayerState, loadPlayer, height, width, overlay, youtube
   ? null
   : <YouTube
       videoId={overlay || youtubeID}
-      opts={{ ...YOUTUBE_PLAYER_OPTS, height: "100%", width: "100%"}}
+      opts={{ ...YOUTUBE_PLAYER_OPTS, height: `${height}px`, width: `${width}px`}}
       onReady={e => loadPlayer(e.target)}
       onStateChange={() => changePlayerState()}
-      style={{ position: 'absolute' }}
     />
 
 const mapStateToProps = store => ({
