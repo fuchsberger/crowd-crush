@@ -121,6 +121,7 @@ const getAdjustments = ( aspectratio ) => {
 const agents = createSelector(
   [ agentSelected, overlay, time, video], ( selected, overlay, time, video ) => {
     let agents = []
+    time = Math.floor(time *= 1000)
 
     for (let [agent, markers] of Object.entries(video.agents)) {
       for(let i = 0; i < markers.length; i++){
@@ -142,8 +143,12 @@ const agents = createSelector(
 
         // if time is in between this and next marker we approximate the position
         const next = markers[i+1]
-        if(curr[0] <= time && time <= next[0]){
-          let percentage = (time - curr[0]) / (next[0] - curr[0]) * 1000
+
+
+
+        if(curr[0] <= time && time < next[0]){
+          let percentage = (time - curr[0]) / (next[0] - curr[0])
+          console.log(percentage)
 
           agents.push({
             id: agent,

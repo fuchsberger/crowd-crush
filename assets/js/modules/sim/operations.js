@@ -99,9 +99,10 @@ const setMarker = e => {
   }
 }
 
-const deleteMarkers = (channel, agent) => {
-  return dispatch => {
-    channel.push("delete_markers", { agent })
+const deleteMarkers = () => {
+  return (dispatch, store) => {
+    const { channel, agentSelected } = store().sim
+    channel.push("delete_markers", { agent: agentSelected })
     .receive('ok', () => dispatch(actions.removeMarkers()))
   }
 }

@@ -98,7 +98,7 @@ class MarkerControls extends Component {
             trigger={
               <Menu.Item
                 disabled={agentCount == 0}
-                onClick={() => deleteMarkers(channel)}
+                onClick={() => deleteMarkers()}
               >
                 <Icon.Group>
                 <Icon

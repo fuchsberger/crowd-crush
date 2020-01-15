@@ -90,7 +90,7 @@ defmodule CrowdCrush.Simulation do
   def delete_overlay(%Overlay{} = overlay), do: Repo.delete(overlay)
 
   @doc """
-  Gets all markers, sorted by  first agent, then time.
+  Gets all markers, sorted by first agent, then time.
   """
   def get_csv_markers(video_id) do
     refs = createAbsRefs get_video!(video_id)
@@ -114,7 +114,7 @@ defmodule CrowdCrush.Simulation do
   """
   def delete_markers(%Video{} = video, agent) do
     if is_nil(agent),
-      do: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent)),
+      do: Repo.delete_all(from(m in Ecto.assoc(video, :markers))),
       else: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent))
   end
 

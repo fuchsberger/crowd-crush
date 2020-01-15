@@ -9,6 +9,7 @@
   "dependencies": {
     "heatmap.js": "^2.0.5",
     "history": "^4.10.1",
+    "immutability-helper": "^3.0.1",
     "iso8601-duration": "^1.2.0",
     "lodash": "^4.17.15",
     "phoenix": "file:../deps/phoenix",
@@ -25,6 +26,7 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "save": "^2.4.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
     "simple-react-validator": "^1.4.0",

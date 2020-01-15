@@ -1,3 +1,4 @@
+import update from 'immutability-helper'
 import { includes, map, reject } from 'lodash/collection'
 import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
@@ -10,7 +11,6 @@ const initialState = {
   channel: null,
   error: false,
   jumpTime: 1.0,
-  markers: [],
   mode: "markers", // 'mapStart', // modes: coords, markers, play (default), mapStart
   overlay: null,
   overlays: null,
@@ -18,21 +18,16 @@ const initialState = {
   player: null,
   player_ready: false,
   player_state: -1,
-  time: 0,
-  video: null,
-
-  // markers & coords
+  time: 0,  // in seconds (simulation)
   x: null,
   y: null,
-
+  video: null,
   // coordSelected: null,
 
   // frameLeft: 0,
   // frameScaleX: 1,
   // frameScaleY: 1,
   // frameTop: 0,
-
-  // markers2: null,
 }
 
 const reducer = ( state = initialState, { type, ...payload} ) => {
@@ -182,17 +177,20 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       // agent exists, so insert the marker at correct position
       if(state.video.agents.hasOwnProperty(agent)){
 
+        const markers = state.video.agents[agent]
+        console.log(markers)
+
         // go through all markers and find index where to insert/update
         let replace = 0
-        for(var i = 0; i< state.video.agents[agent].length; i++){
-          console.log(state.video.agents[agent])
+        for(var i = 0; i < markers.length; i++){
+
           // current index matches time ==> replace marker here
-          if(state.video.agents[agent][i][0] == state.time){
+          if(markers[i][0] == state.time*1000){
             replace = 1
             break
           }
           // marker's time already passed current time --> pick previous index
-          if(state.video.agents[agent][i][0] > state.time){
+          if(markers[i][0] > state.time*1000){
             i--
             break
           }
@@ -200,21 +198,30 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         }
 
         // add marker and optionally remove previous marker at that time
-        state.video.agents[agent].splice(i, replace, [marker.time, marker.x, marker.y])
+        markers.splice(i, replace, [state.time * 1000, state.x, state.y])
+        return update(state, {
+          video: { agents: { [agent]: { $set: markers } }}
+        })
       }
 
-      // agent does not exist so create it with a single marker:
-      else state.video.agents[agent] = [[marker.time, marker.x, marker.y]]
-
-      return {
-        ...state,
-        video: state.video
-      }
+      // else agent does not exist so create it with a single marker:
+      return update(state, {
+        video: { agents: { [agent]: { $set: [[marker.time, marker.x, marker.y]] }}}
+      })
 
     case types.REMOVE_MARKERS:
-      if(state.agentSelected) delete state.video.agents[state.agentSelected]
-      else state.video.agents = []
-      return { ...state, agentSelected: null, video: state.video }
+      // if an agent is currently selected, remove those markers
+      if(state.agentSelected)
+        return update(state, {
+          agentSelected: {$set: null},
+          video: { agents: { $unset: [state.agentSelected]}
+        }})
+
+      // by default remove all agents
+      return update(state, {
+        agentSelected: {$set: null},
+        video: { agents: {$set: {}}}
+      })
 
     case types.RESIZE:
       return { ...state, window_ratio: get_window_ratio() }
