@@ -3,20 +3,17 @@ const glob = require('glob')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const webpack = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, options) => ({
   stats: 'errors-warnings',
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({ cache: true, parallel: true, sourceMap: false }),
+      new TerserPlugin({ test: /\.js(\?.*)?$/i, }),
       new OptimizeCSSAssetsPlugin({})
     ]
   },
-  entry: {
-    './js/app.js': ['./js/app.js'].concat(glob.sync('./vendor/**/*.js'))
-  },
+  entry: './js/app.js',
   output: {
     filename: 'app.js',
     path: path.resolve(__dirname, '../priv/static/js')
@@ -24,12 +21,9 @@ module.exports = (env, options) => ({
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.js$/,
         exclude: /node_modules/,
-        include: path.resolve(__dirname, 'js'),
-        use: {
-          loader: 'babel-loader'
-        }
+        use: { loader: 'babel-loader' }
       },
       {
         test: /\.css$/,
