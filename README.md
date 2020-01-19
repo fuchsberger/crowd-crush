@@ -26,7 +26,63 @@ www.youtube.com##.ytp-chrome-top
 www.youtube.com##.ytp-gradient-top
 ```
 
-# note on how to backup / restore a database:
+## Installation
+This project is best deployed on a debain-based linux distribution (such as Ubuntu). The following requirements have to be met:
+* erlang 22.2.1
+* elixir 1.9.4
+* nodejs 13.5.0
+
+First clone the project:
+```
+git clone https://github.com/fuchsberger/crowd-crush.git
+```
+Then set environment variables. You may want to store them in .zshenv or .bashenv:
+```bash
+$ mix phx.gen.secret
+REALLY_LONG_SECRET
+$ export SECRET_KEY_BASE=REALLY_LONG_SECRET
+$ export CROWD_CRUSH_DATABASE_URL=ecto://USER:PASS@HOST/DATABASE
+```
+Then load dependencies to compile code and assets:
+```bash
+# Initial setup (1)
+$ mix deps.get --only prod
+$ MIX_ENV=prod mix compile
+
+# Compile assets
+$ cd assets && npm install # (2)
+$ npm run deploy --prefix ./assets
+$ mix phx.digest
+$ MIX_ENV=prod mix release
+
+# (*) only on initial deploy or when changing deps (1) / npm assets (2)
+```
+
+Create a service that allows to (re)start the webserver on system boot and when it crashes. Create `lib/systemd/system/app_crowd_crush.service`:
+```ini
+[Unit]
+Description=Crowd Crush
+After=network.target
+
+[Service]
+User=deploy
+Group=deploy
+Restart=on-failure
+Environment=HOME=/home/deploy/apps/crowd-crush/
+ExecStart=/home/deploy/apps/crowd-crush/_build/prod/rel/crowd_crush/bin/crowd_crush start
+ExecStop=/home/deploy/apps/crowd-crush/_build/prod/rel/crowd_crush/bin/crowd_crush stop
+
+[Install]
+WantedBy=multi-user.target
+```
+You can now start / stop the server as a service and it will auto-restart on reboot / failure:
+```console
+$ sudo systemctl daemon-reload
+$ sudo systemctl start app_crowd_crush.service
+```
+
+
+## Backup / Resore Database
 backup:
 pg_dump -F tar crowd_crush_dev > backup.tar
 

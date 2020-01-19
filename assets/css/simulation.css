@@ -23,19 +23,17 @@
   max-width: 150px;
 }
 
-.video-wrapper,
-iframe {
-  position: fixed;
+/* Top Level in Simulation */
+.video-wrapper {
+  background-color: #000000;
+  position: absolute;
   top: 40px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0;
-  margin: 0;
-  z-index: 100;
-  overflow: hidden;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
 }
 
+/* ensure overlay and markers are on top of youtube player */
 .video-wrapper div { z-index: 101; }
 
 .video-wrapper.left {
@@ -46,14 +44,16 @@ iframe {
   left: 50%;
 }
 
-#video-wrapper div { z-index: 101; }
+/* position overlay and player */
+iframe, .overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
 
 .overlay {
-  position: absolute!important;
-  left: 0;
-  top:0;
-  right:0;
-  bottom:0;
+  z-index: 100;
 }
 
 .overlay.edit {
@@ -133,4 +133,3 @@ canvas {
   left:0;
   position: fixed;
 }
-

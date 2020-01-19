@@ -4,9 +4,9 @@ defmodule CrowdCrushWeb.VideoView do
   def render("video.json", %{video: v}) do
     %{
       id: v.id,
+      agents: get_agents(v.markers),
       duration: v.duration,
       title: v.title,
-      inserted_at: NaiveDateTime.to_iso8601(v.inserted_at) <> "Z",
       youtubeID: v.youtubeID,
       aspectratio: v.aspectratio,
       m0_x: v.m0_x,
@@ -18,7 +18,16 @@ defmodule CrowdCrushWeb.VideoView do
       mR_x: v.mR_x,
       mR_y: v.mR_y,
       dist_x: v.dist_x,
-      dist_y: v.dist_y
+      dist_y: v.dist_y,
+      overlays: v.overlays
     }
+  end
+
+  defp get_agents(markers) do
+    Enum.group_by(
+      markers,
+      fn {agent, _t, _x, _y} -> Integer.to_string(agent) |> String.to_atom() end,
+      fn {_agent, time, x, y} -> [time, x, y] end
+    )
   end
 end

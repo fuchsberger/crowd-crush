@@ -9,18 +9,12 @@
 # crash artifacts & logs
 erl_crash.dump
 /assets/npm-debug.log
-/assets/package-lock.json
-mix.lock
 
 # Building / Deployment
 /priv/static
-/.deliver/releases
 
 # editor & OS artifacts
 **/.DS_Store
 *.code-workspace
 /.vscode
 /.elixir_ls
-
-# database backup
-.db_backup

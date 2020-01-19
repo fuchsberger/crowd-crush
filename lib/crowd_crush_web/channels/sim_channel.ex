@@ -4,26 +4,15 @@ defmodule CrowdCrushWeb.SimChannel do
 
   use CrowdCrushWeb, :channel
   alias CrowdCrush.Simulation
-  alias CrowdCrushWeb.{MarkerView, OverlayView}
+  alias CrowdCrushWeb.{VideoView, MarkerView, OverlayView}
+
   # alias CrowdCrushWeb.Endpoint
 
-  @doc """
-  Join simulation.
-  """
-  def join("sim:"<> video_id, params, socket) do
+  def join("sim:"<> video_id, _params, socket) do
     case Simulation.get_video(video_id) do
       nil ->
         {:error, %{ error: "No video with this ID."}}
       video ->
-        last_seen = NaiveDateTime.from_iso8601!(params["last_seen"])
-        markers = Simulation.list_markers(video, last_seen)
-        overlays = Simulation.get_overlays(video)
-
-        res = %{
-          last_seen: last_seen,
-          markers: View.render_many(markers, MarkerView, "marker.json"),
-          overlays: View.render_many(overlays, OverlayView, "overlay.json")
-        }
 
         # if abs=true in params, convert markers to abs, otherwise leave rel
         # res = if Map.get(params, "abs", false) do
@@ -32,7 +21,8 @@ defmodule CrowdCrushWeb.SimChannel do
         #   Map.put(res, :markers, list_markers( video_id, syncTime ))
         # end
 
-        { :ok, res, assign(socket, :video_id, video.id) }
+        { :ok, %{ video: View.render_one(video, VideoView, "video.json") },
+          assign(socket, :video_id, video.id) }
     end
   end
 
@@ -64,24 +54,12 @@ defmodule CrowdCrushWeb.SimChannel do
     end
   end
 
-  def handle_in("delete_markers:all", _params, socket) do
-    socket.assigns.video_id
-    |> Simulation.get_video!()
-    |> Simulation.delete_markers()
-
-    broadcast! socket, "remove_markers", %{}
-
-    {:noreply, socket}
-  end
-
-  def handle_in("delete_markers:" <> agent, _params, socket) do
+  def handle_in("delete_markers", %{"agent" => agent}, socket) do
     socket.assigns.video_id
     |> Simulation.get_video!()
     |> Simulation.delete_markers(agent)
 
-    broadcast! socket, "remove_markers", %{ agent: String.to_integer(agent) }
-
-    {:noreply, socket}
+    {:reply, {:ok, %{}}, socket}
   end
 
   def handle_in("set_marker", marker_params, socket) do

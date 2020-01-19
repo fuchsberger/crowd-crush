@@ -1,6 +1,9 @@
+import update from 'immutability-helper'
 import { includes, map, reject } from 'lodash/collection'
 import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
+
+const get_window_ratio = () => window.innerWidth / (window.innerHeight - 40)
 
 const initialState = {
   agentHovered: null,
@@ -8,31 +11,23 @@ const initialState = {
   channel: null,
   error: false,
   jumpTime: 1.0,
-  markers: [],
-  mode: 'markers', // modes: coords, markers, play (default)
+  mode: "markers", // 'mapStart', // modes: coords, markers, play (default), mapStart
   overlay: null,
   overlays: null,
   playing: false,
   player: null,
   player_ready: false,
   player_state: -1,
-  time: 0,
-  video_id: null,
-  window_height: window.innerHeight,
-  window_width: window.innerWidth,
-
-  // markers & coords
+  time: 0,  // in seconds (simulation)
   x: null,
   y: null,
-
+  video: null,
   // coordSelected: null,
 
   // frameLeft: 0,
   // frameScaleX: 1,
   // frameScaleY: 1,
   // frameTop: 0,
-
-  // markers2: null,
 }
 
 const reducer = ( state = initialState, { type, ...payload} ) => {
@@ -111,12 +106,8 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return {
         ...state,
         channel: payload.channel,
-        markers: [
-          ...reject(state.markers, m => includes(map(payload.markers, m => m.id), m.id)),
-          ...payload.markers
-        ],
-        overlays: payload.overlays,
-        video_id: payload.video_id
+        video: payload.video
+        // overlays: payload.overlays,
       }
 
     case types.LEAVE:
@@ -180,25 +171,60 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       // }
 
     case types.SET_MARKER:
-      return {
-        ...state,
-        markers: [
-          ...reject(state.markers, {agent: payload.marker.agent, time: payload.marker.time }),
-          payload.marker
-        ]
+
+      const {agent, ...marker } = payload.marker
+
+      // agent exists, so insert the marker at correct position
+      if(state.video.agents.hasOwnProperty(agent)){
+
+        const markers = state.video.agents[agent]
+        console.log(markers)
+
+        // go through all markers and find index where to insert/update
+        let replace = 0
+        for(var i = 0; i < markers.length; i++){
+
+          // current index matches time ==> replace marker here
+          if(markers[i][0] == state.time*1000){
+            replace = 1
+            break
+          }
+          // marker's time already passed current time --> pick previous index
+          if(markers[i][0] > state.time*1000){
+            i--
+            break
+          }
+          // end of list reached --> index will be last one in list
+        }
+
+        // add marker and optionally remove previous marker at that time
+        markers.splice(i, replace, [state.time * 1000, state.x, state.y])
+        return update(state, {
+          video: { agents: { [agent]: { $set: markers } }}
+        })
       }
 
+      // else agent does not exist so create it with a single marker:
+      return update(state, {
+        video: { agents: { [agent]: { $set: [[marker.time, marker.x, marker.y]] }}}
+      })
+
     case types.REMOVE_MARKERS:
-      return payload.agent
-        ? {
-            ...state,
-            agentSelected: null,
-            markers: reject(state.markers, {'agent' : payload.agent})
-          }
-        : { ...state, agentSelected: null, markers: [] }
+      // if an agent is currently selected, remove those markers
+      if(state.agentSelected)
+        return update(state, {
+          agentSelected: {$set: null},
+          video: { agents: { $unset: [state.agentSelected]}
+        }})
+
+      // by default remove all agents
+      return update(state, {
+        agentSelected: {$set: null},
+        video: { agents: {$set: {}}}
+      })
 
     case types.RESIZE:
-      return { ...state, window_height: window.innerHeight, window_width: window.innerWidth }
+      return { ...state, window_ratio: get_window_ratio() }
 
     default:
       return state

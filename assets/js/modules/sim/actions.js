@@ -1,7 +1,10 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = (video_id, channel, markers, overlays) => ({ type: types.JOIN, video_id, channel, markers, overlays })
+const join = (channel, video) => ({
+  type: types.JOIN, channel,
+  video: calc_player_size(video)
+})
 
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
@@ -16,6 +19,9 @@ const clearError = () => ({ type: types.CLEAR_ERROR })
 const error = () => ({ type: types.ERROR })
 
 const loadPlayer = player => ({ type: types.LOAD_PLAYER, player })
+
+
+
 
 /**
  * Converts an array of absolute markers into an array of relative markers
@@ -73,11 +79,27 @@ const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 
 // markers
 const setMarker = marker => ({ type: types.SET_MARKER, marker })
-const removeMarkers = agent => ({ type: types.REMOVE_MARKERS, agent })
+const removeMarkers = () => ({ type: types.REMOVE_MARKERS })
 
 const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
+
+// HELPER FUNCTIONS
+// calculates the appropriate size of the youtube player to match current screen size
+const calc_player_size = video => {
+
+  const window_ratio = window.innerWidth / (window.innerHeight - 40)
+
+  if(video.aspectratio < window_ratio){
+    video.height = window.innerHeight - 40
+    video.width = Math.floor(video.height * video.aspectratio)
+  } else {
+    video.width = window.innerWidth
+    video.height = Math.floor(video.width / video.aspectratio)
+  }
+  return video
+}
 
 export default {
   changeJumpInterval,

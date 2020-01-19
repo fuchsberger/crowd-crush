@@ -1,7 +1,7 @@
 defmodule CrowdCrushWeb.LayoutView do
   use CrowdCrushWeb, :view
 
-  def debug, do: Application.get_env(:crowd_crush, :env) === :dev
+  def debug, do: Application.get_env(:crowd_crush, :environment) === :dev
 
   def youtube_api_key, do: Application.get_env(:crowd_crush, :youtube_api_key)
 

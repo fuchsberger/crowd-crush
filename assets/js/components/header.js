@@ -14,7 +14,7 @@ class Header extends Component {
   render(){
     const { clearFlash, icon, message, messageType, simulation } = this.props
     return([
-      <Menu attached='bottom' inverted stackable key={0}>
+      <Menu className="fixed top" inverted stackable key={0}>
         <Container>
           <Menu.Item
             active={this.state.open}

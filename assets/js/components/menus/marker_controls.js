@@ -20,27 +20,15 @@ class MarkerControls extends Component {
   }
 
   keyUp(e){
-    const {
-      agentSelected,
-      channel,
-      deleteMarkers,
-      isAuthenticated,
-      jump,
-      selectAgent,
-      setMarker
-    } = this.props
+    const { isAuthenticated, jump, selectAgent, setMarker } = this.props
 
     switch(e.keyCode){
       case 32: // SPACE
         return isAuthenticated && setMarker()
-      case 68: // D
-        return agentSelected && isAuthenticated ? deleteMarkers(channel, agentSelected) : null
       case 69: // E
         return jump('forward')
       case 81: // Q
         return jump('backward')
-      case 82: // R
-        return isAuthenticated && deleteMarkers(channel)
       case 83: // S
         return selectAgent()
     }
@@ -109,34 +97,18 @@ class MarkerControls extends Component {
             inverted
             trigger={
               <Menu.Item
-                disabled={agentSelected == null}
-                onClick={() => deleteMarkers(channel, agentSelected)}
-              >
-                <Icon.Group>
-                <Icon color={agentSelected == null ? 'grey' : null} name='user' />
-                  <Icon corner color='red' name='dont' />
-                </Icon.Group>
-              </Menu.Item>
-            }
-            content='Delete Current Agent (Hotkey: D)'
-            position='bottom center'
-          />
-        }
-        { isAuthenticated &&
-          <Popup
-            inverted
-            trigger={
-              <Menu.Item
                 disabled={agentCount == 0}
-                onClick={() => deleteMarkers(channel)}
+                onClick={() => deleteMarkers()}
               >
                 <Icon.Group>
-                  <Icon color={agentCount == 0 ? 'grey' : null} name='users' />
+                <Icon
+                  color={agentCount == 0 ? 'grey' : null}
+                  name={agentSelected ? "user" : "users"} />
                   <Icon corner color='red' name='dont' />
                 </Icon.Group>
               </Menu.Item>
             }
-            content='Delete All Markers (Hotkey: R)'
+            content={agentSelected ? "Delete Current Agent" : "Delete all Agents"}
             position='bottom center'
           />
         }

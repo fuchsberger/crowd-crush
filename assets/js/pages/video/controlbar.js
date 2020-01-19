@@ -65,8 +65,8 @@ const ControlBar = ({ duration, play, pause, running, stop, time, update }) => {
   );
 }
 
-const mapStateToProps = ( state ) => ({
-  duration: state.sim.duration,
+const mapStateToProps = store => ({
+  duration: simSelectors.video_duration(store),
   running: state.sim.running,
   time: state.sim.time
 });
