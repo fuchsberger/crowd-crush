@@ -11,6 +11,8 @@ a.b.c
 * Improved keystroke event handling during simulations and removed an old (redundant) module
 * added layouts back and a test page where anything can be tested
 * added heatmap.js and applied on test page.
+* added url64 encoding for small static files to decrease bundle size
+* removed react-timeago
 
 ## 0.12.8
 * Fixed Bug that prevented videos from being added

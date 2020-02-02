@@ -13,13 +13,14 @@ const Markers = ({ agents, hover, mode }) => agents.map(agent =>
 )
 
 const mapStateToProps = ( state, ownProps ) => ({
-  agents: ownProps.right
-    ? Sim.getAbsPositionsSynthetic(state)
-    : (
-        ownProps.comparisonMode
-        ? Sim.getAbsPositionsAnnotated(state)
-        : Sim.agents(state)
-      ),
+  // agents: ownProps.right
+  //   ? Sim.getAbsPositionsSynthetic(state)
+  //   : (
+  //       ownProps.comparisonMode
+  //       ? Sim.getAbsPositionsAnnotated(state)
+  //       : Sim.agents(state)
+  //     ),
+  agents: Sim.displayed_agents(state),
   mode: Sim.mode(state)
 })
 

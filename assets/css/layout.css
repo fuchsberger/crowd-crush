@@ -2,22 +2,22 @@
 body { margin-top: 40px; height: auto; }
 
 a, .pointer { cursor: pointer; }
-.menu { z-index: 200;}
-.menu .container div { display: flex; }
+
+/* .menu .container div { display: flex; } */
 
 /* hide menu button on non-mobile devices */
-#collapse-button { display: none; }
+/* #collapse-button { display: none; } */
 
-/* on mobile devices */
+/* on mobile devices * /
 @media only screen and (max-width: 767px){
 
-  /* hide menu items by default */
+  /* hide menu items by default * /
   #collapse-button ~ div { display: none; }
 
   /* show menu items, if menu button is active */
-  #collapse-button.active ~ div { display: block; }
+  /* #collapse-button.active ~ div { display: block; } */
 
-  /* always show menu button */
+  /* always show menu button *  /
   #collapse-button {
     display: block;
     width:auto!important;
@@ -26,16 +26,17 @@ a, .pointer { cursor: pointer; }
     z-index: 201;
   }
 }
+*/
 
 /* NOTIFICATIONS */
-#flash:not(.hidden) { margin-top: -1em!important; }
+/* #flash:not(.hidden) { margin-top: -1em!important; } */
 
 @keyframes slideInFromTop {
   from {padding: 0; max-height: 0px;}
   to {padding: 1em 1.5em; max-height: 50px;}
 }
 
-.menu ~ .message{
+/* .menu ~ .message{
   min-height:0;
 }
 
@@ -44,7 +45,7 @@ a, .pointer { cursor: pointer; }
   animation-duration: 1s;
   animation-name: slideInFromTop;
   overflow:hidden;
-}
+} */
 
 .ui.modal > .content.table { padding: 0; }
 

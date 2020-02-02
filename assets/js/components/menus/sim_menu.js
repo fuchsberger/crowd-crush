@@ -1,42 +1,63 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { Icon, Menu, Popup } from 'semantic-ui-react'
+import { Dropdown, Icon, Menu, Popup } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
-import { MarkerControls, MarkerInfo, PlayerControls, PlayInfo } from './'
+import { MarkerControls, HeatMapControls, MarkerInfo, PlayerControls, PlayInfo } from './'
 
 const Item = connect(
   store => ({ currentMode: Sim.mode(store) }), { changeMode: simOperations.changeMode })(
     ({ animated, mode, title, icon, changeMode, currentMode }) =>
     <Popup inverted content={title} position="bottom center" trigger={
-      <a onClick={() => changeMode(mode)}>
-        <Icon
-          color={currentMode == mode ? 'teal' : undefined}
-          loading={animated && currentMode == mode}
-          name={icon}
-        />
+        <a onClick={() => changeMode(mode)}>
+          <Icon
+            color={currentMode == mode ? 'teal' : undefined}
+            loading={animated && currentMode == mode}
+            name={icon}
+          />
       </a>
     } />
   )
 
-const SimMenu = ({ mode }) => (
-  <div style={{ width: '100%' }}>
-    <Menu.Menu>
-      <Menu.Item header exact as={NavLink} to='/videos' name='Exit Simulation' />
-        <Menu.Item as='div'>
-          <Item mode='play' icon='play circle outline' title='Play Mode' animated />
-          <Item mode='markers' icon='compass outline' title='Markers Mode' animated/>
-          <Item mode='coords' icon='crosshairs' title='Coords Mode' animated/>
-          <Item mode='mapStart' icon='street view' title='Heatmap: Starting Agents' />
-        </Menu.Item>
+const title = mode => {
+  switch (mode) {
+    case 'play': return "Play Video"
+    case 'playMarkers': return "Play Annotation"
+    // case 'playMarkers': return "Play Annotation"
+    case 'markers': return "Annotate Agents"
+    case 'coords': return "Simulation Params"
+    case 'mapStart': return "Spawning Areas"
+    case 'mapExit': return "Exit Areas"
+    default: console.log(mode + 'not available.')
+  }
+}
 
-        {mode == 'play' && <PlayerControls />}
-        {mode == 'markers' && <MarkerControls />}
-    </Menu.Menu>
+const SimMenu = ({ setMode, mode }) =>
+  <Menu fixed='top' inverted>
+    <Menu.Item header exact as={NavLink} to='/videos' name='Exit Simulation' />
+
+    {/* <Dropdown item compact inline selection={mode} options={action_options} /> */}
+
+    <Dropdown item text={title(mode)}>
+      <Dropdown.Menu>
+        <Dropdown.Item onClick={() => setMode("play")}>Play Video</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("play-markers")}>Play Annotation</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("play-sim")}>Play Simulation</Dropdown.Item>
+        <Dropdown.Divider />
+        <Dropdown.Item onClick={() => setMode("coords")}>Setup Simulation</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("markers")}>Annotate</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("mapStart")}>Spawning Areas</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("mapExit")}>Exit Areas</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+
+    { mode == 'play' && <PlayerControls />}
+    { mode == 'markers' && <MarkerControls />}
+    { mode == 'mapStart' && <HeatMapControls />}
     { mode == 'play' && <PlayInfo /> }
     { mode == 'markers' && <MarkerInfo /> }
-  </div>
-)
+  </Menu>
 
 const mapStateToProps = store => ({ mode: Sim.mode(store) })
-export default connect(mapStateToProps)(SimMenu)
+const mapDispatchToProps = { setMode: simOperations.setMode }
+export default connect(mapStateToProps, mapDispatchToProps)(SimMenu)

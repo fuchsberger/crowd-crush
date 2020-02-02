@@ -1,8 +1,10 @@
 import socket from '../socket'
+import h337 from 'heatmap.js'
 // import { Api } from "../../utils"
 import { REFRESH_INTERVAL } from '../../config'
 import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
+import { Icon } from 'semantic-ui-react'
 // import { simSelectors } from "."
 
 // sync actions
@@ -107,10 +109,16 @@ const deleteMarkers = () => {
   }
 }
 
-const setMode = ( mode ) => {
-  return (dispatch) => {
-    dispatch(pause())
-    dispatch(update({ mode }))
+const setMode = mode => {
+  return dispatch => {
+    switch (mode) {
+      case 'play':
+      case 'playAnnotations':
+      case 'playSynthetic':
+        dispatch(pause())
+      default:
+        dispatch(update({ mode }))
+    }
   }
 }
 
@@ -124,6 +132,61 @@ const moveCursor = e => dispatch => {
   var y = (e.clientY - container.y) / container.height
 
   dispatch(actions.moveCursor(x, y))
+}
+
+// heatmap
+const setHeatMap = () => {
+  const map = h337.create({
+    container: document.getElementById('overlay'),
+    radius: 45,
+    maxOpacity: .7,
+    minOpacity: 0,
+    blur: .75
+  })
+
+  return (dispatch) => {
+    dispatch(actions.createMap(map))
+  }
+}
+
+const spawn = () => {
+  return (dispatch, store) => {
+
+    const { agents, width, height } = store().sim.video
+
+    // determine how many agents are visible in screen one
+    // (only those that have a marker in first frame)
+    const target_count = Object.values(agents).filter(a => a[0][0] == 0).length
+
+    let attempts = 0
+
+    const synthAgents = []
+    const map = store().sim.map
+
+    // attempt to create 10 agents. Procedure:
+    // 1.   randomly select a coordinate and get its likelyhood value
+    // 2.   roll a dice (0-100) and see if it is within the likelyhood value.
+    // 3.a  if so, check distance to other agents and create agent if possible
+    // 3.b  if outside, repeat
+
+    while (synthAgents.length < target_count || attempts >= 10000) {
+      const roll = Math.floor(Math.random() * 100) + 1
+      const x = Math.random()
+      const y = Math.random()
+
+      if (roll <= map.getValueAt({ x: Math.floor(x * width), y: Math.floor(y * height) })) {
+        synthAgents.push({
+          id: synthAgents.length + 1,
+          class: 'marker static',
+          x,
+          y
+        })
+      }
+      attempts++
+    }
+
+    dispatch(actions.simulate(synthAgents))
+  }
 }
 
 export default {
@@ -160,5 +223,9 @@ export default {
   resize,
   setMarker,
   update,
-  updateVideo
+  updateVideo,
+
+  // heatmap
+  setHeatMap,
+  spawn
 };

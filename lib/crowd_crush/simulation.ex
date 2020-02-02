@@ -7,10 +7,8 @@ defmodule CrowdCrush.Simulation do
   import Ecto.Query
   import CrowdCrush.Service.Simulation
 
-  alias Phoenix.View
   alias CrowdCrush.Repo
   alias CrowdCrush.Simulations.{ Overlay, Marker, Video }
-  alias CrowdCrushWeb.VideoView
 
   def create_video(attrs \\ %{}) do
     %Video{}

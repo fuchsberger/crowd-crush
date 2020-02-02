@@ -6,7 +6,8 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, options) => ({
-  stats: 'errors-warnings',
+  // stats: 'errors-warnings',
+
   optimization: {
     minimizer: [
       new TerserPlugin({ test: /\.js(\?.*)?$/i, }),
@@ -21,17 +22,20 @@ module.exports = (env, options) => ({
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: { loader: 'babel-loader' }
       },
       {
-        test: /\.css$/,
+        test: /\.css/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
-        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader'
+        test: /\.(eot|png|svg|ttf|woff|woff2)$/i,
+        use: {
+          loader: 'url-loader',
+          options: { limit: 8192 }
+        }
       }
     ]
   },

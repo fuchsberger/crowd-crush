@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { filter, find, map, sortBy } from 'lodash/collection'
+import { find, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 
 const agentSelected = state => state.sim.agentSelected
@@ -7,6 +7,7 @@ const x = state => state.sim.x
 const y = state => state.sim.y
 const channel = state => state.sim.channel
 const error = state => state.sim.error
+const heatMap = state => state.sim.map
 const jumpTime = state => state.sim.jumpTime
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
@@ -16,16 +17,17 @@ const overlays = state => state.sim.overlays
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
 const playing = state => state.sim.playing
+const synthAgents = state => state.sim.synthAgents
 const time = state => state.sim.time
 const videoRatio = state => state.sim.video.aspectratio
 
 const video = state => state.sim.video
-const video_id = createSelector([ video ], v => v != null ? v.id : null )
+
+// DERIVED DATA
+const video_id = createSelector([video], v => v != null ? v.id : null)
 const video_duration = createSelector([ video ], v => v != null ? v.duration : null)
 const video_height = createSelector([ video ], v => v != null ? v.height : window.innerHeight-40)
 const video_width = createSelector([ video ], v => v != null ? v.width : window.innerWidth)
-
-// DERIVED DATA
 
 const xRounded = createSelector([x], x => x == null ? '-- x --' : round(x, 3))
 const yRounded = createSelector([y], y => y == null ? '-- y --' : round(y, 3))
@@ -38,16 +40,74 @@ const forwardPossible = createSelector([ video_duration, jumpTime, time ],
 
 const sortedOverlays = createSelector([ overlays ], overlays => sortBy(overlays, 'title'))
 
+
+/**
+ * Returns each agents approximated position at a given time.
+ * Markers are already grouped and sorted (server side)
+ */
+const agents = createSelector(
+  [agentSelected, overlay, time, video],
+  (selected, overlay, time, video) => {
+
+    let agents = []
+    time = Math.floor(time *= 1000)
+
+    for (let [agent, markers] of Object.entries(video.agents)) {
+      for(let i = 0; i < markers.length; i++){
+        const curr = markers[i]
+
+        // get correct marker class
+        let marker_class = 'marker'
+        if(overlay == 'white') marker_class += ' static'
+        if(agent == selected) marker_class += ' selected'
+
+        // if current time matches an agents markers time exactly show agent
+        if(curr[0] == time){
+          agents.push({ id: agent, class: marker_class, x: curr[1], y: curr[2] })
+          break
+        }
+
+        // end of line reached / only one marker (at different time) --> do not show agent
+        if(i+1 == markers.length) break
+
+        // if time is in between this and next marker we approximate the position
+        const next = markers[i+1]
+
+        if(curr[0] <= time && time < next[0]){
+          let percentage = (time - curr[0]) / (next[0] - curr[0])
+
+          agents.push({
+            id: agent,
+            class: marker_class,
+            x: (curr[1] + (next[1] - curr[1]) * percentage),
+            y: (curr[2] + (next[2] - curr[2]) * percentage)
+          })
+          break
+        }
+      }
+    }
+    return agents
+  }
+)
+
+const displayed_agents = createSelector([agents, synthAgents, mode], (agents, synthAgents, mode) => {
+
+  if (mode == 'mapStart') return synthAgents
+  return agents
+})
+
+/**
+ * Returns the number of agents the simulation has.
+ */
+const agentCount = createSelector([video], v => Object.keys(v.agents).length)
+
 /**
  * Gets the positions of markers in heatmap format
  */
-const mappedMarkers = createSelector([mode, markers], (mode, markers) => {
-  if(mode == 'mapStart') markers = filter(markers, { time: 0 })
-  else return null
-
-  return map(markers, m => ({
-    x: parseInt(m.x * window.innerHeight),
-    y: parseInt(m.y * window.innerHeight),
+const mappedMarkers = createSelector([agents, video_height, video_width], (agents, h, w) => {
+  return map(agents, a => ({
+    x: parseInt(a.x * w),
+    y: parseInt(a.y * h),
     value: 80
   }))
 })
@@ -113,61 +173,6 @@ const getAdjustments = ( aspectratio ) => {
   }
   return { h_mult, h_offset, w_mult, w_offset }
 }
-
-/**
- * Returns each agents approximated position at a given time.
- * Markers are already grouped and sorted (server side)
- */
-const agents = createSelector(
-  [ agentSelected, overlay, time, video], ( selected, overlay, time, video ) => {
-    let agents = []
-    time = Math.floor(time *= 1000)
-
-    for (let [agent, markers] of Object.entries(video.agents)) {
-      for(let i = 0; i < markers.length; i++){
-        const curr = markers[i]
-
-        // get correct marker class
-        let marker_class = 'marker'
-        if(overlay == 'white') marker_class += ' static'
-        if(agent == selected) marker_class += ' selected'
-
-        // if current time matches an agents markers time exactly show agent
-        if(curr[0] == time){
-          agents.push({ id: agent, class: marker_class, x: curr[1], y: curr[2] })
-          break
-        }
-
-        // end of line reached / only one marker (at different time) --> do not show agent
-        if(i+1 == markers.length) break
-
-        // if time is in between this and next marker we approximate the position
-        const next = markers[i+1]
-
-
-
-        if(curr[0] <= time && time < next[0]){
-          let percentage = (time - curr[0]) / (next[0] - curr[0])
-          console.log(percentage)
-
-          agents.push({
-            id: agent,
-            class: marker_class,
-            x: (curr[1] + (next[1] - curr[1]) * percentage),
-            y: (curr[2] + (next[2] - curr[2]) * percentage)
-          })
-          break
-        }
-      }
-    }
-    return agents
-  }
-)
-
-/**
- * Returns the number of agents the simulation has.
- */
-const agentCount = createSelector([video], v => Object.keys(v.agents).length)
 
 /**
  * returns each agents approximated position at a given time,
@@ -281,8 +286,6 @@ const getFrameConstraints = createSelector([ markers ], ( markers ) => {
   }
 })
 
-
-
 const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
   if (overlay == null) return 'none'
   if (overlay == 'white') return 'Black and White'
@@ -291,9 +294,10 @@ const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
 
 // Decide what to display on the overlay based on mode.
 const render_coords = createSelector([mode], mode => mode == 'coords' ? true : false)
-const render_map = createSelector([mode], mode => mode == 'mapStart' ? true : false)
+
 const render_markers = createSelector([mode], mode => {
-  switch(mode){
+  switch (mode) {
+    case 'mapStart':
     case 'markers':
     case 'play':
       return true
@@ -312,6 +316,7 @@ export default {
   agentSelected,
   channel,
   channelReady,
+  displayed_agents,
   error,
   convertToRel,
   backwardPossible,
@@ -320,6 +325,7 @@ export default {
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
+  heatMap,
   jumpTime,
   mode,
   mappedMarkers,
@@ -330,7 +336,6 @@ export default {
   playerReady,
   playing,
   render_coords,
-  render_map,
   render_markers,
   time: roundedTime,
   video_id,

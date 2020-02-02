@@ -5,7 +5,8 @@
 // export { default as Markers } from './markers'
 
 // export { default as NavSim } from './nav_sim'
-export { default as Heatmap } from './heatmap'
+export { default as HeatmapSpawn } from './heatmap_spawn'
+export { default as HeatmapExit } from './heatmap_exit'
 export { default as Overlay } from './overlay'
 export { default as Player } from './player'
 export { default as SimTime } from '../../components/menus/time_item'

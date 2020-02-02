@@ -4,7 +4,7 @@ import { Menu, Popup } from 'semantic-ui-react'
 import { simSelectors as Sim } from '../../modules/sim'
 import { LoginItem, PositionItem, TimeItem } from './'
 
-const MarkerInfo = ({ agentCount, agentSelected, isAuthenticated }) => (
+const MarkerInfo = ({ agentCount, agentSelected }) => (
   <Menu.Menu position='right'>
     <PositionItem />
     <Popup

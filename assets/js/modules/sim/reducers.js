@@ -1,5 +1,5 @@
 import update from 'immutability-helper'
-import { includes, map, reject } from 'lodash/collection'
+import { reject } from 'lodash/collection'
 import types from "./types"
 import { REFRESH_INTERVAL } from '../../config'
 
@@ -11,13 +11,15 @@ const initialState = {
   channel: null,
   error: false,
   jumpTime: 1.0,
-  mode: "markers", // 'mapStart', // modes: coords, markers, play (default), mapStart
+  map: null,
+  mode: "mapStart", // 'mapStart', // modes: coords, markers, play (default), mapStart
   overlay: null,
   overlays: null,
   playing: false,
   player: null,
   player_ready: false,
   player_state: -1,
+  synthAgents: [],
   time: 0,  // in seconds (simulation)
   x: null,
   y: null,
@@ -66,6 +68,13 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.MOVE_CURSOR:
       return { ...state, x: payload.x, y: payload.y }
+
+    // HEATMAP -----------------------------------------------------------------------------------
+
+    case types.SET_HEATMAP:
+      return update(state, {
+        map: { $set: payload.map }
+      })
 
     // OTHER -------------------------------------------------------------------------------------
 
@@ -178,7 +187,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       if(state.video.agents.hasOwnProperty(agent)){
 
         const markers = state.video.agents[agent]
-        console.log(markers)
 
         // go through all markers and find index where to insert/update
         let replace = 0
@@ -225,6 +233,11 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.RESIZE:
       return { ...state, window_ratio: get_window_ratio() }
+
+    case types.SIMULATE:
+      return update(state, {
+        synthAgents: { $set: payload.agents }
+      })
 
     default:
       return state

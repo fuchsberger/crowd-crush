@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 import Markers from './markers'
-import { Heatmap } from '.'
+import { HeatmapSpawn, HeatmapExit } from '.'
 
 class Overlay extends Component {
 
@@ -22,7 +22,8 @@ class Overlay extends Component {
       onMouseLeave={e => mode != 'play' ? moveCursor(null) : null}
       style={{height: `${height}px`, width: `${width}px`}}
     >
-      { render_map && <Heatmap />}
+      { mode == "mapStart" && <HeatmapSpawn />}
+      { mode == "mapExit" && <HeatmapExit />}
       { render_markers && <Markers /> }
     </div>
   }
@@ -34,7 +35,7 @@ const mapStateToProps = state => ({
   height: Sim.video_height(state),
   width: Sim.video_width(state),
   // render_coords: Sim.renderCoords(state),
-  render_map: Sim.render_map(state),
+  mode: Sim.mode(state),
   render_markers: Sim.render_markers(state),
 })
 

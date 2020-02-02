@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import ReactTable from 'react-table';
 import checkboxHOC from 'react-table/lib/hoc/selectTable';
-import TimeAgo from 'react-timeago';
 import matchSorter from 'match-sorter';
 import Icon from '../../utils/icons';
 import { deleteUsers, updateUsers } from '../../modules/userList';
@@ -66,13 +65,6 @@ const UserTable = ({
     {
       accessor: 'email',
       Header: 'Email'
-    },
-    {
-      accessor: 'inserted_at',
-      Cell: row => <TimeAgo date={row.value} />,
-      Header: 'Member since',
-      maxWidth: 200,
-      show: display > 1
     },
     {
       accessor: 'blocked',

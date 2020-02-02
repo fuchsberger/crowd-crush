@@ -20,8 +20,12 @@ const error = () => ({ type: types.ERROR })
 
 const loadPlayer = player => ({ type: types.LOAD_PLAYER, player })
 
+// heatmap
 
+const createMap = map => ({ type: types.SET_HEATMAP, map })
 
+// synthetic agents (create or move)
+const simulate = agents => ({ type: types.SIMULATE, agents })
 
 /**
  * Converts an array of absolute markers into an array of relative markers
@@ -132,5 +136,11 @@ export default {
 
   tick,
   update,
-  updateVideo
+  updateVideo,
+
+  // heatmap
+  createMap,
+
+  // synthetic agents
+  simulate
 };

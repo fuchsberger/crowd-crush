@@ -8,8 +8,9 @@ import { Route, Router, Switch, withRouter } from 'react-router-dom'
 import { Provider } from "react-redux"
 import { Dimmer, Loader } from 'semantic-ui-react'
 import store from "./store"
-import { Header, PRoute } from "./components"
+import { PRoute } from "./components"
 import { flashOperations } from './modules/flash'
+import { DefaultMenu, SimMenu } from './components/menus'
 import Pages from "./pages"
 import { simOperations as Sim } from "./modules/sim"
 
@@ -44,8 +45,11 @@ const Main = withRouter(connect(mapStateToProps)(MainComponent))
 
 const RootHtml =
   <Provider store={ store }>
-    <Router history={ history }>
-      <Header />
+    <Router history={history}>
+      <Switch>
+        <Route path="/simulation/:id" component={SimMenu} />
+        <Route component={DefaultMenu} />
+      </Switch>
       <Main />
     </Router>
   </Provider>
