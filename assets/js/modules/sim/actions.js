@@ -83,6 +83,7 @@ const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 
 // markers
 const setMarker = marker => ({ type: types.SET_MARKER, marker })
+const setMode = mode => ({ type: types.SET_MODE, mode })
 const removeMarkers = () => ({ type: types.REMOVE_MARKERS })
 
 const tick = () => ({ type: types.TICK })
@@ -132,6 +133,7 @@ export default {
 
   // markers
   setMarker,
+  setMode,
   removeMarkers,
 
   tick,

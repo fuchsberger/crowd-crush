@@ -4,7 +4,7 @@ import h337 from 'heatmap.js'
 import { REFRESH_INTERVAL } from '../../config'
 import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
-import { Icon } from 'semantic-ui-react'
+
 // import { simSelectors } from "."
 
 // sync actions
@@ -112,12 +112,12 @@ const deleteMarkers = () => {
 const setMode = mode => {
   return dispatch => {
     switch (mode) {
-      case 'play':
-      case 'playAnnotations':
-      case 'playSynthetic':
+      case 'play-video':
+      case 'play-annotation':
+      case 'play-synthetic':
         dispatch(pause())
       default:
-        dispatch(update({ mode }))
+        dispatch(actions.setMode(mode))
     }
   }
 }
@@ -222,6 +222,7 @@ export default {
   leave,
   resize,
   setMarker,
+  setMode,
   update,
   updateVideo,
 

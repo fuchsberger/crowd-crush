@@ -18,6 +18,7 @@ export default {
 
   // markers
   SET_MARKER: 'sim/SET_MARKER',
+  SET_MODE: 'sim/SET_MODE',
   REMOVE_MARKERS: 'sim/REMOVE_MARKERS',
 
   CHANGE_JUMP_INTERVAL: 'sim/CHANGE_JUMP_INTERVAL',

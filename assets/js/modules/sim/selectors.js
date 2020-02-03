@@ -292,20 +292,6 @@ const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
   return find(overlays, o => o.youtubeID == overlay).title
 })
 
-// Decide what to display on the overlay based on mode.
-const render_coords = createSelector([mode], mode => mode == 'coords' ? true : false)
-
-const render_markers = createSelector([mode], mode => {
-  switch (mode) {
-    case 'mapStart':
-    case 'markers':
-    case 'play':
-      return true
-    default:
-      return false
-  }
-})
-
 const roundedTime = createSelector([time], t => round(t, 3) || 0)
 
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
@@ -335,8 +321,6 @@ export default {
   player,
   playerReady,
   playing,
-  render_coords,
-  render_markers,
   time: roundedTime,
   video_id,
   video_duration,

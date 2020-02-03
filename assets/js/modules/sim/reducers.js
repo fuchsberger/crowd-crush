@@ -12,7 +12,7 @@ const initialState = {
   error: false,
   jumpTime: 1.0,
   map: null,
-  mode: "mapStart", // 'mapStart', // modes: coords, markers, play (default), mapStart
+  mode: "play-video",
   overlay: null,
   overlays: null,
   playing: false,
@@ -238,6 +238,9 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return update(state, {
         synthAgents: { $set: payload.agents }
       })
+
+    case types.SET_MODE:
+      return update(state, { mode: { $set: payload.mode } })
 
     default:
       return state

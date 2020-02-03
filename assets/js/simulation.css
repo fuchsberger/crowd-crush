@@ -1,0 +1,135 @@
+#editor {
+  float: left;
+  position: relative;
+}
+
+#controls {
+  margin-left: 800px;
+}
+
+#simulation {
+  min-width: 780px;
+}
+
+#inputJumpInterval{
+  width: 25px;
+  text-align: center;
+  padding: 0;
+  background-color: #1b1c1d;
+  color: cornflowerblue;
+}
+
+.jumpControls {
+  max-width: 150px;
+}
+
+/* Top Level in Simulation */
+.video-wrapper {
+  background-color: #000000;
+  position: absolute;
+  top: 40px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+/* ensure overlay and markers are on top of youtube player */
+.video-wrapper div { z-index: 101; }
+
+.video-wrapper.left {
+  right: 50%;
+  border-right: 1px #000000 solid;
+}
+.video-wrapper.right {
+  left: 50%;
+}
+
+/* position overlay and player */
+iframe, .overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
+
+.overlay {
+  z-index: 100;
+}
+
+.overlay.edit {
+  cursor: crosshair;
+}
+
+.overlay.bg-dark {
+  background-color: RGBA(0, 0, 0, 0.5) !important;
+}
+
+.overlay.bg-light {
+  background-color: RGBA(255, 255, 255, 0.5) !important;
+}
+
+#interval-field {
+  width: 68px;
+}
+
+.marker {
+  background-color: #dbff00;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  position: absolute;
+  border-radius: 5px;
+  z-index: 2100;
+}
+.marker.static {
+  background-color:#000000;
+}
+
+.marker:hover {
+  background-color: #f4a341;
+}
+
+.marker.static:hover {
+  background-color: #237d00;
+}
+
+.marker.selected {
+  background-color: #f44b42;
+}
+
+.marker.static.selected {
+  background-color: #4542f4;
+}
+
+.marker.coordinate {
+  background-color: #6bf442;
+}
+
+.marker.coordinate:hover {
+  background-color: #a8d0ff;
+}
+
+.axisBox {
+  background-color: #000;
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 16px;
+  margin-left: -16px;
+  margin-top: -8px;
+  position: absolute;
+  border-radius: 6px;
+  z-index: 2100;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  padding: 0;
+}
+
+/* Canvas */
+canvas {
+  top: 0;
+  left:0;
+  position: fixed;
+}

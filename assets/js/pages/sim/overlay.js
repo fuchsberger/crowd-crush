@@ -6,8 +6,20 @@ import { HeatmapSpawn, HeatmapExit } from '.'
 
 class Overlay extends Component {
 
+  render_content(){
+    switch(this.props.mode){
+      case 'play-annotation':
+      case 'markers':
+        <Markers />
+      case 'map-spawn':
+        <HeatmapSpawn />
+      case 'map-exit':
+        <HeatmapExit />
+    }
+  }
+
   render(){
-    const { mode, moveCursor, height, width, overlay, render_map, render_markers, setMarker } = this.props
+    const { mode, moveCursor, height, width, overlay, setMarker } = this.props
 
     // prepare background and cursor class
     let bgClass = mode !== 'sim' ? ' edit' : ''
@@ -18,13 +30,11 @@ class Overlay extends Component {
       id='overlay'
       className={"overlay" + bgClass}
       onClick={e => mode == 'markers' ? setMarker(e) : null}
-      onMouseMove={e => mode != 'play' ? moveCursor(e) : null}
-      onMouseLeave={e => mode != 'play' ? moveCursor(null) : null}
+      onMouseMove={e => mode != 'play-annotation' ? moveCursor(e) : null}
+      onMouseLeave={e => mode != 'play-annotation' ? moveCursor(null) : null}
       style={{height: `${height}px`, width: `${width}px`}}
     >
-      { mode == "mapStart" && <HeatmapSpawn />}
-      { mode == "mapExit" && <HeatmapExit />}
-      { render_markers && <Markers /> }
+      { this.render_content() }
     </div>
   }
 }
@@ -33,10 +43,7 @@ const mapStateToProps = state => ({
   mode: Sim.mode(state),
   overlay: Sim.overlay(state),
   height: Sim.video_height(state),
-  width: Sim.video_width(state),
-  // render_coords: Sim.renderCoords(state),
-  mode: Sim.mode(state),
-  render_markers: Sim.render_markers(state),
+  width: Sim.video_width(state)
 })
 
 const mapDispatchToProps = {

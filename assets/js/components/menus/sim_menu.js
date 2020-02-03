@@ -21,14 +21,14 @@ const Item = connect(
 
 const title = mode => {
   switch (mode) {
-    case 'play': return "Play Video"
-    case 'playMarkers': return "Play Annotation"
-    // case 'playMarkers': return "Play Annotation"
-    case 'markers': return "Annotate Agents"
-    case 'coords': return "Simulation Params"
-    case 'mapStart': return "Spawning Areas"
-    case 'mapExit': return "Exit Areas"
-    default: console.log(mode + 'not available.')
+    case 'play-video': return "Play Video"
+    case 'play-annotation': return "Play Annotation"
+    case 'play-simulation': return "Play Simulation"
+    case 'markers': return "Annotate / Markers"
+    case 'coords': return "Simulation Configuration"
+    case 'map-start': return "Spawning Areas"
+    case 'map-exit': return "Exit Areas"
+    default: return "Unknown Mode"
   }
 }
 
@@ -45,9 +45,9 @@ const SimMenu = ({ setMode, mode }) =>
         <Dropdown.Item onClick={() => setMode("play-simulation")}>Play Simulation</Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item onClick={() => setMode("coords")}>Setup Simulation</Dropdown.Item>
-        <Dropdown.Item onClick={() => setMode("markers")}>Annotate</Dropdown.Item>
-        <Dropdown.Item onClick={() => setMode("mapStart")}>Spawning Areas</Dropdown.Item>
-        <Dropdown.Item onClick={() => setMode("mapExit")}>Exit Areas</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("markers")}>Annotate / Markers</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("map-start")}>Spawning Areas</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("map-exit")}>Exit Areas</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
