@@ -40,9 +40,9 @@ const SimMenu = ({ setMode, mode }) =>
 
     <Dropdown item text={title(mode)}>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={() => setMode("play")}>Play Video</Dropdown.Item>
-        <Dropdown.Item onClick={() => setMode("play-markers")}>Play Annotation</Dropdown.Item>
-        <Dropdown.Item onClick={() => setMode("play-sim")}>Play Simulation</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("play-video")}>Play Video</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("play-annotation")}>Play Annotation</Dropdown.Item>
+        <Dropdown.Item onClick={() => setMode("play-simulation")}>Play Simulation</Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item onClick={() => setMode("coords")}>Setup Simulation</Dropdown.Item>
         <Dropdown.Item onClick={() => setMode("markers")}>Annotate</Dropdown.Item>
