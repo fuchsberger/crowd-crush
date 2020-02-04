@@ -53,7 +53,7 @@ class VideoList extends Component {
               <Table.Row key={id}>
                 {/* onClick={() => history.push(`/videos/${id}`)} */}
                 <Table.Cell>
-                  <Link to={`/simulation/${id}`}>{title}</Link>
+                  <Link to={`/scene/${youtubeID}/watch`}>{title}</Link>
                 </Table.Cell>
                 <Table.Cell>{duration}</Table.Cell>
                 <Table.Cell>

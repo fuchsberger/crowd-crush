@@ -33,13 +33,7 @@ defmodule CrowdCrush.Simulation do
 
   def get_video!(id), do: Repo.get! Video, id
 
-  def list_videos(last_seen) do
-    from(v in Video,
-      select: map(v, ~w(id title duration inserted_at)a),
-      where: v.updated_at > ^last_seen
-    )
-    |> Repo.all()
-  end
+  def list_videos, do: Repo.all(Video)
 
   def get_video_details(video_id) do
     from(v in Video, select: map(v, ~w(aspectratio m0_x m0_y mX_x mX_y mY_x mY_y

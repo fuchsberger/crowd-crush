@@ -7,21 +7,14 @@ import { flashOperations as Flash } from '../flash'
 
 // import { simSelectors } from "."
 
-// sync actions
-
-// marker actions
 const hoverAgent = actions.hoverAgent
 const selectAgent = actions.selectAgent
 const changeJumpInterval = actions.changeJumpInterval
 const changeMode = actions.changeMode
-const changePlayerState = actions.changePlayerState
 const clearError = actions.clearError
 const jump = actions.jump
-const loadPlayer = actions.loadPlayer
-const pause = actions.pause
 const resize = actions.resize
 const setOverlay = actions.setOverlay
-const stop = actions.stop
 const tick = actions.tick
 const update = actions.update
 const updateVideo = actions.updateVideo
@@ -74,10 +67,7 @@ const leave = redirect => (dispatch, getState) => {
   redirect('/videos')
 }
 
-const play = () => (dispatch => {
-  dispatch(actions.play())
-  window.simTimer = setInterval(() => dispatch(tick()), REFRESH_INTERVAL)
-})
+
 
 // Overlays
 const createOverlay = (channel, data) => dispatch => {
@@ -106,19 +96,6 @@ const deleteMarkers = () => {
     const { channel, agentSelected } = store().sim
     channel.push("delete_markers", { agent: agentSelected })
     .receive('ok', () => dispatch(actions.removeMarkers()))
-  }
-}
-
-const setMode = mode => {
-  return dispatch => {
-    switch (mode) {
-      case 'play-video':
-      case 'play-annotation':
-      case 'play-synthetic':
-        dispatch(pause())
-      default:
-        dispatch(actions.setMode(mode))
-    }
   }
 }
 
@@ -198,7 +175,6 @@ export default {
   // simulation controls
   changeJumpInterval,
   changeMode,
-  setMode,
 
   // marker controls
   hoverAgent,
@@ -208,12 +184,6 @@ export default {
   // marker/coords controls
   moveCursor,
 
-  // player
-  changePlayerState,
-  loadPlayer,
-  play,
-  pause,
-  stop,
   tick,
 
   clearError,
@@ -222,7 +192,6 @@ export default {
   leave,
   resize,
   setMarker,
-  setMode,
   update,
   updateVideo,
 

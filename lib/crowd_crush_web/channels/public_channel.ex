@@ -1,10 +1,12 @@
 defmodule CrowdCrushWeb.PublicChannel do
   use CrowdCrushWeb, :channel
 
-  def join("public", params, socket) do
-    last_seen = NaiveDateTime.from_iso8601!(params["last_seen"])
-    videos = Simulation.list_videos(last_seen)
+  alias CrowdCrushWeb.VideoView
 
-    {:ok, %{ last_seen: now(), videos: videos }, socket}
+  def join("public", params, socket) do
+    videos = Simulation.list_videos()
+    |> Phoenix.View.render_many(VideoView, "simple.json")
+
+    {:ok, %{ videos: videos }, socket}
   end
 end

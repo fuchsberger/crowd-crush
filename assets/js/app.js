@@ -25,6 +25,7 @@ const MainComponent = ({ ready }) => {
       <Route path="/" exact component={Pages.About} />
       <Route path="/about" component={Pages.About} />
       <Route path="/login" component={Pages.Login} />
+      <Route path="/scene/:id/watch" component={Pages.Watch} />
       <Route path="/simulation/:id" component={Pages.Simulation} />
       <Route path="/videos" exact component={Pages.VideoList} />
       <Route path="/videos/:id" component={Pages.VideoShow} />
@@ -47,6 +48,7 @@ const RootHtml =
   <Provider store={ store }>
     <Router history={history}>
       <Switch>
+        <Route path="/scene/:id/:action" component={SimMenu} />
         <Route path="/simulation/:id" component={SimMenu} />
         <Route component={DefaultMenu} />
       </Switch>

@@ -96,15 +96,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
     case types.CHANGE_JUMP_INTERVAL:
       return { ...state, jumpTime: payload.time }
 
-    case types.CHANGE_PLAYER_STATE:
-      const player_state = state.player.getPlayerState()
-      if(player_state == 1 && !state.player_ready){
-        state.player.pauseVideo()
-        state.player.seekTo(0, true)
-        return { ...state, player_ready: true, player_state }
-      }
-      return { ...state, player_state }
-
     case types.CLEAR_ERROR:
       return { ...state, error: false }
 
@@ -121,24 +112,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.LEAVE:
       return initialState
-
-    case types.LOAD_PLAYER:
-      return { ...state, player: payload.player }
-
-    case types.PLAY:
-      if(state.player) state.player.playVideo()
-      return { ...state, playing: true }
-
-    case types.PAUSE:
-      if(state.player) state.player.pauseVideo()
-      return { ...state, playing: false }
-
-    case types.STOP:
-      if(state.player){
-        state.player.pauseVideo()
-        state.player.seekTo(0, true)
-      }
-      return { ...state, playing: false, time: 0 }
 
     case types.TICK:
       return { ...state,

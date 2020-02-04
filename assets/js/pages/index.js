@@ -7,7 +7,7 @@ import Simulation from './simulation.js'
 import Settings from './settings'
 import VideoAdd from './video.add'
 import VideoList from './video.list'
-// import VideoShow from './videos.show.jss'
+import Watch from './watch'
 
 export default {
   About,
@@ -17,5 +17,5 @@ export default {
   Settings,
   VideoAdd,
   VideoList,
-  // VideoShow
+  Watch
 }

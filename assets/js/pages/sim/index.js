@@ -8,5 +8,4 @@
 export { default as HeatmapSpawn } from './heatmap_spawn'
 export { default as HeatmapExit } from './heatmap_exit'
 export { default as Overlay } from './overlay'
-export { default as Player } from './player'
 export { default as SimTime } from '../../components/menus/time_item'

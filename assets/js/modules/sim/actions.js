@@ -10,15 +10,13 @@ const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
 
 const changeJumpInterval = time => ({ type: types.CHANGE_JUMP_INTERVAL, time })
-const changeMode = mode => ({ type: types.CHANGE_MODE, mode })
-const changePlayerState = () => ({ type: types.CHANGE_PLAYER_STATE })
 
 // Simulation
 const hoverAgent = id => ({ type: types.HOVER_AGENT, id })
 const clearError = () => ({ type: types.CLEAR_ERROR })
 const error = () => ({ type: types.ERROR })
 
-const loadPlayer = player => ({ type: types.LOAD_PLAYER, player })
+
 
 // heatmap
 
@@ -60,20 +58,10 @@ const jump = direction => ({ type: types.JUMP, direction })
 
 const moveCursor = (x, y) => ({ type: types.MOVE_CURSOR, x, y })
 
-const play = () => ({ type: types.PLAY })
 
-const pause = () => {
-  clearInterval(window.simTimer)
-  return { type: types.PAUSE }
-}
 
 const resize = () => ({ type: types.RESIZE })
 
-const stop = () => {
-  clearInterval(window.simTimer)
-  return { type: types.STOP }
-
-}
 const selectAgent = (agent = null) => ({ type: types.SELECT_AGENT, agent })
 
 // Overlays
@@ -83,7 +71,6 @@ const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 
 // markers
 const setMarker = marker => ({ type: types.SET_MARKER, marker })
-const setMode = mode => ({ type: types.SET_MODE, mode })
 const removeMarkers = () => ({ type: types.REMOVE_MARKERS })
 
 const tick = () => ({ type: types.TICK })
@@ -108,8 +95,6 @@ const calc_player_size = video => {
 
 export default {
   changeJumpInterval,
-  changeMode,
-  changePlayerState,
   clearError,
   error,
   hoverAgent,
@@ -118,11 +103,7 @@ export default {
   jump,
   leave,
   loadComparison,
-  loadPlayer,
   moveCursor,
-  play,
-  pause,
-  stop,
   resize,
   selectAgent,
 
@@ -133,7 +114,6 @@ export default {
 
   // markers
   setMarker,
-  setMode,
   removeMarkers,
 
   tick,

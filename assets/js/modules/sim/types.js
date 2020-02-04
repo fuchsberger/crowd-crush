@@ -4,14 +4,6 @@ export default {
   REMOVE_OVERLAY: 'sim/REMOVE_OVERLAY',
   SET_OVERLAY: 'sim/SET_OVERLAY',
 
-  // player
-  LOAD_PLAYER: 'sim/LOAD_PLAYER',
-  CHANGE_PLAYER_STATE: 'sim/CHANGE_PLAYER_STATE',
-  PLAY: 'sim/PLAY',
-  PAUSE: 'sim/PAUSE',
-  STOP: 'sim/STOP',
-  TICK: 'sim/TICK',
-
   // simulation
   HOVER_AGENT: 'sim/HOVER_AGENT',
   MOVE_CURSOR: 'sim/MOVE_CURSOR',
