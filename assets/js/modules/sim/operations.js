@@ -1,7 +1,7 @@
 import socket from '../socket'
 import h337 from 'heatmap.js'
 // import { Api } from "../../utils"
-import { REFRESH_INTERVAL } from '../../config'
+
 import actions from "./actions"
 import { flashOperations as Flash } from '../flash'
 
@@ -15,7 +15,6 @@ const clearError = actions.clearError
 const jump = actions.jump
 const resize = actions.resize
 const setOverlay = actions.setOverlay
-const tick = actions.tick
 const update = actions.update
 const updateVideo = actions.updateVideo
 
@@ -183,8 +182,6 @@ export default {
 
   // marker/coords controls
   moveCursor,
-
-  tick,
 
   clearError,
   join,

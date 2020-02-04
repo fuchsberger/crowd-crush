@@ -13,8 +13,8 @@ if (window.debug) {
     timestamp: false,
     // do not show certain events in logger
     predicate: (_getState, action) => ![
-      'sim/CHANGE_PLAYER_STATE',
-      'sim/TICK',
+      'player/TICK',
+      'player/CHANGE_STATE',
       'sim/MOVE_CURSOR'
     ].includes(action.type)
   });

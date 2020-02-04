@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Dropdown, Menu } from 'semantic-ui-react'
-import { MarkerControls, HeatMapControls, MarkerInfo, PlayerControls, PlayInfo } from './'
+import { PlayerControls } from '../controls'
 
 class SimMenu extends Component {
 
@@ -26,14 +26,14 @@ class SimMenu extends Component {
     }
   }
 
-  render_modules(){
+  render_player(){
     switch(this.props.match.params.action){
       case 'watch':
-        <PlayerControls />
+        return <PlayerControls />
     }
   }
 
-  render(){
+  render() {
     return(
       <Menu fixed='top' inverted>
         <Menu.Item header exact as={NavLink} to='/videos' name='Exit Simulation' />
@@ -51,7 +51,7 @@ class SimMenu extends Component {
           </Dropdown.Menu>
         </Dropdown>
 
-        { this.render_modules() }
+        { this.render_player() }
 
         {/* { match.params.action == 'watch' && }
         { match.params.action == 'markers' && <MarkerControls />}

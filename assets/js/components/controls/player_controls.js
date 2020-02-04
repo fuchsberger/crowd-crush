@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Menu } from 'semantic-ui-react'
 import { playerOperations, playerSelectors as Player } from '../../modules/player'
-import { OverlayItem } from '.'
+import { OverlayItem } from '../menus'
 
-const PlayerControls = ({ loaded, play, pause, playing, stop }) => (loaded ?
+const PlayerControls = ({ loaded, play, pause, playing, stop }) => (loaded &&
   <Menu.Menu>
     {playing
       ? <Menu.Item icon='pause' onClick={() => pause()}/>
@@ -12,12 +12,12 @@ const PlayerControls = ({ loaded, play, pause, playing, stop }) => (loaded ?
     }
     <Menu.Item icon='stop' onClick={() => stop()} />
     <OverlayItem />
-  </Menu.Menu> : <Menu.Menu>{loaded}</Menu.Menu>
+  </Menu.Menu>
 )
 
 const mapStateToProps = store => ({
   loaded: Player.loaded(store),
-  playing: false // Player.playing(store)
+  playing: Player.playing(store)
 })
 
 const mapDispatchToProps = {

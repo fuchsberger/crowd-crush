@@ -20,7 +20,6 @@ const initialState = {
   player_ready: false,
   player_state: -1,
   synthAgents: [],
-  time: 0,  // in seconds (simulation)
   x: null,
   y: null,
   video: null,
@@ -112,13 +111,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
 
     case types.LEAVE:
       return initialState
-
-    case types.TICK:
-      return { ...state,
-        time: state.player
-          ? state.player.getCurrentTime()
-          : state.time + REFRESH_INTERVAL / 1000
-      }
 
     case types.VIDEO_NOT_FOUND:
       return { ...initialState, error: true }

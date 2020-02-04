@@ -1,41 +1,47 @@
 import types from "./types"
 
 const initialState = {
-  // playing: false,
-  loaded: false
+  instance: null,
+  state: -1,
+  time: 0  // in seconds (simulation)
 }
 
 const reducer = ( state = initialState, { type, ...payload} ) => {
-  switch ( type ) {
-    // case types.LOAD_PLAYER:
-    //   return { ...state, player: payload.player }
+  switch (type) {
 
     case types.CHANGE_STATE:
-      const player_state = state.player.getPlayerState()
-      if(player_state == 1 && !state.player_ready){
-        state.player.pauseVideo()
-        state.player.seekTo(0, true)
-        return { ...state, player_ready: true, player_state }
-      }
-      return { ...state, player_state }
+      return { ...state, state: state.instance.getPlayerState() }
 
     case types.PLAY:
-      if(state.player) state.player.playVideo()
-      return { ...state, playing: true }
+      if(state.instance) state.instance.playVideo()
+      return state
+
+    case types.LEAVE:
+      return initialState
 
     case types.PAUSE:
-      if(state.player) state.player.pauseVideo()
-      return { ...state, playing: false }
+      if(state.instance) state.instance.pauseVideo()
+      return state
 
     case types.READY:
-      return { ...state, loaded: true}
+      return { ...state, instance: payload.instance}
 
     case types.STOP:
-      if(state.player){
-        state.player.pauseVideo()
-        state.player.seekTo(0, true)
+      // allows player controls to operate without actual youtube player
+      if(state.instance){
+        state.instance.pauseVideo()
+        state.instance.seekTo(0, true)
       }
-      return { ...state, playing: false, time: 0 }
+      return {
+        ...state, time: 0
+      }
+
+    case types.TICK:
+      return { ...state,
+        time: state.instance
+          ? state.instance.getCurrentTime()
+          : state.time + REFRESH_INTERVAL / 1000
+      }
 
     default:
       return state

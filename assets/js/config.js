@@ -4,7 +4,7 @@ export const REFRESH_INTERVAL = 40 // 25 frames per second => 40 ms
 // https://developers.google.com/youtube/player_parameters
 export const YOUTUBE_PLAYER_OPTS = {
   playerVars: {
-    autoplay: 1,
+    autoplay: 0,
     controls: 0,
     disablekb: 1,
     enablejsapi: 1,

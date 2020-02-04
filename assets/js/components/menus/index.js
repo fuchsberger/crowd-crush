@@ -2,11 +2,6 @@
 export { default as DefaultMenu } from './default_menu'
 export { default as SimMenu } from './sim_menu'
 
-// Controls
-export { default as HeatMapControls } from './heatmap_controls'
-export { default as MarkerControls } from './marker_controls'
-export { default as PlayerControls } from './player_controls'
-
 // Info Feedback
 export { default as MarkerInfo } from './marker_info'
 export { default as PlayInfo } from './play_info'

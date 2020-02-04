@@ -73,7 +73,6 @@ const setOverlay = overlay => ({ type: types.SET_OVERLAY, overlay })
 const setMarker = marker => ({ type: types.SET_MARKER, marker })
 const removeMarkers = () => ({ type: types.REMOVE_MARKERS })
 
-const tick = () => ({ type: types.TICK })
 const update = params => ({ type: types.UPDATE, params })
 const updateVideo = params => ({ type: types.UPDATE_VIDEO, params })
 
@@ -116,7 +115,6 @@ export default {
   setMarker,
   removeMarkers,
 
-  tick,
   update,
   updateVideo,
 
