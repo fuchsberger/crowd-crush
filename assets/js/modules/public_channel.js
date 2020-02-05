@@ -3,7 +3,7 @@ import { videoOperations as Video } from './video'
 
 export default (dispatch) => {
 
-  const channel = socket.channel('public', () => ({ last_seen: "2000-01-01T00:00:00.0" }))
+  const channel = socket.channel('public')
 
   // Listen for events
 
@@ -25,10 +25,6 @@ export default (dispatch) => {
   // });
 
   channel.join()
-  .receive('ok', ({ last_seen, videos }) => {
-    dispatch(Video.load(videos))
-    channel.params.last_seen = last_seen
-  })
 
   return channel
 }

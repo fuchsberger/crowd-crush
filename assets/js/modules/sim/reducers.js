@@ -1,28 +1,19 @@
 import update from 'immutability-helper'
 import { reject } from 'lodash/collection'
 import types from "./types"
-import { REFRESH_INTERVAL } from '../../config'
-
-const get_window_ratio = () => window.innerWidth / (window.innerHeight - 40)
 
 const initialState = {
+  agents: null,
   agentHovered: null,
   agentSelected: null,
   channel: null,
   error: false,
-  jumpTime: 1.0,
   map: null,
-  mode: "play-video",
   overlay: null,
   overlays: null,
-  playing: false,
-  player: null,
-  player_ready: false,
-  player_state: -1,
   synthAgents: [],
   x: null,
   y: null,
-  video: null,
   // coordSelected: null,
 
   // frameLeft: 0,
@@ -92,9 +83,6 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         time: 0
       }
 
-    case types.CHANGE_JUMP_INTERVAL:
-      return { ...state, jumpTime: payload.time }
-
     case types.CLEAR_ERROR:
       return { ...state, error: false }
 
@@ -102,32 +90,13 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       return { ...state, error: true }
 
     case types.JOIN:
-      return {
-        ...state,
-        channel: payload.channel,
-        video: payload.video
-        // overlays: payload.overlays,
-      }
+      return { ...state, ...payload }
 
     case types.LEAVE:
       return initialState
 
     case types.VIDEO_NOT_FOUND:
       return { ...initialState, error: true }
-
-    case types.JUMP:
-      let time
-      switch(payload.direction){
-        case 'forward': time = state.time + state.jumpTime; break
-        case 'backward': time = Math.max(0, state.time - state.jumpTime); break
-      }
-
-      // jump to time and update player state
-      if(state.player_ready) {
-        state.player.pauseVideo()
-        state.player.seekTo(time, true)
-      }
-      return { ...state, time }
 
       // let nTime;
 
@@ -142,62 +111,55 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       //   nTime = action.forward
       //     ? Math.min(last + state.jumpTime, state.duration)
       //     : Math.max(last - state.jumpTime, 0);
-      // }
+      // }s
 
     case types.SET_MARKER:
 
       const {agent, ...marker } = payload.marker
 
       // agent exists, so insert the marker at correct position
-      if(state.video.agents.hasOwnProperty(agent)){
+      if(state.agents.hasOwnProperty(agent)){
 
-        const markers = state.video.agents[agent]
+        const markers = state.agents[agent]
 
         // go through all markers and find index where to insert/update
-        let replace = 0
         for(var i = 0; i < markers.length; i++){
 
           // current index matches time ==> replace marker here
-          if(markers[i][0] == state.time*1000){
-            replace = 1
+          if(markers[i][0] == marker.time){
+            markers.splice(i, 1, [marker.time, marker.x, marker.y])
             break
           }
-          // marker's time already passed current time --> pick previous index
-          if(markers[i][0] > state.time*1000){
-            i--
+          // current time has already surpassed marker --> add at previous index
+          if (markers[i][0] > marker.time) {
+            markers.splice(i-1, 0, [marker.time, marker.x, marker.y])
             break
           }
-          // end of list reached --> index will be last one in list
+          // last marker reached, just add here at the end
+          if (i + 1 == markers.length)
+            markers.push([marker.time, marker.x, marker.y])
         }
 
         // add marker and optionally remove previous marker at that time
-        markers.splice(i, replace, [state.time * 1000, state.x, state.y])
-        return update(state, {
-          video: { agents: { [agent]: { $set: markers } }}
-        })
+        return update(state, { agents: { [agent]: { $set: markers }} })
       }
 
       // else agent does not exist so create it with a single marker:
-      return update(state, {
-        video: { agents: { [agent]: { $set: [[marker.time, marker.x, marker.y]] }}}
-      })
+      return update(state, { agents: { [agent]: { $set: [[marker.time, marker.x, marker.y]] }}})
 
     case types.REMOVE_MARKERS:
       // if an agent is currently selected, remove those markers
       if(state.agentSelected)
         return update(state, {
-          agentSelected: {$set: null},
-          video: { agents: { $unset: [state.agentSelected]}
-        }})
+          agents: { $unset: [state.agentSelected]},
+          agentSelected: {$set: null}
+        })
 
       // by default remove all agents
       return update(state, {
         agentSelected: {$set: null},
         video: { agents: {$set: {}}}
       })
-
-    case types.RESIZE:
-      return { ...state, window_ratio: get_window_ratio() }
 
     case types.SIMULATE:
       return update(state, {

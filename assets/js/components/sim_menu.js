@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Dropdown, Menu } from 'semantic-ui-react'
-import { PlayerControls } from '../controls'
+import { Login, MarkerControls, MarkerInfo, PlayerControls, Position, Time } from './controls'
 
 class SimMenu extends Component {
 
@@ -26,10 +26,34 @@ class SimMenu extends Component {
     }
   }
 
-  render_player(){
+  render_marker_controls() {
+    if (this.props.match.params.action == 'markers') return <MarkerControls />
+  }
+
+  render_marker_info() {
+    if (this.props.match.params.action == 'markers') return <MarkerInfo />
+  }
+
+  render_player_controls(){
     switch(this.props.match.params.action){
       case 'watch':
-        return <PlayerControls />
+      case 'run':
+      case 'simulate':
+        return <PlayerControls key={1} />
+    }
+  }
+
+  render_position() {
+    if (this.props.match.params.action == 'markers') return <Position />
+  }
+
+  render_time() {
+    switch(this.props.match.params.action){
+      case 'watch':
+      case 'run':
+      case 'simulate':
+      case 'markers':
+        return <Time />
     }
   }
 
@@ -51,13 +75,20 @@ class SimMenu extends Component {
           </Dropdown.Menu>
         </Dropdown>
 
-        { this.render_player() }
+        {this.render_player_controls()}
+        {this.render_marker_controls()}
+
+        <Menu.Menu position='right'>
+          {this.render_marker_info()}
+          {this.render_position()}
+          {this.render_time()}
+          <Login />
+        </Menu.Menu>
 
         {/* { match.params.action == 'watch' && }
         { match.params.action == 'markers' && <MarkerControls />}
         { match.params.action == 'mapStart' && <HeatMapControls />}
-        { match.params.action == 'play' && <PlayInfo /> }
-        { match.params.action == 'markers' && <MarkerInfo /> } */}
+        { match.params.action == 'play' && <PlayInfo /> } */}
       </Menu>
     )
   }

@@ -2,11 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Menu, Popup } from 'semantic-ui-react'
 import { simSelectors as Sim } from '../../modules/sim'
-import { LoginItem, PositionItem, TimeItem } from './'
 
 const MarkerInfo = ({ agentCount, agentSelected }) => (
-  <Menu.Menu position='right'>
-    <PositionItem />
+  <Menu.Menu>
     <Popup
       inverted
       trigger={
@@ -21,8 +19,6 @@ const MarkerInfo = ({ agentCount, agentSelected }) => (
       content='Selected Agent / # of Agents (Hotkey: S)'
       position='bottom center'
     />
-    <TimeItem />
-    <LoginItem />
   </Menu.Menu>
 )
 

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import YouTube from 'react-youtube'
-import { YOUTUBE_PLAYER_OPTS } from '../config'
-
-import { playerOperations } from '../modules/player'
-import { simSelectors as Sim } from '../modules/sim'
+import { YOUTUBE_PLAYER_OPTS } from '../../config'
+import { sceneSelectors as Scene } from '../../modules/scene'
+import { playerOperations } from '../../modules/player'
+import { simSelectors as Sim } from '../../modules/sim'
 
 class Player extends Component {
   componentWillUnmount() {
@@ -12,11 +12,15 @@ class Player extends Component {
   }
 
   render() {
-    const { id, changeState, height, ready, width, overlay } = this.props
+    const { id, changeState, dimensions, ready, overlay } = this.props
     return (
       <YouTube
         videoId={overlay || id}
-        opts={{ ...YOUTUBE_PLAYER_OPTS, height: `${height}px`, width: `${width}px` }}
+        opts={{
+          ...YOUTUBE_PLAYER_OPTS,
+          height: `${dimensions[1]}px`,
+          width: `${dimensions[0]}px`
+        }}
         onReady={e => ready(e.target)}
         onStateChange={() => changeState()}
       />
@@ -24,10 +28,11 @@ class Player extends Component {
   }
 }
 const mapStateToProps = store => ({
-  height: Sim.video_height(store),
-  width: Sim.video_width(store),
+  dimensions: Scene.dimensions(store),
+  id: Scene.id(store),
   overlay: Sim.overlay(store)
 })
+
 const mapDispatchToProps = {
   changeState: playerOperations.changeState,
   ready: playerOperations.ready,

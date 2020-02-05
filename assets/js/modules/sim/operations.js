@@ -3,16 +3,16 @@ import h337 from 'heatmap.js'
 // import { Api } from "../../utils"
 
 import actions from "./actions"
+import { playerOperations as Player } from '../player'
+import { sceneOperations as Scene } from '../scene'
 import { flashOperations as Flash } from '../flash'
 
 // import { simSelectors } from "."
 
 const hoverAgent = actions.hoverAgent
 const selectAgent = actions.selectAgent
-const changeJumpInterval = actions.changeJumpInterval
 const changeMode = actions.changeMode
 const clearError = actions.clearError
-const jump = actions.jump
 const resize = actions.resize
 const setOverlay = actions.setOverlay
 const update = actions.update
@@ -25,7 +25,7 @@ const updateVideo = actions.updateVideo
  * Also subscribes to channel events and dispatches actions accordingly.
  * @param { number } video_id
  */
-const join = (video_id, redirect) => dispatch => {
+const join = video_id => (dispatch, store) => {
 
   const channel = socket.channel(`sim:${video_id}`)
 
@@ -46,27 +46,22 @@ const join = (video_id, redirect) => dispatch => {
 // );
 
   channel.join()
-  .receive('ok', ({ video }) => {
+    .receive('ok', ({ video }) => {
+
+    const { agents, ...vid } = video
 
     // if markers are in absolute coords convert to relative first
     // if(params.abs) simParams.markers = simSelectors.convertToRel(simParams.markers)
-    dispatch(actions.join(channel, video))
-  })
-  .receive('error', res => {
-    channel.leave()
-    redirect('/videos')
-    dispatch(Flash.get(res))
+    dispatch(Scene.load(vid))
+    dispatch(actions.join(agents, channel))
   })
 }
 
-const leave = redirect => (dispatch, getState) => {
+const leave = () => (dispatch, getState) => {
   const { sim } = getState()
   if(sim.channel) sim.channel.leave()
   dispatch(actions.leave())
-  redirect('/videos')
 }
-
-
 
 // Overlays
 const createOverlay = (channel, data) => dispatch => {
@@ -77,15 +72,16 @@ const deleteOverlay = (channel, id) => _dispatch => channel.push(`delete_overlay
 
 // markers
 
-const setMarker = e => {
+const setMarker = (e) => {
   return (dispatch, store) => {
 
-    const { agentSelected, channel, x, y, time } = store().sim
+    const { player, sim } = store()
+    const { agentSelected, channel, x, y } = sim
 
-    channel.push('set_marker', { agent: agentSelected, time, x, y })
+    channel.push('set_marker', { agent: agentSelected, time: player.time, x, y })
     .receive('ok', ({ agent }) => {
       dispatch(selectAgent(agent))
-      dispatch(jump('forward'))
+      dispatch(Player.jump('forward'))
     })
   }
 }
@@ -172,7 +168,7 @@ export default {
   setOverlay,
 
   // simulation controls
-  changeJumpInterval,
+
   changeMode,
 
   // marker controls
@@ -185,7 +181,6 @@ export default {
 
   clearError,
   join,
-  jump,
   leave,
   resize,
   setMarker,

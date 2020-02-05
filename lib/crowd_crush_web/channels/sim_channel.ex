@@ -9,7 +9,7 @@ defmodule CrowdCrushWeb.SimChannel do
   # alias CrowdCrushWeb.Endpoint
 
   def join("sim:"<> video_id, _params, socket) do
-    case Simulation.get_video(video_id) do
+    case Simulation.get_video_by_youtube_id(video_id) do
       nil ->
         {:error, %{ error: "No video with this ID."}}
       video ->

@@ -2,8 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { Menu } from 'semantic-ui-react'
-import { sessionSelectors as Session } from '../../modules/session'
-import { LoginItem } from './'
+import { sessionSelectors as Session } from '../modules/session'
+import { Login } from './controls'
 
 const DefaultMenu = ({ isAuthenticated }) =>
   <Menu fixed='top' inverted>
@@ -14,7 +14,7 @@ const DefaultMenu = ({ isAuthenticated }) =>
       {isAuthenticated && <Menu.Item as={NavLink} to='/users' icon='user' name='Users' />}
     </Menu.Menu>,
     <Menu.Menu position='right'>
-      <LoginItem />
+      <Login />
     </Menu.Menu>
   </Menu>
 const mapStateToProps = store => ({ isAuthenticated: Session.isAuthenticated(store) })

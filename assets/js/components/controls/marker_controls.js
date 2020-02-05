@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Icon, Input, Menu, Popup } from 'semantic-ui-react'
 import { sessionSelectors as Session } from '../../modules/session'
+import { playerOperations, playerSelectors as Player } from '../../modules/player'
 import { simOperations, simSelectors as Sim } from '../../modules/sim'
 
 class MarkerControls extends Component {
+
+  state = { jumpTime : this.props.jumpTime }
 
   constructor(props){
     super(props)
@@ -17,6 +20,11 @@ class MarkerControls extends Component {
 
   componentWillUnmount(){
     document.removeEventListener('keyup', this.keyUp)
+  }
+
+  changeJumpTime(e) {
+    if (parseFloat(e.target.value)) this.props.changeJumpInterval(parseFloat(e.target.value))
+    this.setState({ jumpTime: e.target.value })
   }
 
   keyUp(e){
@@ -39,8 +47,6 @@ class MarkerControls extends Component {
       agentCount,
       agentSelected,
       backwardPossible,
-      channel,
-      changeJumpInterval,
       deleteMarkers,
       forwardPossible,
       isAuthenticated,
@@ -56,7 +62,7 @@ class MarkerControls extends Component {
             <Menu.Item
               color={backwardPossible ? null : 'grey'}
               disabled={!backwardPossible}
-              icon='step backward'
+              icon='backward'
               onClick={() => jump('backward')}
             />
           }
@@ -69,7 +75,7 @@ class MarkerControls extends Component {
             <Menu.Item
               color={forwardPossible ? null : 'grey'}
               disabled={!forwardPossible}
-              icon='step forward'
+              icon='forward'
               onClick={() => jump('forward')}
             />
           }
@@ -80,32 +86,24 @@ class MarkerControls extends Component {
           inverted
           trigger={
             <Menu.Item>
-              <Icon name='stopwatch' />
+              <Icon name='clock' />
               <Input
                 id='inputJumpInterval'
                 inverted
-                onChange={e => changeJumpInterval(parseInt(e.target.value, 10))}
-                value={jumpTime}
+                onChange={e => this.changeJumpTime(e)}
+                value={this.state.jumpTime}
               />
             </Menu.Item>
           }
           content='Jump Inteval'
           position='bottom center'
         />
-        { isAuthenticated &&
+        { isAuthenticated && agentCount > 0 &&
           <Popup
             inverted
             trigger={
-              <Menu.Item
-                disabled={agentCount == 0}
-                onClick={() => deleteMarkers()}
-              >
-                <Icon.Group>
-                <Icon
-                  color={agentCount == 0 ? 'grey' : null}
-                  name={agentSelected ? "user" : "users"} />
-                  <Icon corner color='red' name='dont' />
-                </Icon.Group>
+              <Menu.Item onClick={() => deleteMarkers()}>
+                <Icon color='red' name='cancel' />
               </Menu.Item>
             }
             content={agentSelected ? "Delete Current Agent" : "Delete all Agents"}
@@ -121,16 +119,16 @@ const mapStateToProps = store => ({
   isAuthenticated: Session.isAuthenticated(store),
   agentCount: Sim.agentCount(store),
   agentSelected: Sim.agentSelected(store),
-  backwardPossible: Sim.backwardPossible(store),
+  backwardPossible: Player.backwardPossible(store),
   channel: Sim.channel(store),
-  forwardPossible: Sim.forwardPossible(store),
-  jumpTime: Sim.jumpTime(store)
+  forwardPossible: Player.forwardPossible(store),
+  jumpTime: Player.jumpTime(store)
 })
 
 const mapDispatchToProps = {
-  changeJumpInterval: simOperations.changeJumpInterval,
+  changeJumpInterval: playerOperations.changeJumpInterval,
   deleteMarkers: simOperations.deleteMarkers,
-  jump: simOperations.jump,
+  jump: playerOperations.jump,
   selectAgent: simOperations.selectAgent,
   setMarker: simOperations.setMarker
 }

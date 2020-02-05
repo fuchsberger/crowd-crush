@@ -16,5 +16,23 @@
         "workspaceRoot": null,
         "workspacePath": null,
         "id": "PQNyiW1JAFgZls07"
+    },
+    {
+        "type": "Directory",
+        "name": "c:\\Users\\Alex\\workspace\\crowd-crush\\assets\\js\\modules\\video",
+        "parent_id": null,
+        "fsPath": "c:\\Users\\Alex\\workspace\\crowd-crush\\assets\\js\\modules\\video",
+        "workspaceRoot": null,
+        "workspacePath": null,
+        "id": "I9HxAnQPFGl1tdMV"
+    },
+    {
+        "type": "Directory",
+        "name": "c:\\Users\\Alex\\workspace\\crowd-crush\\assets\\js\\modules\\scene",
+        "parent_id": null,
+        "fsPath": "c:\\Users\\Alex\\workspace\\crowd-crush\\assets\\js\\modules\\scene",
+        "workspaceRoot": null,
+        "workspacePath": null,
+        "id": "5kTSXVYDes8GLJZP"
     }
 ]

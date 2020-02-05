@@ -2,13 +2,13 @@ import { createSelector } from 'reselect'
 import { find, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 
+const agentData = state => state.sim.agents
 const agentSelected = state => state.sim.agentSelected
 const x = state => state.sim.x
 const y = state => state.sim.y
 const channel = state => state.sim.channel
 const error = state => state.sim.error
 const heatMap = state => state.sim.map
-const jumpTime = state => state.sim.jumpTime
 const markers = state => state.sim.markers
 const markers2 = state => state.sim.markers2
 const mode = state => state.sim.mode
@@ -18,41 +18,36 @@ const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
 const playing = state => state.sim.playing
 const synthAgents = state => state.sim.synthAgents
-const time = state => state.sim.time
+const time = state => state.player.time
 const videoRatio = state => state.sim.video.aspectratio
 
-const video = state => state.sim.video
+const video = state => state.scene
 
 // DERIVED DATA
 const video_id = createSelector([video], v => v != null ? v.id : null)
 const video_duration = createSelector([ video ], v => v != null ? v.duration : null)
-const video_height = createSelector([ video ], v => v != null ? v.height : window.innerHeight-40)
-const video_width = createSelector([ video ], v => v != null ? v.width : window.innerWidth)
 
 const xRounded = createSelector([x], x => x == null ? '-- x --' : round(x, 3))
 const yRounded = createSelector([y], y => y == null ? '-- y --' : round(y, 3))
 
 const channelReady = createSelector([video_id], id => id != null)
 
-const backwardPossible = createSelector([jumpTime, time], (j, t) => t - j >= 0 ? true : false)
-const forwardPossible = createSelector([ video_duration, jumpTime, time ],
-  (d, j, t) => t + j <= d ? true : false)
-
 const sortedOverlays = createSelector([ overlays ], overlays => sortBy(overlays, 'title'))
-
 
 /**
  * Returns each agents approximated position at a given time.
  * Markers are already grouped and sorted (server side)
  */
-const agents = createSelector(
-  [agentSelected, overlay, time, video],
-  (selected, overlay, time, video) => {
+const agents = createSelector([agentSelected, overlay, time, agentData],
+  (selected, overlay, time, agentData) => {
+
+    if (!agentData) return []
 
     let agents = []
-    time = Math.floor(time *= 1000)
 
-    for (let [agent, markers] of Object.entries(video.agents)) {
+    time = Math.floor(time *= 1000) // convert to miliseconds
+
+    for (let [agent, markers] of Object.entries(agentData)) {
       for(let i = 0; i < markers.length; i++){
         const curr = markers[i]
 
@@ -90,21 +85,15 @@ const agents = createSelector(
   }
 )
 
-const displayed_agents = createSelector([agents, synthAgents, mode], (agents, synthAgents, mode) => {
-
-  if (mode == 'mapStart') return synthAgents
-  return agents
-})
-
 /**
  * Returns the number of agents the simulation has.
  */
-const agentCount = createSelector([video], v => Object.keys(v.agents).length)
+const agentCount = createSelector([agentData], agents => agents && Object.keys(agents).length)
 
 /**
  * Gets the positions of markers in heatmap format
  */
-const mappedMarkers = createSelector([agents, video_height, video_width], (agents, h, w) => {
+const mappedMarkers = createSelector([agents], (agents) => {
   return map(agents, a => ({
     x: parseInt(a.x * w),
     y: parseInt(a.y * h),
@@ -302,17 +291,13 @@ export default {
   agentSelected,
   channel,
   channelReady,
-  displayed_agents,
   error,
   convertToRel,
-  backwardPossible,
-  forwardPossible,
   getAdjustments,
   getAbsPositionsAnnotated,
   getAbsPositionsSynthetic,
   getFrameConstraints,
   heatMap,
-  jumpTime,
   mode,
   mappedMarkers,
   overlay,
@@ -324,8 +309,6 @@ export default {
   time: roundedTime,
   video_id,
   video_duration,
-  video_height,
-  video_width,
   xRounded,
   yRounded,
   youtubeID

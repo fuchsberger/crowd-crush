@@ -16,8 +16,8 @@ class Header extends Component {
     return isAuthenticated
       ? <Dropdown item icon='caret down' text={username}>
           <Dropdown.Menu>
-            <Dropdown.Item as={NavLink} to='/settings' icon='cog' content='Settings' />
-            <Dropdown.Item as='a' href='/logout' icon='power' content='Sign Out' />
+            <Dropdown.Item as={NavLink} to='/settings' content='Settings' />
+            <Dropdown.Item as='a' href='/logout' content='Sign Out' />
           </Dropdown.Menu>
         </Dropdown>
       : <Menu.Item as={NavLink} to='/login' icon='power' name='Login' />

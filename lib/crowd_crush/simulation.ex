@@ -33,7 +33,23 @@ defmodule CrowdCrush.Simulation do
 
   def get_video!(id), do: Repo.get! Video, id
 
-  def list_videos, do: Repo.all(Video)
+  def list_videos, do: Repo.all(from v in Video,
+    select: map(v, ~w(id title duration youtubeID)a),
+    order_by: v.title
+  )
+
+  def get_video_by_youtube_id(id) do
+
+    overlay_query = from(o in Overlay, select: [ o.title, o.youtubeID ])
+
+    marker_query = from(m in Marker,
+      select: {m.agent, m.time, m.x, m.y},
+      order_by: [m.agent, m.time]
+    )
+
+    from(v in Video, preload: [overlays: ^overlay_query, markers: ^marker_query])
+    |> Repo.get_by(youtubeID: id)
+  end
 
   def get_video_details(video_id) do
     from(v in Video, select: map(v, ~w(aspectratio m0_x m0_y mX_x mX_y mY_x mY_y

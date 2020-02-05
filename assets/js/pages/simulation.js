@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Dimmer, Loader } from 'semantic-ui-react'
 import { simOperations, simSelectors as Sim } from '../modules/sim'
-import { Overlay, Player } from './sim'
+import { Overlay } from './sim'
+import { Player } from '../components'
 
 class Simulation extends Component {
 

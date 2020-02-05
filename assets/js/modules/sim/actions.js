@@ -1,22 +1,15 @@
 import types from "./types"
 import { Utils } from '../../utils'
 
-const join = (channel, video) => ({
-  type: types.JOIN, channel,
-  video: calc_player_size(video)
-})
+const join = (agents, channel) => ({ type: types.JOIN, agents, channel })
 
 const joinError = () => ({ type: types.VIDEO_NOT_FOUND })
 const leave = () => ({ type: types.LEAVE })
-
-const changeJumpInterval = time => ({ type: types.CHANGE_JUMP_INTERVAL, time })
 
 // Simulation
 const hoverAgent = id => ({ type: types.HOVER_AGENT, id })
 const clearError = () => ({ type: types.CLEAR_ERROR })
 const error = () => ({ type: types.ERROR })
-
-
 
 // heatmap
 
@@ -54,7 +47,7 @@ const loadComparison = ( markers ) => {
   return { type: types.LOAD_COMPARISON, markers };
 }
 
-const jump = direction => ({ type: types.JUMP, direction })
+
 
 const moveCursor = (x, y) => ({ type: types.MOVE_CURSOR, x, y })
 
@@ -93,13 +86,12 @@ const calc_player_size = video => {
 }
 
 export default {
-  changeJumpInterval,
   clearError,
   error,
   hoverAgent,
   join,
   joinError,
-  jump,
+
   leave,
   loadComparison,
   moveCursor,
