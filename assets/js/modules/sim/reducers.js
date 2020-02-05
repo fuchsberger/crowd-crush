@@ -162,7 +162,7 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
       })
 
     case types.SPAWN:
-      return { state, ...payload }
+      return { state, robots: payload.robots }
 
     case types.SET_MODE:
       return update(state, { mode: { $set: payload.mode } })

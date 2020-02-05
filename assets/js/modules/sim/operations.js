@@ -121,14 +121,10 @@ const setHeatMap = () => {
   }
 }
 
-const spawn = dimensions => {
+const spawn = (dimensions, count) => {
   return (dispatch, store) => {
 
-    const { agents, map } = store().sim
-
-    // determine how many agents are visible in screen one
-    // (only those that have a marker in first frame)
-    const target_count = Object.values(agents).filter(a => a[0][0] == 0).length
+    const { map } = store().sim
 
     let attempts = 0
     let i = 0
@@ -140,7 +136,7 @@ const spawn = dimensions => {
     // 3.a  if so, check distance to other agents and create agent if possible
     // 3.b  if outside, repeat
 
-    while (i < target_count && attempts < 10000) {
+    while (i < count && attempts < 10000) {
       const roll = Math.floor(Math.random() * 100) + 1
       const x = Math.random()
       const y = Math.random()

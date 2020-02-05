@@ -90,6 +90,7 @@ const agents = createSelector([agentSelected, overlay, time, agentData],
  * Returns the number of agents the simulation has.
  */
 const agentCount = createSelector([agentData], agents => agents && Object.keys(agents).length)
+const currentCount = createSelector([agents], agents => agents && agents.length)
 
 /**
  * Gets the positions of markers in heatmap format
@@ -331,6 +332,7 @@ export default {
   agentSelected,
   channel,
   channelReady,
+  currentCount,
   error,
   convertToRel,
   getAdjustments,
