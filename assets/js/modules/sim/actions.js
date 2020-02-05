@@ -16,7 +16,7 @@ const error = () => ({ type: types.ERROR })
 const createMap = map => ({ type: types.SET_HEATMAP, map })
 
 // synthetic agents (create or move)
-const simulate = agents => ({ type: types.SIMULATE, agents })
+const spawn = robots => ({ type: types.SPAWN, robots })
 
 /**
  * Converts an array of absolute markers into an array of relative markers
@@ -114,5 +114,5 @@ export default {
   createMap,
 
   // synthetic agents
-  simulate
+  spawn
 };

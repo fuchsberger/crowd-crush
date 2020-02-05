@@ -29,5 +29,5 @@ export default {
   SET_HEATMAP: 'sim/SET_HEATMAP',
 
   // SYNTHETIC AGENTS
-  SIMULATE: 'sim/SIMULATE'
+  SPAWN: 'sim/SPAWN'
 }

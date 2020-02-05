@@ -4,7 +4,7 @@ import h337 from 'heatmap.js'
 
 import actions from "./actions"
 import { playerOperations as Player } from '../player'
-import { sceneOperations as Scene } from '../scene'
+import { sceneOperations as Scene, sceneSelectors } from '../scene'
 import { flashOperations as Flash } from '../flash'
 
 // import { simSelectors } from "."
@@ -121,19 +121,18 @@ const setHeatMap = () => {
   }
 }
 
-const spawn = () => {
+const spawn = dimensions => {
   return (dispatch, store) => {
 
-    const { agents, width, height } = store().sim.video
+    const { agents, map } = store().sim
 
     // determine how many agents are visible in screen one
     // (only those that have a marker in first frame)
     const target_count = Object.values(agents).filter(a => a[0][0] == 0).length
 
     let attempts = 0
-
-    const synthAgents = []
-    const map = store().sim.map
+    let i = 0
+    const robots = {}
 
     // attempt to create 10 agents. Procedure:
     // 1.   randomly select a coordinate and get its likelyhood value
@@ -141,23 +140,21 @@ const spawn = () => {
     // 3.a  if so, check distance to other agents and create agent if possible
     // 3.b  if outside, repeat
 
-    while (synthAgents.length < target_count || attempts >= 10000) {
+    while (i < target_count && attempts < 10000) {
       const roll = Math.floor(Math.random() * 100) + 1
       const x = Math.random()
       const y = Math.random()
 
-      if (roll <= map.getValueAt({ x: Math.floor(x * width), y: Math.floor(y * height) })) {
-        synthAgents.push({
-          id: synthAgents.length + 1,
-          class: 'marker static',
-          x,
-          y
-        })
+      if (roll <= map.getValueAt({
+        x: Math.floor(x * dimensions[0]),
+        y: Math.floor(y * dimensions[1])
+      })) {
+        robots[i] = [[0, x, y]]
+        i++
       }
       attempts++
     }
-
-    dispatch(actions.simulate(synthAgents))
+    dispatch(actions.spawn(robots))
   }
 }
 

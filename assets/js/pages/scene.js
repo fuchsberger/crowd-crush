@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Dimmer, Loader } from 'semantic-ui-react'
 import { sceneOperations, sceneSelectors as Scene } from '../modules/scene'
 import { simOperations } from '../modules/sim'
-import { Markers, Player } from './sim'
+import { Markers, Player, Robots, HeatmapSpawn, HeatmapExit } from './sim'
 
 class ScenePage extends Component {
   componentDidMount() {
@@ -15,13 +15,14 @@ class ScenePage extends Component {
   }
 
   render_player() {
-    switch (this.props.match.params.action) {
-      case 'watch':
-      case 'run':
-      case 'markers':
-      case 'simulate':
-        return <Player />
-    }
+    // switch (this.props.match.params.action) {
+    //   case 'watch':
+    //   case 'run':
+    //   case 'markers':
+    //   case 'simulate':
+    //     return <Player />
+    // }
+    return <Player />
   }
 
   render_markers() {
@@ -49,6 +50,40 @@ class ScenePage extends Component {
     )
   }
 
+  render_simulation() {
+    const { dimensions, match } = this.props
+
+    if (match.params.action != 'simulate') return
+
+    return (
+      <div
+        id='overlay'
+        className="overlay"
+        style={{height: `${dimensions[1]}px`, width: `${dimensions[0]}px`}}
+      >
+        <Robots simulation/>
+      </div>
+    )
+  }
+
+
+  render_map_spawn() {
+    const { dimensions, match } = this.props
+
+    if (match.params.action != 'map-spawn') return
+
+    return (
+      <div
+        id='overlay'
+        className="overlay"
+        style={{height: `${dimensions[1]}px`, width: `${dimensions[0]}px`}}
+      >
+        <HeatmapSpawn />
+        <Robots/>
+      </div>
+    )
+  }
+
   render() {
     if (!this.props.id) return <Dimmer active><Loader inverted /></Dimmer>
 
@@ -56,6 +91,8 @@ class ScenePage extends Component {
       <div className='video-wrapper'>
         {this.render_player()}
         {this.render_markers()}
+        {this.render_simulation()}
+        {this.render_map_spawn()}
       </div>
     )
   }

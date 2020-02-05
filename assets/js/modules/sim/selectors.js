@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect'
+import { sceneSelectors as Scene } from '../scene'
 import { find, map, sortBy } from 'lodash/collection'
 import { round } from 'lodash/math'
 
@@ -17,7 +18,7 @@ const overlays = state => state.sim.overlays
 const player = state => state.sim.player
 const playerReady = state => state.sim.player_ready
 const playing = state => state.sim.playing
-const synthAgents = state => state.sim.synthAgents
+const robotData = state => state.sim.robots
 const time = state => state.player.time
 const videoRatio = state => state.sim.video.aspectratio
 
@@ -93,10 +94,10 @@ const agentCount = createSelector([agentData], agents => agents && Object.keys(a
 /**
  * Gets the positions of markers in heatmap format
  */
-const mappedMarkers = createSelector([agents], (agents) => {
+const mappedMarkers = createSelector([agents, Scene.dimensions], (agents, dimensions) => {
   return map(agents, a => ({
-    x: parseInt(a.x * w),
-    y: parseInt(a.y * h),
+    x: parseInt(a.x * dimensions[0]),
+    y: parseInt(a.y * dimensions[1]),
     value: 80
   }))
 })
@@ -281,6 +282,45 @@ const overlayText = createSelector([overlay, overlays], (overlay, overlays) => {
   return find(overlays, o => o.youtubeID == overlay).title
 })
 
+const robots = createSelector([time, robotData], (time, robotData) => {
+    let robots = []
+
+    time = Math.floor(time *= 1000) // convert to miliseconds
+
+    for (let [robot, markers] of Object.entries(robotData)) {
+      for(let i = 0; i < markers.length; i++){
+        const curr = markers[i]
+
+
+        // if current time matches an robots markers time exactly show agent
+        if(curr[0] == time){
+          robots.push({ id: robot, x: curr[1], y: curr[2] })
+          break
+        }
+
+        // end of line reached / only one marker (at different time) --> do not show agent
+        if(i+1 == markers.length) break
+
+        // if time is in between this and next marker we approximate the position
+        const next = markers[i+1]
+
+        if(curr[0] <= time && time < next[0]){
+          let percentage = (time - curr[0]) / (next[0] - curr[0])
+
+          robots.push({
+            id: robot,
+            x: (curr[1] + (next[1] - curr[1]) * percentage),
+            y: (curr[2] + (next[2] - curr[2]) * percentage)
+          })
+          break
+        }
+      }
+    }
+    return robots
+  }
+)
+
+
 const roundedTime = createSelector([time], t => round(t, 3) || 0)
 
 const youtubeID = createSelector([video], v => v ? v.youtubeID : null)
@@ -306,6 +346,7 @@ export default {
   player,
   playerReady,
   playing,
+  robots,
   time: roundedTime,
   video_id,
   video_duration,

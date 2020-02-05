@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Menu } from 'semantic-ui-react'
 import { playerOperations, playerSelectors as Player } from '../../modules/player'
-import { OverlayItem } from '../menus'
+import Overlay from './manage_overlay'
 
 const PlayerControls = ({ loaded, play, pause, playing, stop }) => (loaded &&
   <Menu.Menu>
@@ -11,7 +11,7 @@ const PlayerControls = ({ loaded, play, pause, playing, stop }) => (loaded &&
       : <Menu.Item icon='play' onClick={() => play()}/>
     }
     <Menu.Item icon='stop' onClick={() => stop()} />
-    <OverlayItem />
+    <Overlay />
   </Menu.Menu>
 )
 

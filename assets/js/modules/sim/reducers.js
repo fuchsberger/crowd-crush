@@ -11,7 +11,7 @@ const initialState = {
   map: null,
   overlay: null,
   overlays: null,
-  synthAgents: [],
+  robots: [],
   x: null,
   y: null,
   // coordSelected: null,
@@ -161,10 +161,8 @@ const reducer = ( state = initialState, { type, ...payload} ) => {
         video: { agents: {$set: {}}}
       })
 
-    case types.SIMULATE:
-      return update(state, {
-        synthAgents: { $set: payload.agents }
-      })
+    case types.SPAWN:
+      return { state, ...payload }
 
     case types.SET_MODE:
       return update(state, { mode: { $set: payload.mode } })

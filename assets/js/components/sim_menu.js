@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Dropdown, Menu } from 'semantic-ui-react'
-import { Login, MarkerControls, MarkerInfo, PlayerControls, Position, Time } from './controls'
+import { Login, MarkerControls, MarkerInfo, MapSpawnControls, PlayerControls, Position, Time } from './controls'
 
 class SimMenu extends Component {
 
@@ -32,6 +32,10 @@ class SimMenu extends Component {
 
   render_marker_info() {
     if (this.props.match.params.action == 'markers') return <MarkerInfo />
+  }
+
+  render_map_spawn_controls() {
+    if (this.props.match.params.action == 'map-spawn') return <MapSpawnControls />
   }
 
   render_player_controls(){
@@ -77,6 +81,7 @@ class SimMenu extends Component {
 
         {this.render_player_controls()}
         {this.render_marker_controls()}
+        {this.render_map_spawn_controls()}
 
         <Menu.Menu position='right'>
           {this.render_marker_info()}
