@@ -1,0 +1,32 @@
+<div class='container'>
+
+  <h1>About</h1>
+
+  <p>
+    CrowdCrush is a research tool that allows to annotate the motions of objects in videos.<br/>
+    Primarily used for pedestrian crowd simulations, this project is part of Alexander Fuchsberger's dissertation, conducted at the University of Nebraska at Omaha.
+  </p>
+
+  <p>Currently the following features are implemented:</p>
+
+  <ul>
+    <li>Annotation of objects via Agents and Markers</li>
+    <li>2D relative Coordinate Translation into real world coordinates</li>
+    <li>
+      Rendering of
+      <ul>
+        <li>original video</li>
+        <li>original video overlayed with annotated agents</li>
+        <li>overlay videos (such as background removal rendered variants)</li>
+        <li>overlay videos with annotated agents</li>
+        <li>Side-by-side comparison of agent movements with a secondary simulation</li>
+      </ul>
+    </li>
+    <li>Downloading of Data files that serve as input for succeeding research projects</li>
+  </ul>
+
+  <p>If you have any questions, please contact me via email at <a href = "mailto: afuchsberger@unomaha.edu">afuchsberger@unomaha.edu</a>.</p>
+
+  <p>If you want to report any bugs or report on the research tool please submit an issue <a href='https://github.com/fuchsberger/crowd-crush' target='_blank'>on Github</a></p>
+
+</div>

@@ -1,0 +1,45 @@
+<div class='container mt-2'>
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4 class='m-0'>Videos</h4>
+    <%= unless is_nil(@current_user) do %>
+      <a href='<%= Routes.video_path(@conn, :new) %>' class="btn btn-sm btn-primary">
+        <i class='icon-add'></i>
+        Add
+      </a>
+    <% end %>
+  </div>
+  <div class="card-body p-0">
+  <table class="table table-sm mb-0">
+    <thead>
+      <tr>
+        <th scope="col">Title</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Markers</th>
+        <%= unless is_nil(@current_user) || true do %>
+          <th scope="col">Actions</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for video <- @videos do %>
+        <tr>
+          <td scope='row'>
+            <a href='/scene/<%= video.youtubeID %>/watch'><%= video.title %></a>
+          </td>
+          <td><%= video.duration %></td>
+          <td><%= List.first(video.markers) %></td>
+          <%= unless is_nil(@current_user) || true do %>
+            <td></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+
+</div>
+
+

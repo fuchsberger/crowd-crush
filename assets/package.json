@@ -1,4 +1,5 @@
 {
+  "author": "Alexander Fuchsberger",
   "description": "Tool to annotate and simulate object motions in videos",
   "repository": {},
   "license": "MIT",
@@ -8,18 +9,21 @@
     "watch": "webpack --mode development --watch-stdin"
   },
   "dependencies": {
+    "bootstrap": "^4.4.1",
     "heatmap.js": "^2.0.5",
     "history": "^4.10.1",
     "immutability-helper": "^3.0.1",
     "iso8601-duration": "^1.2.0",
+    "jquery": "^3.4.1",
     "lodash": "^4.17.15",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
+    "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-csv-reader": "^1.3.1",
     "react-dom": "^16.12.0",
-    "react-redux": "^7.1.3",
+    "react-redux": "^7.2.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-youtube": "^7.9.0",
@@ -29,7 +33,7 @@
     "save": "^2.4.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
-    "simple-react-validator": "^1.4.0"
+    "simple-react-validator": "^1.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
@@ -39,13 +43,15 @@
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
-    "file-loader": "^5.0.2",
+    "file-loader": "^5.1.0",
     "mini-css-extract-plugin": "^0.8.2",
+    "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "redux-logger": "^3.0.6",
-    "terser-webpack-plugin": "^2.3.4",
+    "sass-loader": "^8.0.2",
+    "terser-webpack-plugin": "^2.3.5",
     "url-loader": "^2.3.0",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   }
 }

@@ -4,10 +4,10 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const webpack = require("webpack")
 
 module.exports = (env, options) => ({
-  // stats: 'errors-warnings',
-
+  stats: 'errors-warnings',
   optimization: {
     minimizer: [
       new TerserPlugin({ test: /\.js(\?.*)?$/i, }),
@@ -22,13 +22,17 @@ module.exports = (env, options) => ({
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        test: /\.(js)$/,
+        exclude: /node_modules/i,
         use: { loader: 'babel-loader' }
       },
       {
-        test: /\.css/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        test: /\.(s?)css/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader'
+        ]
       },
       {
         test: /\.(eot|png|svg|ttf|woff|woff2)$/i,
@@ -40,6 +44,10 @@ module.exports = (env, options) => ({
     ]
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    }),
     new MiniCssExtractPlugin({ filename: '../css/app.css' }),
     new CopyWebpackPlugin([{ from: 'static/', to: '../' }])
   ]

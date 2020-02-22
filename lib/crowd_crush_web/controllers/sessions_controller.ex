@@ -1,32 +1,27 @@
 defmodule CrowdCrushWeb.SessionController do
   use CrowdCrushWeb, :controller
 
-  alias CrowdCrushWeb.{Auth, PageView}
+  alias CrowdCrushWeb.Auth
 
-  def create(conn, %{"email" => email, "password" => pass} = params) do
+  def new(conn, _), do: render(conn, "new.html")
 
-    # check if user should be redirected after login
-    redirect_path = Map.get(params, "redirect", false)
-
-    case Auth.login_by_email_and_pass(conn, email, pass) do
-      {:ok, conn} ->
-        if redirect_path do
-          redirect(conn, to: Routes.page_path(conn, :index, redirect: redirect_path))
-        else
-          redirect(conn, to: Routes.page_path(conn, :index))
-        end
-      {:error, _reason, conn} ->
+  def create(conn, %{"session" =>  %{"username" => username, "password" => pass}}) do
+    case CrowdCrush.Accounts.authenticate_by_username_and_pass(username, pass) do
+      {:ok, user} ->
         conn
-        |> assign(:redirect, redirect_path)
-        |> put_flash(:error, "Invalid email/password combination")
-        |> put_view(PageView)
-        |> render("index.html")
+        |> Auth.login(user)
+        |> redirect(to: Routes.page_path(conn, :index))
+
+      {:error, _reason} ->
+        conn
+        |> put_flash(:error, "Invalid username/password combination")
+        |> render("new.html")
     end
   end
 
   def delete(conn, _) do
     conn
     |> Auth.logout()
-    |> redirect(to: Routes.page_path(conn, :index, redirect: "/login"))
+    |> redirect(to: Routes.page_path(conn, :index))
   end
 end

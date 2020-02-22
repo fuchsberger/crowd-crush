@@ -34,7 +34,8 @@ defmodule CrowdCrushWeb do
       use Phoenix.HTML
       use Phoenix.View, root: "lib/crowd_crush_web/templates", namespace: CrowdCrushWeb
 
-      import CrowdCrushWeb.{ErrorHelpers, Gettext}
+      import Phoenix.Controller, only: [get_flash: 1, get_flash: 2]
+      import CrowdCrushWeb.{ErrorHelpers, Gettext, ViewHelpers}
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
 
@@ -48,6 +49,8 @@ defmodule CrowdCrushWeb do
 
       import Plug.Conn
       import Phoenix.Controller
+
+      import CrowdCrushWeb.Auth, only: [authenticate_user: 2]
     end
   end
 

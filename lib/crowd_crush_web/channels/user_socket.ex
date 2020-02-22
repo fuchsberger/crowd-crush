@@ -6,7 +6,6 @@ defmodule CrowdCrushWeb.UserSocket do
   use Phoenix.Socket
 
   # Channels
-  channel "public", CrowdCrushWeb.PublicChannel
   channel "private", CrowdCrushWeb.PrivateChannel
   channel "sim:*", CrowdCrushWeb.SimChannel
 

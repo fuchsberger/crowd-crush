@@ -46,10 +46,6 @@ export const path = state => state.router.location.pathname
 export const isReadySimChannel = state =>
   state.api.simChannel && state.api.simChannel.state === 'joined'
 
-export const isReadyPublicChannel = state =>
-  state.api.publicChannel.state === 'joined'
-
-
 export const markerCount = state => {
   const markers = state.simulation.markers
   return markers ? Object.keys(markers).length : null;

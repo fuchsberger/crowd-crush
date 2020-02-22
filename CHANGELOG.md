@@ -7,6 +7,11 @@ a.b.c
 * b - major updated
 * c - minor updated
 
+## 0.14
+* Added Bootstrap & Jquery
+* Handling About and Video List on server now
+* Removed Public Channel
+
 ## 0.13
 * Improved keystroke event handling during simulations and removed an old (redundant) module
 * added layouts back and a test page where anything can be tested

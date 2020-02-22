@@ -1,5 +1,6 @@
 defmodule CrowdCrushWeb.Auth do
   import Plug.Conn
+  import Phoenix.Controller, only: [put_view: 2, render: 2]
 
   alias CrowdCrush.Accounts
   require Logger
@@ -20,13 +21,6 @@ defmodule CrowdCrushWeb.Auth do
     end
   end
 
-  def login(conn, user) do
-    conn
-    |> put_current_user(user)
-    |> put_session(:user_id, user.id)
-    |> configure_session(renew: true)
-  end
-
   defp put_current_user(conn, user) do
     token = Phoenix.Token.sign(conn, "user_token", user.id)
 
@@ -35,13 +29,24 @@ defmodule CrowdCrushWeb.Auth do
     |> assign(:user_token, token)
   end
 
+  def login(conn, user) do
+    conn
+    |> assign(:current_user, user)
+    |> put_session(:user_id, user.id)
+    |> configure_session(renew: true)
+  end
+
   def logout(conn), do: configure_session(conn, drop: true)
 
-  def login_by_email_and_pass(conn, email, given_pass) do
-    case Accounts.authenticate_by_email_and_pass(email, given_pass) do
-      {:ok, user} -> {:ok, login(conn, user)}
-      {:error, :unauthorized} -> {:error, :unauthorized, conn}
-      {:error, :not_found} -> {:error, :not_found, conn}
+  def authenticate_user(conn, _opts) do
+    if conn.assigns.current_user do
+      conn
+    else
+      conn
+      |> put_status(401)
+      |> put_view(LotdWeb.ErrorView)
+      |> render("401.html")
+      |> halt()
     end
   end
 end

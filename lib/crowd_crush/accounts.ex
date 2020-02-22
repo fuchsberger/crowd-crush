@@ -1,26 +1,45 @@
 defmodule CrowdCrush.Accounts do
   @moduledoc """
-  The Accounts context.
+  The User context.
   """
 
   import Ecto.Query, warn: false
 
   alias CrowdCrush.Repo
-  alias CrowdCrush.Accounts.{Credential, User}
+  alias CrowdCrush.Accounts.User
 
   def get_user(id), do: Repo.get(User, id)
-  def get_user_with_credential(id), do: Repo.preload(get_user(id), [:credential])
 
-  def get_user_by_email(email) do
-    from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)
-    |> Repo.one()
-    |> Repo.preload(:credential)
+  def get_user!(id), do: Repo.get!(User, id)
+
+  def get_user_by(params), do: Repo.get_by(User, params)
+
+  # def list_users do
+  #   Repo.all(User)
+  # end
+
+  def change_user(%User{} = user) do
+    User.changeset(user, %{})
   end
 
-  def authenticate_by_email_and_pass(email, given_pass) do
-    user = get_user_by_email(email)
+  def create_user(attrs \\ %{}) do
+    %User{}
+    |> User.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_registration(%User{} = user, params), do: User.registration_changeset(user, params)
+
+  def register_user(attrs \\ %{}) do
+    %User{}
+    |> User.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def authenticate_by_username_and_pass(username, given_pass) do
+    user = get_user_by(username: username)
     cond do
-      user && Pbkdf2.verify_pass(given_pass, user.credential.password_hash) ->
+      user && Pbkdf2.verify_pass(given_pass, user.password_hash) ->
         {:ok, user}
       user ->
         {:error, :unauthorized}
@@ -28,17 +47,5 @@ defmodule CrowdCrush.Accounts do
         Pbkdf2.no_user_verify()
         {:error, :not_found}
     end
-  end
-
-  def update_user(id, changes) do
-    Repo.get(User, id)
-    |> User.changeset(changes)
-    |> Repo.update()
-  end
-
-  def update_credential(%Credential{} = credential, attrs) do
-    credential
-    |> Credential.update_changeset(attrs)
-    |> Repo.update()
   end
 end

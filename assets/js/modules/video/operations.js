@@ -2,7 +2,7 @@ import { toSeconds, parse } from 'iso8601-duration'
 import actions from "./actions"
 import { start_request } from '../loading'
 import { flashOperations as Flash } from '../flash'
-import { publicChannel, privateChannel } from '../socket'
+import { privateChannel } from '../socket'
 
 // sync operations
 const add = actions.add
@@ -11,13 +11,6 @@ const remove = actions.remove
 const sort = actions.sort
 
 // async operations ( preceded with _ )
-
-const load = () => {
-  return dispatch =>
-    publicChannel.push('load_videos')
-    .receive('ok', ({ videos }) => dispatch(actions.load(videos)))
-    .receive('error', res => dispatch(Flash.get(res)))
-}
 
 const create = data => {
   return (dispatch) => {
@@ -104,7 +97,6 @@ export default {
   add,
   create,
   delete_one,
-  load,
   modify,
   remove,
   sort,

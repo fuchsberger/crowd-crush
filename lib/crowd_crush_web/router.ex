@@ -1,6 +1,8 @@
 defmodule CrowdCrushWeb.Router do
   use CrowdCrushWeb, :router
 
+  alias CrowdCrushWeb.LayoutView
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -10,15 +12,32 @@ defmodule CrowdCrushWeb.Router do
     plug CrowdCrushWeb.Auth
   end
 
+  pipeline :react do
+    plug :put_layout, {LayoutView, "react.html"}
+  end
+
   scope "/", CrowdCrushWeb do
     pipe_through :browser # Use the default browser stack
     get "/export/csv/:id", ExportController, :export_csv
     get "/export/eclipse/:id", ExportController, :export_eclipse
 
-    post "/login", SessionController, :create
-    get "/logout", SessionController, :delete
-
     get "/test", PageController, :test
+
+    get "/about", PageController, :about
+
+    resources "/sessions", SessionController, only: [:new, :create, :delete]
+    resources "/videos", VideoController, only: [:index]
+  end
+
+  scope "/", LotdWeb do
+    pipe_through [:browser, :authenticate_user]
+
+    resources "/videos", VideoController, only: [:new]
+  end
+
+  scope "/", CrowdCrushWeb do
+    pipe_through [:browser, :react]
+
     get "/", PageController, :index
     get "/*path", PageController, :index
   end

@@ -33,10 +33,16 @@ defmodule CrowdCrush.Simulation do
 
   def get_video!(id), do: Repo.get! Video, id
 
-  def list_videos, do: Repo.all(from v in Video,
-    select: map(v, ~w(id title duration youtubeID)a),
-    order_by: v.title
-  )
+  def list_videos do
+    Repo.all from v in Video,
+      order_by: v.title,
+      preload: [markers: ^from(m in Marker, group_by: m.video_id, select: count())]
+  end
+
+  # def list_videos, do: Repo.all(from v in Video,
+  #   select: map(v, ~w(id title duration youtubeID)a),
+  #   order_by: v.title
+  # )
 
   def get_video_by_youtube_id(id) do
 
