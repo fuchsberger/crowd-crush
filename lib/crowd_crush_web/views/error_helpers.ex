@@ -4,6 +4,10 @@ defmodule CrowdCrushWeb.ErrorHelpers do
   """
   use Phoenix.HTML
 
+  def control_class(form, field) do
+    if Keyword.has_key?(form.source.errors, field), do: "invalid", else: "valid"
+  end
+
   @doc """
   Generates a map with all invalid fields and their first error
   """

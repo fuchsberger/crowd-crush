@@ -1,15 +1,22 @@
 <div class='container mt-2'>
   <h2 class='text-center'>Add Video</h2>
-  <%= form_for @conn, Routes.video_path(@conn, :create), [as: :video], fn f -> %>
+  <%= f = form_for @changeset, "#", [
+    class: (if @changeset.action, do: " was-validated", else: ""),
+    novalidate: true,
+    phx_change: :validate
+  ] %>
     <div class="form-group">
       <div class="input-group">
         <div class="input-group-prepend bg-white border-right-0">
-          <span class="input-group-text bg-transparent p-1"><i class="icon-youtube"></i></span>
+          <span class="input-group-text bg-transparent p-1">
+            <i class="icon-youtube"></i>
+          </span>
         </div>
         <%= text_input f, :url,
-          class: "form-control border-left-0 pl-0",
-          placeholder: "Post Youtube URL here..."
+          class: "form-control border-left-0 pl-0 #{control_class(f, :url)}",
+          placeholder: "Copy Youtube URL in here..."
         %>
+        <%= error_tag f, :url %>
       </div>
     </div>
 
@@ -51,6 +58,5 @@
         </div>
       </div>
     </div>
-
-  <% end %>
+  </form>
 </div>

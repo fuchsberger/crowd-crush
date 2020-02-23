@@ -4,7 +4,7 @@ defmodule CrowdCrush.Mixfile do
   def project do
     [
       app: :crowd_crush,
-      version: "0.13.0",
+      version: "0.14.0",
       elixir: "~> 1.10.0",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -42,6 +42,7 @@ defmodule CrowdCrush.Mixfile do
       {:phoenix_live_view, "~> 0.8.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.17"},
+      {:httpoison, "~> 1.6"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.1"},
       {:comeonin, "~> 5.2"},

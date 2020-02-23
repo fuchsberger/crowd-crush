@@ -8,15 +8,7 @@ defmodule CrowdCrush.Simulation do
   import CrowdCrush.Service.Simulation
 
   alias CrowdCrush.Repo
-  alias CrowdCrush.Simulations.{ Overlay, Marker, Video }
-
-  def create_video(attrs \\ %{}) do
-    %Video{}
-    |> Video.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def delete_video(video), do: Repo.delete(video)
+  alias CrowdCrush.Simulation.{ Overlay, Marker, Video }
 
   def get_video(id) do
 
@@ -32,6 +24,16 @@ defmodule CrowdCrush.Simulation do
   end
 
   def get_video!(id), do: Repo.get! Video, id
+
+  def change_video(%Video{} = video, params), do: Video.changeset(video, params)
+
+  def create_video(attrs \\ %{}) do
+    %Video{}
+    |> Video.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def delete_video(video), do: Repo.delete(video)
 
   def list_videos do
     Repo.all from v in Video,

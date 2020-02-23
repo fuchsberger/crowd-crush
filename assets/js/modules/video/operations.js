@@ -1,4 +1,3 @@
-import { toSeconds, parse } from 'iso8601-duration'
 import actions from "./actions"
 import { start_request } from '../loading'
 import { flashOperations as Flash } from '../flash'
@@ -29,37 +28,6 @@ const delete_one = id => {
     privateChannel.push(`delete_video:${id}`)
       .receive('ok', res => dispatch(Flash.get(res)))
       .receive('error', res => dispatch(Flash.get(res)))
-  }
-}
-
-// get updated aspect ratio and video duration from youTube
-const update = (id, youtubeID) => {
-  return (dispatch) => {
-    dispatch(start_request())
-
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', `https://www.googleapis.com/youtube/v3/videos?&id=${youtubeID}&key=${window.youtubeAPIKey}&part=player,contentDetails&maxHeight=8192`)
-    xhr.setRequestHeader('Content-Type', 'application/json')
-    xhr.onload = res => {
-      switch(xhr.status){
-        case 200:
-          res = JSON.parse(res.srcElement.response)
-
-          if(res.items.length == 0) return dispatch(Flash.error('Could not connect to YouTube. Please try again later or contact the administrator, if the issue persists.'))
-
-          const aspectratio =  res.items[0].player.embedWidth / res.items[0].player.embedHeight
-          const duration = toSeconds(parse(res.items[0].contentDetails.duration))
-
-          privateChannel.push(`update_video:${id}`, { aspectratio, duration })
-          .receive('ok', res => dispatch(Flash.get(res)))
-          .receive('error', res => dispatch(Flash.get(res)))
-          break
-
-        default:
-          dispatch(Flash.error('Could not connect to YouTube. Please try again later or contact the administrator, if the issue persists.'))
-      }
-    }
-    xhr.send();
   }
 }
 
@@ -100,7 +68,6 @@ export default {
   modify,
   remove,
   sort,
-  update,
   _insert,
   _updateAll
 };

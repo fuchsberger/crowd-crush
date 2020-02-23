@@ -18,9 +18,7 @@ defmodule CrowdCrush.Accounts do
   #   Repo.all(User)
   # end
 
-  def change_user(%User{} = user) do
-    User.changeset(user, %{})
-  end
+  def change_user(%User{} = user), do: User.changeset(user, %{})
 
   def create_user(attrs \\ %{}) do
     %User{}

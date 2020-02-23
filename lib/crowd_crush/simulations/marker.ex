@@ -1,4 +1,4 @@
-defmodule CrowdCrush.Simulations.Marker do
+defmodule CrowdCrush.Simulation.Marker do
   use CrowdCrush, :schema
 
   schema "markers" do
@@ -6,7 +6,7 @@ defmodule CrowdCrush.Simulations.Marker do
     field :time, :integer
     field :x, :float
     field :y, :float
-    belongs_to :video, CrowdCrush.Simulations.Video
+    belongs_to :video, CrowdCrush.Simulation.Video
     timestamps()
   end
 

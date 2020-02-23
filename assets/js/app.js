@@ -26,7 +26,6 @@ $(window).on('unload', () => {
 // import { Route, Router, Switch } from 'react-router-dom'
 // import { Provider } from "react-redux"
 // import store from "./store"
-// import { PRoute } from "./components"
 // import { flashOperations } from './modules/flash'
 // import { DefaultMenu, SimMenu } from './components'
 // import Pages from "./pages"
@@ -45,9 +44,6 @@ $(window).on('unload', () => {
 //         <Route path="/" exact component={Pages.About} />
 //         <Route path="/scene/:id/:action" component={Pages.Scene} />
 //         <Route path="/videos/:id" component={Pages.VideoShow} />
-
-//         {/* Private Routes (require login) */}
-//         <PRoute path="/video/add" component={Pages.VideoAdd} />
 
 //         {/* default 404 if no route matches*/}
 //         <Route component={Pages.Error} />

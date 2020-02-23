@@ -1,9 +1,12 @@
+import connect from '../socket'
+
 export default class MainView {
   mount() {
-    // This will be executed when the document loads...
+    // enable live view sockets on pages that need it
+    connect()
   }
 
   unmount() {
-    // This will be executed when the document unloads...
+
   }
 }

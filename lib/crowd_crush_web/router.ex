@@ -34,6 +34,8 @@ defmodule CrowdCrushWeb.Router do
   scope "/", CrowdCrushWeb do
     pipe_through [:browser, :authenticate_user]
 
+    live "/video", VideoLive
+
     resources "/videos", VideoController, only: [:new, :create]
   end
 
