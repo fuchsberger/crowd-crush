@@ -1,12 +1,14 @@
 defmodule CrowdCrushWeb.Router do
   use CrowdCrushWeb, :router
 
+  import Phoenix.LiveView.Router
+
   alias CrowdCrushWeb.LayoutView
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_flash
+    plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug CrowdCrushWeb.Auth
@@ -29,10 +31,10 @@ defmodule CrowdCrushWeb.Router do
     resources "/videos", VideoController, only: [:index]
   end
 
-  scope "/", LotdWeb do
+  scope "/", CrowdCrushWeb do
     pipe_through [:browser, :authenticate_user]
 
-    resources "/videos", VideoController, only: [:new]
+    resources "/videos", VideoController, only: [:new, :create]
   end
 
   scope "/", CrowdCrushWeb do

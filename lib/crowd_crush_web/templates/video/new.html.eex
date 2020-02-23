@@ -1,2 +1,56 @@
 <div class='container mt-2'>
+  <h2 class='text-center'>Add Video</h2>
+  <%= form_for @conn, Routes.video_path(@conn, :create), [as: :video], fn f -> %>
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend bg-white border-right-0">
+          <span class="input-group-text bg-transparent p-1"><i class="icon-youtube"></i></span>
+        </div>
+        <%= text_input f, :url,
+          class: "form-control border-left-0 pl-0",
+          placeholder: "Post Youtube URL here..."
+        %>
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col col-sm-8'>
+        <div class="form-group">
+          <%= label f, :title, "Title", class: "font-weight-bold" %>
+          <%= text_input f, :title,
+            class: "form-control",
+            disabled: true,
+            placeholder: "post link first..."
+          %>
+        </div>
+        <div class="form-group">
+          <%= label f, :youtubeID, "Youtube ID", class: "font-weight-bold" %>
+          <%= text_input f, :youtubeID,
+            class: "form-control",
+            disabled: true,
+            placeholder: "post link first..."
+          %>
+        </div>
+      </div>
+      <div class='col col-sm-4'>
+        <div class="form-group">
+          <%= label f, :aspectratio, "Aspect Ratio", class: "font-weight-bold" %>
+          <%= text_input f, :aspectratio,
+            class: "form-control",
+            disabled: true,
+            placeholder: "post link first..."
+          %>
+        </div>
+        <div class="form-group">
+          <%= label f, :duration, "Duration", class: "font-weight-bold" %>
+          <%= text_input f, :duration,
+            class: "form-control",
+            disabled: true,
+            placeholder: "post link first..."
+          %>
+        </div>
+      </div>
+    </div>
+
+  <% end %>
 </div>

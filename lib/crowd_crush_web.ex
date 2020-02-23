@@ -20,6 +20,7 @@ defmodule CrowdCrushWeb do
     quote do
       use Phoenix.Controller, namespace: CrowdCrushWeb
 
+      import Phoenix.LiveView.Controller
       import Plug.Conn
       import CrowdCrushWeb.Gettext
 
@@ -35,6 +36,7 @@ defmodule CrowdCrushWeb do
       use Phoenix.View, root: "lib/crowd_crush_web/templates", namespace: CrowdCrushWeb
 
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2]
+      import Phoenix.LiveView.Helpers
       import CrowdCrushWeb.{ErrorHelpers, Gettext, ViewHelpers}
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
@@ -47,9 +49,9 @@ defmodule CrowdCrushWeb do
     quote do
       use Phoenix.Router
 
+      import Phoenix.LiveView.Router
       import Plug.Conn
       import Phoenix.Controller
-
       import CrowdCrushWeb.Auth, only: [authenticate_user: 2]
     end
   end

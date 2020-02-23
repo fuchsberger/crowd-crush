@@ -4,7 +4,7 @@ export default viewPath => {
   let view
   try {
     const ViewClass = require('./' + viewPath).default
-    view = new ViewClass.default
+    view = new ViewClass
   } catch (e) {
     view = new MainView
   }

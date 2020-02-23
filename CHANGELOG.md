@@ -11,6 +11,8 @@ a.b.c
 * Added Bootstrap & Jquery
 * Handling About and Video List on server now
 * Removed Public Channel
+* removed ability to change username password or email
+* authentication handled serverside again and
 
 ## 0.13
 * Improved keystroke event handling during simulations and removed an old (redundant) module

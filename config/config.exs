@@ -13,6 +13,7 @@ config :crowd_crush,
 
 # Configures the endpoint
 config :crowd_crush, CrowdCrushWeb.Endpoint,
+  live_view: [signing_salt: "UkYSpPhc21dBoIlVS3mRzKTZ4z1PcGDa"],
   url: [host: "localhost"],
   secret_key_base: "L2gUqlkhyHjMBx2ARefpXbQ81cdr00NRtdrelH8v35A5/VQbFm9VxKm0GKufNoWo",
   render_errors: [view: CrowdCrushWeb.ErrorView, accepts: ~w(html json)],

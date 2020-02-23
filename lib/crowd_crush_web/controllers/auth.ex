@@ -44,7 +44,7 @@ defmodule CrowdCrushWeb.Auth do
     else
       conn
       |> put_status(401)
-      |> put_view(LotdWeb.ErrorView)
+      |> put_view(CrowdCrushWeb.ErrorView)
       |> render("401.html")
       |> halt()
     end

@@ -1,6 +1,5 @@
 defmodule CrowdCrush.Accounts.User do
   use CrowdCrush, :schema
-  alias CrowdCrush.Accounts.Credential
 
   schema "users" do
     field :username, :string
