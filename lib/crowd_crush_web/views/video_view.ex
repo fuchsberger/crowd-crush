@@ -1,14 +1,7 @@
 defmodule CrowdCrushWeb.VideoView do
   use CrowdCrushWeb, :view
 
-  def render("simple.json", %{video: v}) do
-    %{
-      id: v.id,
-      duration: v.duration,
-      title: v.title,
-      youtubeID: v.youtubeID
-    }
-  end
+  def invalid_youtubeID?(changeset), do: is_nil(Ecto.Changeset.get_field(changeset, :youtubeID))
 
   def render("video.json", %{video: v}) do
     %{

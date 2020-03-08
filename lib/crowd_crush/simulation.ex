@@ -33,7 +33,13 @@ defmodule CrowdCrush.Simulation do
     |> Repo.insert()
   end
 
-  def delete_video(video), do: Repo.delete(video)
+  def update_video(video, attrs \\ %{}) do
+    video
+    |> Video.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_video(id), do: Repo.get(Video, id) |> Repo.delete()
 
   def list_videos do
     Repo.all from v in Video,

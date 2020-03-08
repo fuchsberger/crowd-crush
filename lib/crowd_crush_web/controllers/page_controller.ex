@@ -6,7 +6,7 @@ defmodule CrowdCrushWeb.PageController do
   def index(conn, _) do
     if is_nil(conn.assigns.current_user),
       do: redirect(conn, to: Routes.page_path(conn, :about)),
-      else: redirect(conn, to: Routes.video_path(conn, :index))
+      else: redirect(conn, to: Routes.live_path(conn, CrowdCrushWeb.VideoLive))
   end
 
   def test(conn, _), do: render conn, "test.html"

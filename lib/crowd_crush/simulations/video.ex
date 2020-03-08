@@ -73,7 +73,7 @@ defmodule CrowdCrush.Simulation.Video do
       case String.split(url, "?") do
         ["https://www.youtube.com/watch", params] ->
           case URI.decode_query(params) do
-            %{"v" => youtubeID} -> []
+            %{"v" => _youtubeID} -> []
             _ -> error
           end
         _ -> error

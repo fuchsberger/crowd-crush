@@ -51,7 +51,7 @@ defmodule CrowdCrushWeb do
       import Phoenix.LiveView.Router
       import Plug.Conn
       import Phoenix.Controller
-      import CrowdCrushWeb.Auth, only: [authenticate_user: 2]
+      # import CrowdCrushWeb.Auth, only: [authenticate_user: 2]
     end
   end
 

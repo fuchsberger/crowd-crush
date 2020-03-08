@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-light bg-light">
+<nav class="navbar navbar-expand-md navbar-light bg-light mb-2">
   <div class='container'>
 
     <%# Logo %>
@@ -24,7 +24,7 @@
           <a class="nav-link" href="<%= Routes.page_path(@conn, :about) %>">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<%= Routes.video_path(@conn, :index) %>">Videos</a>
+          <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.VideoLive) %>">Videos</a>
         </li>
       </ul>
 

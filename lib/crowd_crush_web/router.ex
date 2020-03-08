@@ -2,10 +2,6 @@ defmodule CrowdCrushWeb.Router do
 
   use CrowdCrushWeb, :router
 
-  import Phoenix.LiveView.Router
-
-  alias CrowdCrushWeb.LayoutView
-
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -20,7 +16,8 @@ defmodule CrowdCrushWeb.Router do
   end
 
   scope "/", CrowdCrushWeb do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
+
     get "/export/csv/:id", ExportController, :export_csv
     get "/export/eclipse/:id", ExportController, :export_eclipse
 
@@ -29,13 +26,12 @@ defmodule CrowdCrushWeb.Router do
     get "/about", PageController, :about
 
     resources "/sessions", SessionController, only: [:new, :create, :delete]
-    resources "/videos", VideoController, only: [:index]
+    live "/videos", VideoLive
   end
 
   scope "/", CrowdCrushWeb do
     pipe_through [:browser, :authenticate_user]
 
-    live "/video", VideoLive
   end
 
   scope "/", CrowdCrushWeb do
