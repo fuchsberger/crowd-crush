@@ -1,21 +1,16 @@
 defmodule CrowdCrush.TestHelpers do
-  alias CrowdCrush.Repo
 
-  def insert_user(attrs \\ %{}) do
-    changes = Map.merge(%{
-      name: "Some User",
-      username: "user#{Base.encode16(:crypto.strong_rand_bytes(8))}",
-      password: "supersecret",
-    }, Map.new(attrs))
+  alias CrowdCrush.Accounts
 
-    %CrowdCrush.User{}
-    |> CrowdCrush.User.registration_changeset(changes)
-    |> Repo.insert!()
-  end
+  def user_fixture(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> Enum.into(%{
+        username: "user#{System.unique_integer([:positive])}",
+        password: attrs[:password] || "supersecret"
+      })
+      |> Accounts.register_user()
 
-  def insert_video(user, attrs \\ %{}) do
     user
-    |> Ecto.build_assoc(:videos, attrs)
-    |> Repo.insert!()
   end
 end

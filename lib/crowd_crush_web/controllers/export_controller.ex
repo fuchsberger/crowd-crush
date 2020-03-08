@@ -13,8 +13,7 @@ defmodule CrowdCrushWeb.ExportController do
 
     conn
     |> put_resp_content_type("text/csv")
-    |> put_resp_header("content-disposition",
-        "attachment; filename=\"#{video_id}.csv\"")
+    |> put_resp_header("content-disposition", "attachment; filename=\"#{video_id}.csv\"")
     |> send_resp(200, markers)
   end
 
@@ -30,8 +29,7 @@ defmodule CrowdCrushWeb.ExportController do
 
     conn
     |> put_resp_content_type("text/csv")
-    |> put_resp_header("content-disposition",
-        "attachment; filename=\"#{video_id}.csv\"")
+    |> put_resp_header("content-disposition", "attachment; filename=\"#{video_id}.csv\"")
     |> send_resp(200, agents)
   end
 

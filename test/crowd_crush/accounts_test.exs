@@ -1,29 +1,49 @@
 defmodule CrowdCrush.AccountsTest do
-  use CrowdCrush.DataCase
+  use CrowdCrush.DataCase, async: true
 
   alias CrowdCrush.Accounts
+  alias CrowdCrush.Accounts.User
 
-  describe "credentials" do
-    alias CrowdCrush.Accounts.Credential
+  describe "register_user/1" do
+    @valid_attrs %{
+      username: "eva",
+      password: "secret"
+    }
+    @invalid_attrs %{}
 
-    @valid_attrs %{email: "some email", password_hash: "some password_hash"}
-    @update_attrs %{email: "some updated email", password_hash: "some updated password_hash"}
-    @invalid_attrs %{email: nil, password_hash: nil}
-
-    def credential_fixture(attrs \\ %{}) do
-      {:ok, credential} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_credential()
-
-      credential
+    test "with valid data inserts user" do
+      assert {:ok, %User{id: id}=user} = Accounts.register_user(@valid_attrs)
+      assert user.username == "eva"
+      assert [%User{id: ^id}] = Accounts.list_users()
     end
 
-    test "update_credential/2 with valid data updates the credential" do
-      credential = credential_fixture()
-      assert {:ok, %Credential{} = credential} = Accounts.update_credential(credential, @update_attrs)
-      assert credential.email == "some updated email"
-      assert credential.password_hash == "some updated password_hash"
+    test "with invalid data does not insert user" do
+      assert {:error, _changeset} = Accounts.register_user(@invalid_attrs)
+      assert Accounts.list_users() == []
+    end
+
+    test "enforces unique usernames" do
+      assert {:ok, %User{id: id}} = Accounts.register_user(@valid_attrs)
+      assert {:error, changeset} = Accounts.register_user(@valid_attrs)
+
+      assert %{username: ["has already been taken"]} = errors_on(changeset)
+      assert [%User{id: ^id}] = Accounts.list_users()
+    end
+
+    test "does not accept long usernames" do
+      attrs = Map.put(@valid_attrs, :username, String.duplicate("a", 30))
+      {:error, changeset} = Accounts.register_user(attrs)
+
+      assert %{username: ["should be at most 20 character(s)"]} = errors_on(changeset)
+      assert Accounts.list_users() == []
+    end
+
+    test "requires password to be at least 6 chars long" do
+      attrs = Map.put(@valid_attrs, :password, "12345")
+      {:error, changeset} = Accounts.register_user(attrs)
+
+      assert %{password: ["should be at least 6 character(s)"]} = errors_on(changeset)
+      assert Accounts.list_users() == []
     end
   end
 end

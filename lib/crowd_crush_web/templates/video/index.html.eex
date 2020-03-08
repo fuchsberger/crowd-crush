@@ -3,7 +3,7 @@
   <div class="card-header d-flex justify-content-between">
     <h4 class='m-0'>Videos</h4>
     <%= unless is_nil(@current_user) do %>
-      <a href='<%= Routes.video_path(@conn, :new) %>' class="btn btn-sm btn-primary">
+      <a href='<%= Routes.live_path(@conn, CrowdCrushWeb.VideoLive) %>' class="btn btn-sm btn-primary">
         <i class='icon-add'></i>
         Add
       </a>

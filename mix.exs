@@ -45,7 +45,7 @@ defmodule CrowdCrush.Mixfile do
       {:httpoison, "~> 1.6"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.1"},
-      {:comeonin, "~> 5.2"},
+      {:comeonin, "~> 5.3"},
       {:pbkdf2_elixir, "~> 1.1"},
       {:csv, "~> 2.3"},
       {:floki, ">= 0.0.0", only: :test}

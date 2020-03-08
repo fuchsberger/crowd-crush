@@ -1,4 +1,5 @@
 defmodule CrowdCrushWeb.Router do
+
   use CrowdCrushWeb, :router
 
   import Phoenix.LiveView.Router
@@ -35,8 +36,6 @@ defmodule CrowdCrushWeb.Router do
     pipe_through [:browser, :authenticate_user]
 
     live "/video", VideoLive
-
-    resources "/videos", VideoController, only: [:new, :create]
   end
 
   scope "/", CrowdCrushWeb do

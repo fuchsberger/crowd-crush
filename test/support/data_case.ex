@@ -1,4 +1,4 @@
-defmodule CrowdCrush.ModelCase do
+defmodule CrowdCrush.DataCase do
   @moduledoc """
   This module defines the test case to be used by
   model tests.
@@ -21,8 +21,8 @@ defmodule CrowdCrush.ModelCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import CrowdCrush.DataCase
       import CrowdCrush.TestHelpers
-      import CrowdCrush.ModelCase
     end
   end
 
@@ -38,29 +38,12 @@ defmodule CrowdCrush.ModelCase do
 
   @doc """
   Helper for returning list of errors in a struct when given certain data.
-
-  ## Examples
-
-  Given a User schema that lists `:name` as a required field and validates
-  `:password` to be safe, it would return:
-
-      iex> errors_on(%User{}, %{password: "password"})
-      [password: "is unsafe", name: "is blank"]
-
-  You could then write your assertion like:
-
-      assert {:password, "is unsafe"} in errors_on(%User{}, %{password: "password"})
-
-  You can also create the changeset manually and retrieve the errors
-  field directly:
-
-      iex> changeset = User.changeset(%User{}, password: "password")
-      iex> {:password, "is unsafe"} in changeset.errors
-      true
   """
-  def errors_on(struct, data) do
-    struct.__struct__.changeset(struct, data)
-    |> Ecto.Changeset.traverse_errors(&CrowdCrushWeb.ErrorHelpers.translate_error/1)
-    |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
+  def errors_on(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
+      Regex.replace(~r"%{(\w+)}", message, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
   end
 end
