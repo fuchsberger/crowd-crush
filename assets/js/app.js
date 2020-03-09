@@ -1,23 +1,19 @@
 import CSS from '../css/app.scss'
 
-import 'phoenix_html'
 import 'popper.js'
 import 'bootstrap'
+import 'phoenix_html'
+import { Socket } from "phoenix"
+import LiveSocket from "phoenix_live_view"
 
-import loadView from './views/loader'
+import Hooks from './hooks'
 
-// Executed when page is loaded
-$(document).ready(() => {
-  const viewName = $('body').data('view')
-  const view = loadView(viewName)
-  view.mount()
-  window.currentView = view
+let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: Hooks,
+  params: { _csrf_token: $("meta[name='csrf-token']").attr("content") }
 })
 
-$(window).on('unload', () => {
-  window.currentView.unmount();
-})
-
+liveSocket.connect()
 
 // REACT APP
 // import socket from './modules/socket' // do not delete!

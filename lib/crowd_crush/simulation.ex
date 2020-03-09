@@ -76,12 +76,6 @@ defmodule CrowdCrush.Simulation do
     |> Repo.update_all([set: [locked: !!status]], [returning: true])
   end
 
-  def update_video(%Video{} = video, attrs) do
-    video
-    |> Video.changeset(attrs)
-    |> Repo.update()
-  end
-
   def update_videos(ids, changes) do
     # todo: VALIDATION MISSING
     params = Enum.map(changes, fn({k, v}) -> {String.to_atom(k), v} end)

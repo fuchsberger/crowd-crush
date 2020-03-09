@@ -1,6 +1,5 @@
 defmodule CrowdCrushWeb.VideoLive do
   use Phoenix.LiveView
-  use Phoenix.HTML
 
   alias CrowdCrush.Simulation
   alias CrowdCrush.Simulation.Video

@@ -27,6 +27,7 @@ defmodule CrowdCrushWeb.Router do
 
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     live "/videos", VideoLive
+    live "/test/canvas", CanvasLive
   end
 
   scope "/", CrowdCrushWeb do
