@@ -1,7 +1,7 @@
-import canvas from './canvas'
-// import synth_test from './synth_test'
+import agents from './agents_test'
+import canvas from './canvas_test'
 
 export default {
+  agents,
   canvas
-  // synth_test
 }

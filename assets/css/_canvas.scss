@@ -1,5 +1,9 @@
 canvas {
   position:fixed;
+  top: 56px;
+  bottom:0;
+  left: 0;
+  right: 0;
   height: calc(100vh - 56px);
   width: 100vw;
 }

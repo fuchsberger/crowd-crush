@@ -1,3 +1,5 @@
+import {resize} from '../helpers/canvas'
+
 /**
  * Test to animate canvas in realtime using data provided by server
  * http://www.petecorey.com/blog/2019/09/02/animating-a-canvas-with-phoenix-liveview/
@@ -7,16 +9,12 @@ export default {
   mounted() {
     let canvas = this.el.firstElementChild
     let context = canvas.getContext("2d")
-    let ratio = getPixelRatio(context)
     let colorizer = cubehelix(3, 0.5, 2.0)
 
-    // resize(canvas, ratio)
-
     Object.assign(this, {
-      canvas,
+      canvas: canvas,
       colorizer,
       context,
-      ratio,
       i: 0,
       j: 0,
       fps: 0,
@@ -25,10 +23,10 @@ export default {
   },
 
   updated() {
-    let { canvas, colorizer, context, ratio } = this
+    let { canvas, colorizer, context } = this
 
     // should be done in mount but for some reason doesnt work here
-    if (canvas.width != window.width) resize(canvas, ratio)
+    resize(canvas, context)
 
     let particles = JSON.parse(this.el.dataset.particles)
 
@@ -90,20 +88,6 @@ export default {
   }
 }
 
-
-const getPixelRatio = context => {
-  var backingStore =
-    context.backingStorePixelRatio ||
-    context.webkitBackingStorePixelRatio ||
-    context.mozBackingStorePixelRatio ||
-    context.msBackingStorePixelRatio ||
-    context.oBackingStorePixelRatio ||
-    context.backingStorePixelRatio ||
-    1;
-
-  return (window.devicePixelRatio || 1) / backingStore
-}
-
 const fade = (canvas, context, amount) => {
   context.beginPath()
   context.rect(0, 0, canvas.width, canvas.height)
@@ -111,12 +95,6 @@ const fade = (canvas, context, amount) => {
   context.fill()
 }
 
-const resize = (canvas, ratio) => {
-  canvas.width = window.innerWidth * ratio
-  canvas.height = window.innerHeight * ratio
-  canvas.style.width = `${window.innerWidth}px`
-  canvas.style.height = `${window.innerHeight}px`
-}
 
 const cubehelix = (s, r, h) => d => {
   let t = 2 * Math.PI * (s / 3 + r * d)

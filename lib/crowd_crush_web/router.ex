@@ -20,14 +20,13 @@ defmodule CrowdCrushWeb.Router do
 
     get "/export/csv/:id", ExportController, :export_csv
     get "/export/eclipse/:id", ExportController, :export_eclipse
-
-    get "/test", PageController, :test
-
     get "/about", PageController, :about
 
-    resources "/sessions", SessionController, only: [:new, :create, :delete]
-    live "/videos", VideoLive
+    live "/test/agents", AgentsLive
     live "/test/canvas", CanvasLive
+
+    live "/videos", VideoLive
+    resources "/sessions", SessionController, only: [:new, :create, :delete]
   end
 
   scope "/", CrowdCrushWeb do

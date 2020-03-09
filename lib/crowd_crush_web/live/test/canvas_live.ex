@@ -6,7 +6,7 @@ defmodule CrowdCrushWeb.CanvasLive do
   @ax 0
   @ay 0.00025
 
-  def render(assigns), do: CrowdCrushWeb.SimView.render("canvas.html", assigns)
+  def render(assigns), do: CrowdCrushWeb.TestView.render("canvas.html", assigns)
 
   def mount(_params, _session, socket) do
     particles = for _x <- 1..@particles, do: create_particle()
@@ -36,7 +36,7 @@ defmodule CrowdCrushWeb.CanvasLive do
     ]
   end
 
-  defp update_particle([a, x, y, vx, vy] = particle) do
+  defp update_particle([a, x, y, vx, vy] = _particle) do
     if (a + @da < 0) do
       create_particle()
     else
