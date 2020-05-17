@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= csrf_meta_tag() %>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A research Tool">
+    <meta name="author" content="Alexander Fuchsberger">
+    <title>Crowd Crush</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body data-view="<%= view_name(@view_module, @view_template) %>">
+
+    <%# Navbar %>
+    <%= render "navbar.html", conn: @conn, current_user: @current_user %>
+
+    <%# Flash Messages %>
+    <%= unless get_flash(@conn) == %{} do %>
+      <div class='container mt-2'>
+        <%= flash_alert(@conn, :info) %>
+        <%= flash_alert(@conn, :error) %>
+      </div>
+    <% end %>
+
+    <%# Page Content %>
+    <%= @inner_content %>
+
+    <%# Javascript %>
+    <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

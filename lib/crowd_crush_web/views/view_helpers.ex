@@ -10,6 +10,8 @@ defmodule CrowdCrushWeb.ViewHelpers do
     [{:class, "icon-#{name} #{Keyword.get(opts, :class, "")}"} | Keyword.delete(opts, :class)])
 
 
+  def new?(changeset), do: changeset && changeset.data.__meta__.state == :built
+
   def text_input(form, field, opts \\ []),
     do: Form.text_input(form, field, opts ++ Form.input_validations(form, field))
 

@@ -27,10 +27,18 @@ defmodule CrowdCrush.Simulation do
 
   def change_video(%Video{} = video, params), do: Video.changeset(video, params)
 
+  def change_video(%Video{} = video, params, :rename), do: Video.rename_changeset(video, params)
+
   def create_video(attrs \\ %{}) do
     %Video{}
     |> Video.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def rename_video(video, attrs) do
+    video
+    |> Video.rename_changeset(attrs)
+    |> Repo.update()
   end
 
   def update_video(video, attrs \\ %{}) do

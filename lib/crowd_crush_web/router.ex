@@ -9,6 +9,7 @@ defmodule CrowdCrushWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug CrowdCrushWeb.Auth
+    plug :put_root_layout, {CrowdCrushWeb.LayoutView, :root}
   end
 
   pipeline :react do

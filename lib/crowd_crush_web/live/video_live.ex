@@ -1,19 +1,19 @@
 defmodule CrowdCrushWeb.VideoLive do
-  use Phoenix.LiveView
+  use Phoenix.LiveView, container: {:div, class: "container"}
 
-  alias CrowdCrush.Simulation
+  alias CrowdCrush.{Repo, Simulation}
   alias CrowdCrush.Simulation.Video
 
   @key Application.get_env(:crowd_crush, :youtube_api_key)
 
   def render(assigns), do: CrowdCrushWeb.VideoView.render("index.html", assigns)
 
-  def mount(_params, session, socket), do:
-    {:ok, assign(socket, %{
-      authenticated?: Map.has_key?(session, "user_id"),
-      changeset: nil,
-      videos: Simulation.list_videos()
-    })}
+  def mount(_params, session, socket) do
+    {:ok, socket
+    |> assign(:changeset, nil)
+    |> assign(:user_id, Map.get(session, "user_id"))
+    |> assign(:videos, Simulation.list_videos())}
+  end
 
   # changing url on new videos
   def handle_event("validate", %{"video" => %{"url" => url} = params}, socket) do
@@ -48,39 +48,49 @@ defmodule CrowdCrushWeb.VideoLive do
     end
   end
 
-  def handle_event("validate", %{"video" => params}, socket), do:
-    {:noreply, assign(socket,
-      changeset: Simulation.change_video(socket.assigns.changeset.data, params)
-    )}
-
-  def handle_event("add", _params, socket),
-    do: {:noreply, assign(socket, changeset: Simulation.change_video(%Video{}, %{}))}
+  def handle_event("add", _params, socket) do
+    changeset = if is_nil(socket.assigns.changeset),
+      do: Simulation.change_video(%Video{}, %{}),
+      else: nil
+    {:noreply, assign(socket, changeset: changeset)}
+  end
 
   def handle_event("edit", %{"id" => id}, socket) do
     video = Enum.find(socket.assigns.videos, & &1.id == String.to_integer(id))
     {:noreply, assign(socket, changeset: Simulation.change_video(video, %{}))}
   end
 
-  def handle_event("cancel", _params, socket),
-    do: {:noreply, assign(socket, changeset: nil)}
+  def handle_event("validate", %{"video" => params}, socket) do
+    changeset = Simulation.change_video(socket.assigns.changeset.data, params)
+    {:noreply, assign(socket, changeset: changeset)}
+  end
+
+  def handle_event("validate_title", %{"video" => params}, socket) do
+    changeset = Simulation.change_video(socket.assigns.changeset.data, params, :rename)
+    {:noreply, assign(socket, changeset: changeset)}
+  end
 
   def handle_event("create", %{"video" => params}, socket) do
     case Simulation.create_video(params) do
-      {:ok, _video } ->
-        {:noreply, assign(socket, changeset: nil, videos: Simulation.list_videos())}
+      {:ok, _entry} ->
+        {:noreply, socket
+        |> assign(:changeset, nil)
+        |> assign(:videos, Simulation.list_videos())}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+      {:error, changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
     end
   end
 
-  def handle_event("update", %{"video" => params}, socket) do
-    case Simulation.update_video(socket.assigns.changeset.data, params) do
-      {:ok, _video } ->
-        {:noreply, assign(socket, changeset: nil, videos: Simulation.list_videos())}
+  def handle_event("rename", %{"video" => params}, socket) do
+    case Simulation.rename_video(socket.assigns.changeset.data, params) do
+      {:ok, _entry} ->
+        {:noreply, socket
+        |> assign(:changeset, nil)
+        |> assign(:videos, Simulation.list_videos())}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+      {:error, changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
     end
   end
 

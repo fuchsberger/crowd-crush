@@ -49,6 +49,14 @@ defmodule CrowdCrush.Simulation.Video do
     |> unique_constraint(:youtubeID)
   end
 
+  def rename_changeset(struct, params) do
+    struct
+    |> cast(params, [:title])
+    |> validate_required([:title])
+    |> validate_format(:title, ~r/^[^<>]*$/)
+    |> validate_length(:title, min: 5, max: 100)
+  end
+
   defp validate_url(changeset, field, opts \\ []) do
     validate_change changeset, field, fn _, value ->
       case URI.parse(value) do

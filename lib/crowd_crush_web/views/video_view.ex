@@ -1,7 +1,9 @@
 defmodule CrowdCrushWeb.VideoView do
   use CrowdCrushWeb, :view
 
-  def invalid_youtubeID?(changeset), do: is_nil(Ecto.Changeset.get_field(changeset, :youtubeID))
+  import Ecto.Changeset, only: [get_field: 2]
+
+  def invalid_youtubeID?(changeset), do: is_nil(get_field(changeset, :youtubeID))
 
   def render("video.json", %{video: v}) do
     %{

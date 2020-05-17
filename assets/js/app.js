@@ -5,15 +5,17 @@ import 'bootstrap'
 import 'phoenix_html'
 import { Socket } from "phoenix"
 import LiveSocket from "phoenix_live_view"
-
 import Hooks from './hooks'
 
-let liveSocket = new LiveSocket("/live", Socket, {
-  hooks: Hooks,
-  params: { _csrf_token: $("meta[name='csrf-token']").attr("content") }
-})
-
-liveSocket.connect()
+// if we do have a crsf token (all pages except error pages)
+// then connect live socket and enable various functionalities
+const csrf_elm = document.querySelector("meta[name='csrf-token']")
+if(csrf_elm){
+  const _csrf_token = csrf_elm.getAttribute("content")
+  let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token } })
+  liveSocket.socket.onError(() => $('#loader-wrapper').show())
+  liveSocket.connect()
+}
 
 // REACT APP
 // import socket from './modules/socket' // do not delete!
