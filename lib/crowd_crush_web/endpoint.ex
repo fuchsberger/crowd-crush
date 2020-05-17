@@ -4,6 +4,7 @@ defmodule CrowdCrushWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_crowd_crush_key",
+    max_age: 24*60*60*10, # 10 days
     signing_salt: "3qRtFB7V"
   ]
 
@@ -21,7 +22,7 @@ defmodule CrowdCrushWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :crowd_crush,
-    gzip: false,
+    gzip: System.get_env("MIX_ENV") == "prod",
     only: ~w(css fonts images js favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
@@ -33,7 +34,7 @@ defmodule CrowdCrushWeb.Endpoint do
   end
 
   plug Plug.RequestId
-  plug Plug.Logger
+  plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],

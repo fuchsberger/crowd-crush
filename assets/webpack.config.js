@@ -1,10 +1,11 @@
 const path = require('path')
 const glob = require('glob')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const webpack = require("webpack")
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+// const webpack = require("webpack")
 
 module.exports = (env, options) => ({
   stats: 'errors-warnings',
@@ -44,11 +45,13 @@ module.exports = (env, options) => ({
     ]
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
-    }),
+    // new webpack.ProvidePlugin({
+    //   $: "jquery",
+    //   jQuery: "jquery"
+    // }),
     new MiniCssExtractPlugin({ filename: '../css/app.css' }),
-    new CopyWebpackPlugin([{ from: 'static/', to: '../' }])
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'static/', to: '../' }]
+    })
   ]
 });

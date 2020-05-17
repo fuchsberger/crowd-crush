@@ -11,7 +11,7 @@
   </head>
 
   <body data-view="<%= view_name(@view_module, @view_template) %>">
-    <%= render @view_module, @view_template, assigns %>
+    <%= @inner_content %>
     <script>
       window.flash = <%= parse_flash(@conn) %>
       window.debug = <%= debug() %>;

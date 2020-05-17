@@ -1,5 +1,7 @@
 defmodule CrowdCrush.Simulation.Overlay do
-  use CrowdCrush, :schema
+  use Ecto.Schema
+
+  import Ecto.Changeset
 
   schema "overlays" do
     field :title, :string

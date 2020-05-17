@@ -1,5 +1,7 @@
 defmodule CrowdCrush.Simulation.Video do
-  use CrowdCrush, :schema
+  use Ecto.Schema
+
+  import Ecto.Changeset
 
   schema "videos" do
     field :url, :string, virtual: true

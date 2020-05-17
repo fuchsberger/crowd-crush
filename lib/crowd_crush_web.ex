@@ -1,7 +1,7 @@
 defmodule CrowdCrushWeb do
   @moduledoc """
-  A module that keeps using definitions for controllers,
-  views and so on.
+  The entrypoint for defining your web interface, such
+  as controllers, views, channels and so on.
 
   This can be used in your application as:
 
@@ -13,7 +13,8 @@ defmodule CrowdCrushWeb do
   on imports, uses and aliases.
 
   Do NOT define functions inside the quoted expressions
-  below.
+  below. Instead, define any helper function in modules
+  and import those modules here.
   """
 
   def controller do
@@ -30,14 +31,14 @@ defmodule CrowdCrushWeb do
 
   def view do
     quote do
-      use Phoenix.HTML
+
       use Phoenix.View, root: "lib/crowd_crush_web/templates", namespace: CrowdCrushWeb
+      use Phoenix.HTML
 
       import Phoenix.HTML.Form, except: [select: 4, text_input: 3, url_input: 3]
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2]
-      import Phoenix.LiveView.Helpers
 
-      import CrowdCrushWeb.ViewHelpers
+      import Phoenix.LiveView.Helpers
       import CrowdCrushWeb.{ErrorHelpers, Gettext, ViewHelpers}
 
       alias CrowdCrushWeb.Router.Helpers, as: Routes
@@ -71,5 +72,7 @@ defmodule CrowdCrushWeb do
   @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
-  defmacro __using__(which) when is_atom(which), do: apply(__MODULE__, which, [])
+  defmacro __using__(which) when is_atom(which) do
+    apply(__MODULE__, which, [])
+  end
 end

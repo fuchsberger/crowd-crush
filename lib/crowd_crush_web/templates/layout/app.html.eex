@@ -24,7 +24,7 @@
     <% end %>
 
     <%# Page Content %>
-    <%= render @view_module, @view_template, assigns %>
+    <%= @inner_content %>
 
     <%# Javascript %>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>

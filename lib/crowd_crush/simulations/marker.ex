@@ -1,5 +1,7 @@
 defmodule CrowdCrush.Simulation.Marker do
-  use CrowdCrush, :schema
+  use Ecto.Schema
+
+  import Ecto.Changeset
 
   schema "markers" do
     field :agent, :integer
