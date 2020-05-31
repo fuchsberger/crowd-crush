@@ -26,13 +26,14 @@ defmodule CrowdCrushWeb.Router do
     live "/test/agents", AgentsLive
     live "/test/canvas", CanvasLive
 
+    live "/scene/:id", SimLive
     live "/videos", VideoLive
+
     resources "/sessions", SessionController, only: [:new, :create, :delete]
   end
 
   scope "/", CrowdCrushWeb do
     pipe_through [:browser, :authenticate_user]
-
   end
 
   scope "/", CrowdCrushWeb do

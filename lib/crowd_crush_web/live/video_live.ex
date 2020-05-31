@@ -1,7 +1,7 @@
 defmodule CrowdCrushWeb.VideoLive do
   use Phoenix.LiveView, container: {:div, class: "container"}
 
-  alias CrowdCrush.{Repo, Simulation}
+  alias CrowdCrush.Simulation
   alias CrowdCrush.Simulation.Video
 
   @key Application.get_env(:crowd_crush, :youtube_api_key)

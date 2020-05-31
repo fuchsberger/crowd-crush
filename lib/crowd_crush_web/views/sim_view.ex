@@ -1,4 +1,4 @@
-defmodule CrowdCrushWeb.TestView do
+defmodule CrowdCrushWeb.SimView do
   use CrowdCrushWeb, :view
 
 end

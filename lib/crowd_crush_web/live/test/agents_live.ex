@@ -1,7 +1,7 @@
 defmodule CrowdCrushWeb.AgentsLive do
   use Phoenix.LiveView
 
-  def render(assigns), do: CrowdCrushWeb.TestView.render("agents.html", assigns)
+  def render(assigns), do: CrowdCrushWeb.SimView.render("agents.html", assigns)
 
   def mount(_params, _session, socket) do
 

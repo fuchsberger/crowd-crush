@@ -1,18 +1,15 @@
 <table class="table table-sm">
   <thead>
     <tr>
-      <th scope="col">
-        Video
-        <%= unless is_nil(@user_id) do %>
-          <button class='btn btn-link p-0' type='button' phx-click='add'>
-            <i class='icon-add'></i>
-          </button>
-        <% end %>
-      </th>
+      <th scope="col">Scene</th>
       <th class='text-right' scope="col">Duration</th>
       <th class='text-right' scope="col">Markers</th>
       <%= unless is_nil(@user_id) do %>
-        <th class='text-center px-0' scope="col"><i class='icon-edit'></i></th>
+        <th class='text-center px-0' scope="col">
+          <button class='btn btn-link p-0' type='button' phx-click='add'>
+            <i class='icon-add'></i>
+          </button>
+        </th>
       <% end %>
     </tr>
   </thead>
@@ -94,7 +91,7 @@
           </td>
         <% else %>
           <th scope='row'>
-            <a href='/scene/<%= video.youtubeID %>/watch'><%= video.title %></a>
+            <%= link video.title, to: Routes.live_path(@socket, CrowdCrushWeb.SimLive, video.youtubeID) %>
           </th>
           <td class='text-right'><%= video.duration %></td>
           <td class='text-right'><%= List.first(video.markers) %></td>

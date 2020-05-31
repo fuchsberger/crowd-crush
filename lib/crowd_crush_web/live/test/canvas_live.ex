@@ -6,7 +6,7 @@ defmodule CrowdCrushWeb.CanvasLive do
   @ax 0
   @ay 0.00025
 
-  def render(assigns), do: CrowdCrushWeb.TestView.render("canvas.html", assigns)
+  def render(assigns), do: CrowdCrushWeb.SimView.render("canvas.html", assigns)
 
   def mount(_params, _session, socket) do
     particles = for _x <- 1..@particles, do: create_particle()
