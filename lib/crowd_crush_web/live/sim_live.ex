@@ -7,6 +7,8 @@ defmodule CrowdCrushWeb.SimLive do
   def render(assigns), do: CrowdCrushWeb.SimView.render("index.html", assigns)
 
   def mount(%{"id" => youtubeID}, session, socket) do
+    Process.send_after(self(), :update, 16)
+
     case Simulation.get_video_by_youtube_id(youtubeID) do
       nil ->
         {:ok, socket
@@ -15,8 +17,23 @@ defmodule CrowdCrushWeb.SimLive do
 
       video ->
         {:ok, socket
+        |> assign(:playing, false)
+        |> assign(:i, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
         |> assign(:video, video)}
     end
+  end
+
+  def handle_event("playing", _params, socket) do
+    {:noreply, assign(socket, :playing, true)}
+  end
+
+  def handle_event("pausing", _params, socket) do
+    {:noreply, assign(socket, :playing, false)}
+  end
+
+  def handle_info(:update, %{assigns: %{i: i}} = socket) do
+    Process.send_after(self(), :update, 16)
+    {:noreply, assign(socket, :i, i + 0.05)}
   end
 end
