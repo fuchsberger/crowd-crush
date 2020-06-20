@@ -2,8 +2,8 @@
   src="http://www.youtube.com/embed/<%= @video.youtubeID %>?enablejsapi=1&fs=0&modestbranding=1&loop=1&rel=0"
   frameborder="0" phx-hook='player'></iframe>
 
-<canvas data-i="<%= @i %>" phx-hook='canvas' phx-update="ignore">
-  Canvas is not supported!
-</canvas>
+<div data-i="<%= @i %>" data-agents="<%= Jason.encode!(@agent_positions) %>" phx-hook='canvas'>
+  <canvas phx-update="ignore">Canvas is not supported!</canvas>
+</div>
 
 <%= render CrowdCrushWeb.SimView, "controlbar.html" %>

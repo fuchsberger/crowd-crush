@@ -23,34 +23,43 @@ const resize = (canvas, ratio) => {
 
 export default {
   mounted() {
-    let canvas = this.el
+    let canvas = this.el.firstElementChild
     let context = canvas.getContext("2d")
     let ratio = getPixelRatio(context)
+    let wrapper = this.el
 
-    Object.assign(this, { canvas, context, ratio })
+    Object.assign(this, { canvas, context, ratio, wrapper })
   },
-  updated() {
-    let { canvas, context, ratio } = this;
 
-    // should be done in mount but for some reason properties don't persist there
+  updated() {
+    let { canvas, context, ratio, wrapper } = this
+
+    // should be done once in mount but for some reason properties don't persist there
     resize(canvas, ratio)
 
-    let i = JSON.parse(canvas.dataset.i);
-    let halfHeight = canvas.height / 2;
-    let halfWidth = canvas.width / 2;
-    let smallerHalf = Math.min(halfHeight, halfWidth);
+    this.pushEvent("ping", { time: window.player.getCurrentTime() })
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "rgba(128, 0, 255, 1)";
-    context.beginPath();
-    context.arc(
-      halfWidth + (Math.cos(i) * smallerHalf) / 2,
-      halfHeight + (Math.sin(i) * smallerHalf) / 2,
-      smallerHalf / 16,
-      0,
-      2 * Math.PI
-    );
-    context.fill();
+    // guard to ensure rendering keeps up with updates
+    if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)
 
+    // request an animation frame only when necessary
+    this.animationFrameRequest = requestAnimationFrame(() => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "rgba(0, 255, 0, 1)";
+
+      for (let [agent, position] of Object.entries(JSON.parse(wrapper.dataset.agents))) {
+        if (position) {
+          context.beginPath()
+          context.arc(
+            canvas.width * position[0],
+            canvas.height * position[1],
+            5,
+            0,
+            2 * Math.PI
+          )
+          context.fill()
+        }
+      }
+    })
   }
 }
