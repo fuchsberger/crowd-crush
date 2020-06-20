@@ -1,40 +1,48 @@
-// core
-@import "bootstrap/scss/_functions";
-@import "bootstrap/scss/_variables";
-@import "bootstrap/scss/_mixins";
+/*!
+ * Bootstrap v5.0.0-alpha1 (https://getbootstrap.com/)
+ * Copyright 2011-2020 The Bootstrap Authors
+ * Copyright 2011-2020 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ */
 
-// modules
-@import "bootstrap/scss/_root";
-@import "bootstrap/scss/_reboot";
-@import "bootstrap/scss/_type";
-// @import "bootstrap/scss/_images";
-// @import "bootstrap/scss/_code";
-@import "bootstrap/scss/_grid";
-@import "bootstrap/scss/_tables";
-@import "bootstrap/scss/_forms";
-@import "bootstrap/scss/_buttons";
-@import "bootstrap/scss/_transitions";
-@import "bootstrap/scss/_dropdown";
-@import "bootstrap/scss/_button-group";
-@import "bootstrap/scss/_input-group";
-@import "bootstrap/scss/_custom-forms";
-@import "bootstrap/scss/_nav";
-@import "bootstrap/scss/_navbar";
-@import "bootstrap/scss/_card";
-// @import "bootstrap/scss/_breadcrumb";
-// @import "bootstrap/scss/_pagination";
-// @import "bootstrap/scss/_badge";
-// @import "bootstrap/scss/_jumbotron";
-@import "bootstrap/scss/_alert";
-// @import "bootstrap/scss/_progress";
-// @import "bootstrap/scss/_media";
-// @import "bootstrap/scss/_list-group";
-@import "bootstrap/scss/_close";
-// @import "bootstrap/scss/_toasts";
-// @import "bootstrap/scss/_modal";
-@import "bootstrap/scss/_tooltip";
-// @import "bootstrap/scss/_popover";
-// @import "bootstrap/scss/_carousel";
-// @import "bootstrap/scss/_spinners";
-@import "bootstrap/scss/_utilities";
-// @import "bootstrap/scss/_print";
+// Configuration
+@import "functions";
+@import "variables";
+@import "mixins";
+@import "utilities";
+
+// Layout & components
+@import "root";
+@import "reboot";
+@import "type";
+// @import "images";
+@import "containers";
+@import "grid";
+@import "tables";
+@import "forms";
+@import "buttons";
+@import "transitions";
+@import "dropdown";
+@import "button-group";
+@import "nav";
+@import "navbar";
+@import "card";
+@import "breadcrumb";
+// @import "pagination";
+// @import "badge";
+@import "alert";
+// @import "progress";
+// @import "list-group";
+@import "close";
+// @import "toasts";
+// @import "modal";
+@import "tooltip";
+// @import "popover";
+// @import "carousel";
+// @import "spinners";
+
+// Helpers
+@import "helpers";
+
+// Utilities
+@import "utilities/api";
