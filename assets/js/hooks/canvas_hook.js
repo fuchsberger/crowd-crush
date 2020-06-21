@@ -37,7 +37,7 @@ export default {
     // should be done once in mount but for some reason properties don't persist there
     resize(canvas, ratio)
 
-    this.pushEvent("ping", { time: window.player.getCurrentTime() })
+    // this.pushEvent("ping", { time: window.player.getCurrentTime() })
 
     // guard to ensure rendering keeps up with updates
     if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)

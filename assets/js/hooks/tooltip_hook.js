@@ -1,17 +1,17 @@
-import $ from 'jquery'
+import Tooltip from 'bootstrap/js/dist/alert'
 
 // enable tooltips in live views
 export default {
   mounted() {
-    $(this.el).tooltip({ html: true })
+    this.tooltip = new bootstrap.Tooltip(this.el)
   },
   beforeUpdate() {
-    $(this.el).tooltip('dispose')
+    this.tooltip.dispose()
   },
   updated() {
-    $(this.el).tooltip({ html: true })
+    this.tooltip = new bootstrap.Tooltip(this.el)
   },
   destroyed() {
-    $(this.el).tooltip('dispose')
+    this.tooltip.dispose()
   }
 }
