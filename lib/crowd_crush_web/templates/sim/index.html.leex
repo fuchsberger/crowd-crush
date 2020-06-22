@@ -3,8 +3,8 @@
 </div>
 
 <div
-  data-i="<%= @i %>"
   data-agents="<%= Jason.encode!(@agent_positions) %>"
+  data-aspectratio="<%= @video.aspectratio %>"
   data-paused="<%= @paused %>"
   phx-hook='canvas'
 >

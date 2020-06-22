@@ -7,7 +7,6 @@ defmodule CrowdCrushWeb.SimLive do
   def render(assigns), do: CrowdCrushWeb.SimView.render("index.html", assigns)
 
   def mount(%{"id" => youtubeID}, session, socket) do
-    # Process.send_after(self(), :update, 16)
 
     case Simulation.get_video_by_youtube_id(youtubeID) do
       nil ->
@@ -25,7 +24,6 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:agents, agents)
         |> assign(:agent_positions, agent_positions(agents, 0))
         |> assign(:paused, true)
-        |> assign(:i, 0)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
         |> assign(:video, video)}
@@ -51,14 +49,6 @@ defmodule CrowdCrushWeb.SimLive do
     {:noreply, socket
     |> assign(:agent_positions, agent_positions(socket.assigns.agents, time * 1000))
     |> assign(:paused, true)}
-  end
-
-  @doc """
-  Sends a signal to client at ~ 60 fps. Running permanently.
-  """
-  def handle_info(:update, %{assigns: %{i: i}} = socket) do
-    Process.send_after(self(), :update, 16)
-    {:noreply, assign(socket, :i, i + 0.05)}
   end
 
   defp agent_positions(agents, time) do

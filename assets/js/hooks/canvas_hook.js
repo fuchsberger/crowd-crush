@@ -11,34 +11,46 @@ const getPixelRatio = context => {
   return (window.devicePixelRatio || 1) / backingStore;
 }
 
-const resize = (canvas, ratio) => {
-  canvas.width = window.innerWidth * ratio;
-  canvas.height = (window.innerHeight - 112) * ratio;
+const resize = (aspectratio, canvas, ratio) => {
+
+  const screen_w = window.innerWidth * ratio
+  const screen_h = (window.innerHeight - 110) * ratio
+  let w = screen_w
+  let h = screen_h
+
+  // screen is wider than video -> fix height and get scaled width
+  if (w / h > aspectratio) w = h * aspectratio
+  else h = w / aspectratio
+
+  // calculate left/top offset
+  const t = h < screen_h ? 56 + (screen_h - h) / 2 : 56
+  const l = w < screen_w ? (screen_w - w) / 2 : 0
+
+  // update canvas
+  canvas.width = w;
+  canvas.height = h;
   canvas.style.position = 'fixed'
-  canvas.style.top = '56px'
-  canvas.style.left = '0'
-  canvas.style.width = `${window.innerWidth}px`;
-  canvas.style.height = `${window.innerHeight - 112}px`;
+  canvas.style.top = `${t}px`
+  canvas.style.left = `${l}px`
+  canvas.style.width = `${w}px`
+  canvas.style.height = `${h}px`
 }
 
 export default {
   mounted() {
+
     let canvas = this.el.firstElementChild
     let context = canvas.getContext("2d")
     let ratio = getPixelRatio(context)
     let wrapper = this.el
+    let aspectratio = JSON.parse(wrapper.dataset.aspectratio)
 
-    Object.assign(this, { canvas, context, ratio, wrapper })
+    Object.assign(this, { aspectratio, canvas, context, ratio, wrapper })
 
     this.draw_agents()
   },
 
   updated() {
-    let { canvas, context, ratio, wrapper } = this
-
-    // should be done once in mount but for some reason properties don't persist there
-    resize(canvas, ratio)
-
     // guard to ensure rendering keeps up with updates
     if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)
 
@@ -50,11 +62,11 @@ export default {
   },
 
   draw_agents() {
-    let { canvas, context, ratio, wrapper } = this
+    let { aspectratio, canvas, context, ratio, wrapper } = this
     const agents = JSON.parse(wrapper.dataset.agents)
 
     // should be done once in mount but for some reason properties don't persist there
-    resize(canvas, ratio)
+    resize(aspectratio, canvas, ratio)
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "rgba(0, 255, 0, 1)";
