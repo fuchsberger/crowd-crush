@@ -2,33 +2,54 @@ import YTPlayer from 'yt-player'
 
 export default {
   mounted() {
-
+    let loaded = false;
     const player = new YTPlayer(this.el, {
       annotations: false,
       captions: false,
       controls: false,
       fullscreen: false,
       keyboard: false,
-      modestBranding: false,
+      modestBranding: true,
       width: "100%",
       height: "100%",
     })
     player.load(this.el.dataset.video)
+    player.mute()
+    player.play()
 
-    // inform server that video has been paused
+
     const hook = this
-    player.on('playing', () => hook.pushEvent("play", {}))
-    player.on('paused', () => hook.pushEvent("pause", {}))
-
-    // enable controls
-    document.getElementById("btn-play").addEventListener('click', () => {
-      player.getState() == 'playing' ? player.pause() : player.play()
+    player.on('playing', () => {
+      if (!loaded) {
+        player.pause()
+        player.seek(0)
+        hook.pushEvent("pause", { time: 0 })
+        loaded = true
+      } else {
+        hook.pushEvent("play", { time: player.getCurrentTime() })
+      }
     })
-    document.getElementById("btn-stop").addEventListener('click', () => {
-      player.pause()
+    player.on('paused', () => hook.pushEvent("pause", { time: player.getCurrentTime() }))
+
+    player.on('ended', () => {
+      loaded = false
       player.seek(0)
     })
 
-    this.player = player
+    // play/pause button
+    document.getElementById("btn-play").addEventListener('click', () => {
+      player.getState() == 'playing' ? player.pause() : player.play()
+    })
+
+    // stop button
+    document.getElementById("btn-stop").addEventListener('click', () => {
+      if (player.getCurrentTime() != 0) {
+        if(player.getState() == 'playing') player.pause()
+        player.seek(0)
+        hook.pushEvent("pause", { time: 0 })
+      }
+    })
+
+    window.player = player
   }
 }

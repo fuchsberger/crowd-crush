@@ -29,6 +29,8 @@ export default {
     let wrapper = this.el
 
     Object.assign(this, { canvas, context, ratio, wrapper })
+
+    this.draw_agents()
   },
 
   updated() {
@@ -37,29 +39,38 @@ export default {
     // should be done once in mount but for some reason properties don't persist there
     resize(canvas, ratio)
 
-    // this.pushEvent("ping", { time: window.player.getCurrentTime() })
-
     // guard to ensure rendering keeps up with updates
     if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)
 
     // request an animation frame only when necessary
     this.animationFrameRequest = requestAnimationFrame(() => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.fillStyle = "rgba(0, 255, 0, 1)";
-
-      for (let [agent, position] of Object.entries(JSON.parse(wrapper.dataset.agents))) {
-        if (position) {
-          context.beginPath()
-          context.arc(
-            canvas.width * position[0],
-            canvas.height * position[1],
-            5,
-            0,
-            2 * Math.PI
-          )
-          context.fill()
-        }
-      }
+      this.draw_agents()
+      this.pushEvent("ping", { time: window.player.getCurrentTime() })
     })
+  },
+
+  draw_agents() {
+    let { canvas, context, ratio, wrapper } = this
+    const agents = JSON.parse(wrapper.dataset.agents)
+
+    // should be done once in mount but for some reason properties don't persist there
+    resize(canvas, ratio)
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "rgba(0, 255, 0, 1)";
+
+    for (let [agent, position] of Object.entries(JSON.parse(wrapper.dataset.agents))) {
+      if (position) {
+        context.beginPath()
+        context.arc(
+          canvas.width * position[0],
+          canvas.height * position[1],
+          5,
+          0,
+          2 * Math.PI
+        )
+        context.fill()
+      }
+    }
   }
 }

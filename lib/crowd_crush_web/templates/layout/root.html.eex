@@ -8,6 +8,7 @@
     <meta name="author" content="Alexander Fuchsberger">
     <title>Crowd Crush</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>">
+    <script src='https://www.youtube.com/iframe_api' async></script>
   </head>
 
   <body data-view="<%= view_name(@view_module, @view_template) %>">

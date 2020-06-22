@@ -1,9 +1,27 @@
-<iframe id="player" type="text/html" width="100%" height="100%"
-  src="http://www.youtube.com/embed/<%= @video.youtubeID %>?enablejsapi=1&fs=0&modestbranding=1&loop=1&rel=0"
-  frameborder="0" phx-hook='player'></iframe>
+<div class='wrapper' phx-update='ignore'>
+  <div data-video="<%= @video.youtubeID %>" phx-hook='player'></div>
+</div>
 
-<div data-i="<%= @i %>" data-agents="<%= Jason.encode!(@agent_positions) %>" phx-hook='canvas'>
+<div
+  data-i="<%= @i %>"
+  data-agents="<%= Jason.encode!(@agent_positions) %>"
+  data-paused="<%= @paused %>"
+  phx-hook='canvas'
+>
   <canvas phx-update="ignore">Canvas is not supported!</canvas>
 </div>
 
-<%= render CrowdCrushWeb.SimView, "controlbar.html" %>
+<nav class="navbar navbar-dark bg-dark fixed-bottom">
+  <div class='container-fluid'>
+    <div>
+      <button id='btn-play' class="btn btn-outline-light my-2 my-sm-0" type='button'>
+        <i class='icon-play'></i>
+      </button>
+      <button id='btn-stop' class="btn btn-outline-light my-2 my-sm-0" type='button'>
+        <i class='icon-stop'></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<%= if @paused, do: content_tag :div, "", class: "wrapper legend bg-dark" %>
