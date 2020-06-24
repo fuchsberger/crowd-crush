@@ -22,7 +22,6 @@ export default {
       if (!loaded) {
         player.pause()
         player.seek(0)
-        hook.pushEvent("pause", { time: 0 })
         hook.pushEvent('set_duration', { duration: player.getDuration()})
         loaded = true
       } else {
@@ -31,7 +30,7 @@ export default {
     })
     player.on('paused', () => {
       // jumpt to closest second (round down) when pausing
-      const time = parseInt(player.getCurrentTime())
+      const time = Math.floor(player.getCurrentTime())
       player.seek(time)
       hook.pushEvent("pause", { time })
     })
@@ -53,6 +52,20 @@ export default {
         player.seek(0)
         hook.pushEvent("pause", { time: 0 })
       }
+    })
+
+    // backward button
+    document.getElementById("btn-backward").addEventListener('click', () => {
+      const time = player.getCurrentTime() - 1
+      player.seek(time)
+      hook.pushEvent("pause", { time })
+    })
+
+    // forward button
+    document.getElementById("btn-forward").addEventListener('click', () => {
+      const time = player.getCurrentTime() + 1
+      player.seek(time)
+      hook.pushEvent("pause", { time })
     })
 
     window.player = player

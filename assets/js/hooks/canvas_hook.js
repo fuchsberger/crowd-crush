@@ -57,7 +57,8 @@ export default {
     // request an animation frame only when necessary
     this.animationFrameRequest = requestAnimationFrame(() => {
       this.draw_agents()
-      this.pushEvent("ping", { time: window.player.getCurrentTime() })
+      if (!JSON.parse(this.wrapper.dataset.paused))
+        this.pushEvent("ping", { time: window.player.getCurrentTime() })
     })
   },
 

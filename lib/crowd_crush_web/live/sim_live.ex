@@ -23,7 +23,7 @@ defmodule CrowdCrushWeb.SimLive do
         {:ok, socket
         |> assign(:agents, agents)
         |> assign(:agent_positions, agent_positions(agents, 0))
-        |> assign(:duration, nil)
+        |> assign(:duration, 0)
         |> assign(:paused, true)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
@@ -40,23 +40,25 @@ defmodule CrowdCrushWeb.SimLive do
   """
   def handle_event("ping", %{"time" => time}, socket) do
     {:noreply, socket
-    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time * 1000))
+    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time))
     |> assign(:time, round(time))}
   end
 
   def handle_event("play", %{"time" => time}, socket) do
     {:noreply, socket
-    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time * 1000))
+    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time))
     |> assign(:paused, false)}
   end
 
   def handle_event("pause", %{"time" => time}, socket) do
     {:noreply, socket
-    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time * 1000))
-    |> assign(:paused, true)}
+    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time))
+    |> assign(:paused, true)
+    |> assign(:time, time)}
   end
 
   defp agent_positions(agents, time) do
+    time = time * 1000
     Enum.into(agents, %{}, fn {id, markers} ->
 
       # find first marker where it's time is at or after current time

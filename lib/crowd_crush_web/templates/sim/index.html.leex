@@ -21,6 +21,8 @@
       <button id='btn-stop' class="btn btn-sm btn-outline-light my-2 my-sm-0" type='button'>
         <i class='icon-stop'></i>
       </button>
+      <button id='btn-backward' class='btn btn-sm btn-outline-light my-2 my-sm-0<%= if @time == 0 || not @paused, do: " disabled"%>' type='button'><i class='icon-backward'></i></button>
+      <button id='btn-forward' class='btn btn-sm btn-outline-light my-2 my-sm-0<%= if @time > (@duration - 2) or not @paused, do: " disabled"%>' type='button'><i class='icon-forward'></i></button>
     </div>
     <span class="navbar-text py-0">
       <i class='icon-clock'></i>
