@@ -14,7 +14,7 @@ const getPixelRatio = context => {
 const resize = (aspectratio, canvas, ratio) => {
 
   const screen_w = window.innerWidth * ratio
-  const screen_h = (window.innerHeight - 110) * ratio
+  const screen_h = (window.innerHeight - 103) * ratio
   let w = screen_w
   let h = screen_h
 

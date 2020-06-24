@@ -23,6 +23,7 @@ defmodule CrowdCrushWeb.SimLive do
         {:ok, socket
         |> assign(:agents, agents)
         |> assign(:agent_positions, agent_positions(agents, 0))
+        |> assign(:duration, nil)
         |> assign(:paused, true)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
@@ -30,13 +31,17 @@ defmodule CrowdCrushWeb.SimLive do
     end
   end
 
+  def handle_event("set_duration", %{"duration" => duration}, socket) do
+    {:noreply, assign(socket, :duration, round(duration))}
+  end
+
   @doc """
   Receive a timestamp and respond with agent data. Runs when client requests.
   """
   def handle_event("ping", %{"time" => time}, socket) do
-    # get current agent positions
-    agent_positions = agent_positions(socket.assigns.agents, time * 1000)
-    {:noreply, assign(socket, :agent_positions, agent_positions)}
+    {:noreply, socket
+    |> assign(:agent_positions, agent_positions(socket.assigns.agents, time * 1000))
+    |> assign(:time, round(time))}
   end
 
   def handle_event("play", %{"time" => time}, socket) do

@@ -11,16 +11,21 @@
   <canvas phx-update="ignore">Canvas is not supported!</canvas>
 </div>
 
+<%# Control Bar at bottom %>
 <nav class="navbar navbar-dark bg-dark fixed-bottom">
   <div class='container-fluid'>
     <div>
-      <button id='btn-play' class="btn btn-outline-light my-2 my-sm-0" type='button'>
+      <button id='btn-play' class="btn btn-sm btn-outline-light my-2 my-sm-0" type='button'>
         <i class='icon-play'></i>
       </button>
-      <button id='btn-stop' class="btn btn-outline-light my-2 my-sm-0" type='button'>
+      <button id='btn-stop' class="btn btn-sm btn-outline-light my-2 my-sm-0" type='button'>
         <i class='icon-stop'></i>
       </button>
     </div>
+    <span class="navbar-text py-0">
+      <i class='icon-clock'></i>
+      <%= @time %>/<%= @duration %>
+    </span>
   </div>
 </nav>
 

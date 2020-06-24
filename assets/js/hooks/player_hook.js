@@ -17,13 +17,13 @@ export default {
     player.mute()
     player.play()
 
-
     const hook = this
     player.on('playing', () => {
       if (!loaded) {
         player.pause()
         player.seek(0)
         hook.pushEvent("pause", { time: 0 })
+        hook.pushEvent('set_duration', { duration: player.getDuration()})
         loaded = true
       } else {
         hook.pushEvent("play", { time: player.getCurrentTime() })
