@@ -1,7 +1,7 @@
 import CSS from '../css/app.scss'
 
-import 'popper.js'
-import 'bootstrap'
+// import 'popper.js'
+import { Dropdown } from 'bootstrap'
 import 'phoenix_html'
 import { Socket } from "phoenix"
 import LiveSocket from "phoenix_live_view"
@@ -13,7 +13,6 @@ const csrf_elm = document.querySelector("meta[name='csrf-token']")
 if(csrf_elm){
   const _csrf_token = csrf_elm.getAttribute("content")
   let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token } })
-  liveSocket.socket.onError(() => $('#loader-wrapper').show())
   liveSocket.connect()
 }
 
