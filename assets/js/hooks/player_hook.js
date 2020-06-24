@@ -29,7 +29,12 @@ export default {
         hook.pushEvent("play", { time: player.getCurrentTime() })
       }
     })
-    player.on('paused', () => hook.pushEvent("pause", { time: player.getCurrentTime() }))
+    player.on('paused', () => {
+      // jumpt to closest second (round down) when pausing
+      const time = parseInt(player.getCurrentTime())
+      player.seek(time)
+      hook.pushEvent("pause", { time })
+    })
 
     player.on('ended', () => {
       loaded = false
