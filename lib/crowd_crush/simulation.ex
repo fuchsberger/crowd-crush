@@ -146,26 +146,10 @@ defmodule CrowdCrush.Simulation do
   Attempts to create or update a marker
   get_agent_id is used when a new agent is created (gives highest id + 1)
   """
-  def set_marker(video_id, params) do
-    agent = params["agent"] || get_next_agent(video_id)
-
-    get_marker(video_id, agent, params["time"])
-      |> Marker.changeset(%{
-          agent:    agent,
-          time:     params["time"] * 1000,
-          video_id: video_id,
-          x:        params["x"],
-          y:        params["y"],
-        })
-      |> Repo.insert_or_update
-  end
-
-  # Returns a new agent_id (that has not been used before)
-  defp get_next_agent(video_id) do
-    case Repo.one(from m in Marker, select: max(m.agent), where: m.video_id == ^video_id) do
-      nil -> 1
-      max -> max + 1
-    end
+  def set_marker(params) do
+    get_marker(params.video_id, params.agent, params.time)
+    |> Marker.changeset(params)
+    |> Repo.insert_or_update()
   end
 
   @doc """

@@ -11,8 +11,16 @@ import Hooks from './hooks'
 // then connect live socket and enable various functionalities
 const csrf_elm = document.querySelector("meta[name='csrf-token']")
 if(csrf_elm){
-  const _csrf_token = csrf_elm.getAttribute("content")
-  let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token } })
+  let liveSocket = new LiveSocket("/live", Socket, {
+    hooks: Hooks,
+    metadata: {
+      click: (e, el) => ({
+        x: e.offsetX / el.width,
+        y: e.offsetY / el.height
+      })
+    },
+    params: { _csrf_token: csrf_elm.getAttribute("content") }
+  })
   liveSocket.connect()
 }
 

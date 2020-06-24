@@ -65,15 +65,19 @@ export default {
   draw_agents() {
     let { aspectratio, canvas, context, ratio, wrapper } = this
     const agents = JSON.parse(wrapper.dataset.agents)
+    const selected = JSON.parse(wrapper.dataset.selected)
 
     // should be done once in mount but for some reason properties don't persist there
     resize(aspectratio, canvas, ratio)
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "rgba(0, 255, 0, 1)";
 
-    for (let [agent, position] of Object.entries(JSON.parse(wrapper.dataset.agents))) {
+
+    for (let [agent, position] of Object.entries(agents)) {
       if (position) {
+
+        context.fillStyle = selected == agent ? "rgba(0, 255, 208, 1)" : "rgba(0, 255, 0, 1)"
+
         context.beginPath()
         context.arc(
           canvas.width * position[0],
