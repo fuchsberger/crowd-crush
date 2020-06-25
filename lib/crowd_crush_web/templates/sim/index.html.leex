@@ -27,9 +27,13 @@
     </div>
     <div>
       <%= if @selected do %>
-        <span class="navbar-text">Agent selected: <%= @selected %>. Click on canvas to create/overwrite marker at current time.</span>
+        <span class="navbar-text">Agent <%= @selected %> selected. Click on canvas to create/overwrite marker at current time.</span>
         <button class='btn btn-outline-light btn-sm' phx-click='deselect'>
           deselect
+        </button>
+        <button class='btn btn-outline-danger btn-sm' data-confirm='Are you sure?' phx-click='delete'>
+          <i class='icon-cancel'></i>
+          remove agent (<%= count_markers(@video, @selected) %> markers)
         </button>
       <% else %>
         <span class="navbar-text">Click on canvas to select closest agent.</span>

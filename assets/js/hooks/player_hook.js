@@ -68,6 +68,26 @@ export default {
       hook.pushEvent("pause", { time })
     })
 
+    // replace context menu with forward action
+    document.addEventListener('keydown', e => {
+      let time = player.getCurrentTime()
+      switch (e.keyCode) {
+        case 65: // (a) backward
+          if (time <= 0) break
+          time--
+          player.seek(time)
+          hook.pushEvent("pause", { time })
+          break
+
+        case 68: // (s) forward
+          if(time > player.getDuration()- 1) break
+          time++
+          player.seek(time)
+          hook.pushEvent("pause", { time })
+          break
+      }
+    })
+
     window.player = player
   }
 }
