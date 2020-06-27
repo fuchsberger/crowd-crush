@@ -72,8 +72,26 @@ defmodule CrowdCrushWeb.SimLive do
   end
 
   def handle_event("create", _params, socket) do
-    {id, _, _, _} = List.last(socket.assigns.video.markers)
-    {:noreply, assign(socket, :selected, id + 1)}
+    case Enum.count(socket.assigns.video.markers) do
+      0 ->
+        {:noreply, assign(socket, :selected, 1)}
+
+      _count ->
+        {id, _, _, _} = List.last(socket.assigns.video.markers)
+        {:noreply, assign(socket, :selected, id + 1)}
+    end
+  end
+
+  def handle_event("delete", _params, socket) do
+
+    Simulation.delete_markers(socket.assigns.video, socket.assigns.selected)
+
+    socket =
+      assign(socket, :video, Simulation.get_video_by_youtube_id(socket.assigns.video.youtubeID))
+
+    {:noreply, socket
+    |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
+    |> assign(:selected, nil)}
   end
 
   def handle_event("deselect", _params, socket), do: {:noreply, assign(socket, :selected, nil)}
@@ -90,7 +108,7 @@ defmodule CrowdCrushWeb.SimLive do
   """
   def handle_event("ping", %{"action" => action, "time" => time}, socket) do
     {:noreply, socket
-    |> assign(:action, (if time > socket.assigns.duration, do: "pause", else: action))
+    |> assign(:action, (if time > socket.assigns.duration, do: "stop", else: action))
     |> assign(:agent_positions, agent_positions(socket, time))
     |> assign(:time, time)}
   end

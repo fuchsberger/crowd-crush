@@ -42,10 +42,12 @@
           <i class='icon-add'></i>
           create agent
         </button>
-        <button class='btn btn-outline-danger btn-sm' data-confirm='Are you sure?' phx-click='delete_all'>
-          <i class='icon-cancel'></i>
-          remove all agents
-        </button>
+        <%= if Enum.count(@agent_positions) > 0 do %>
+          <button class='btn btn-outline-danger btn-sm' data-confirm='Are you sure?' phx-click='delete'>
+            <i class='icon-cancel'></i>
+            remove all agents (<%= Enum.count(@agent_positions) %>)
+          </button>
+        <% end %>
       <% end %>
     </div>
     <span class="navbar-text py-0">

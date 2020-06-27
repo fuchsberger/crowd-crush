@@ -132,14 +132,16 @@ defmodule CrowdCrush.Simulation do
     |> Enum.into([], fn {_k, x} -> Enum.concat(List.first(x), List.last(x)) end)
   end
 
-  @doc """
-  Deletes all markers of a given video that belong to the given agent.
-  If no agent is given, deletes all markers of all agents.
-  """
   def delete_markers(%Video{} = video, agent) do
-    if is_nil(agent),
-      do: Repo.delete_all(from(m in Ecto.assoc(video, :markers))),
-      else: Repo.delete_all(from(m in Ecto.assoc(video, :markers), where: m.agent == ^agent))
+    case agent do
+      nil ->
+        video
+        |> Ecto.assoc(:markers)
+        |> Repo.delete_all()
+      id ->
+        from(m in Ecto.assoc(video, :markers), where: m.agent == ^id)
+        |> Repo.delete_all()
+    end
   end
 
   @doc """
