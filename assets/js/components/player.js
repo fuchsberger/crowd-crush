@@ -20,24 +20,17 @@ export default class Player {
     this._player.play()
   }
 
-  get duration() {
-    return this._player.getDuration()
-  }
+  get duration() { return this._player.getDuration() }
+  get time() { return this._player.getCurrentTime() }
+  get player() { return this._player }
 
-  get time() {
-    return this._player.getCurrentTime()
-  }
-
-  get player() {
-    return this._player
-  }
-
-  play() {
-    this._player.play()
-  }
+  play() { this._player.play() }
+  backward() { this._player.seek(this._player.getCurrentTime() - 1) }
+  forward() { this._player.seek(this._player.getCurrentTime() + 1) }
 
   pause() {
     // pauses at the closest completed minute mark
+    console.log("pause", Math.floor(this._player.getCurrentTime()))
     this._player.seek(Math.floor(this._player.getCurrentTime()))
     this._player.pause()
   }
@@ -46,15 +39,4 @@ export default class Player {
     this._player.pause()
     this._player.seek(0)
   }
-
-  backward() {
-    // only possible while paused
-    this._player.seek(Math.max(0, this._player.getCurrentTime() - 1))
-  }
-
-  forward() {
-    // only possible while paused
-    this._player.seek(Math.min(this._player.getDuration(), this._player.getCurrentTime() + 1))
-  }
 }
-

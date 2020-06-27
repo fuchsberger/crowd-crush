@@ -22,19 +22,12 @@ export default {
       }
     })
 
-    player.player.on('paused', () => {
-      this.pushEvent("ping", { action: "paused", time: this.player.time })
-    })
-
     Object.assign(this, { aspectratio, canvas, context, data, ratio, player })
 
     this.draw_agents()
   },
 
   updated() {
-
-    console.log(this.player.time)
-
     // request an animation frame only when necessary, delete previous frame if in existance.
     if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)
     this.animationFrameRequest = requestAnimationFrame(() => {
@@ -54,6 +47,7 @@ export default {
 
         case 'stop':
           this.player.stop();
+          this.pushEvent("ping", { action: "paused", time: 0 })
           break
 
         case 'backward':
@@ -63,10 +57,7 @@ export default {
 
         case 'forward':
           this.player.forward();
-          this.pushEvent("ping", {
-            action: "paused",
-            time: Math.min(this.player.duration, time + 1)
-          })
+          this.pushEvent("ping", { action: "paused", time: time + 1 })
           break
 
         case 'playing':

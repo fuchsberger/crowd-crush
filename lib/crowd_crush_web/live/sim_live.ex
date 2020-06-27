@@ -90,7 +90,7 @@ defmodule CrowdCrushWeb.SimLive do
   """
   def handle_event("ping", %{"action" => action, "time" => time}, socket) do
     {:noreply, socket
-    |> assign(:action, (if time >= socket.assigns.duration, do: "pause", else: action))
+    |> assign(:action, (if time > socket.assigns.duration, do: "pause", else: action))
     |> assign(:agent_positions, agent_positions(socket, time))
     |> assign(:time, time)}
   end
