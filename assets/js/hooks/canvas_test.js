@@ -23,10 +23,10 @@ export default {
   },
 
   updated() {
-    let { canvas, colorizer, context } = this
+    let { aspectratio, canvas, colorizer, context } = this
 
     // should be done in mount but for some reason doesnt work here
-    resize(canvas, context)
+    resize(aspectratio, canvas, context)
 
     let particles = JSON.parse(this.el.dataset.particles)
 

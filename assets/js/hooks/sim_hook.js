@@ -1,4 +1,5 @@
 import Player from '../components/player'
+import { resize, pixelRatio } from '../helpers/canvas'
 
 export default {
   mounted() {
@@ -7,7 +8,6 @@ export default {
     let context = canvas.getContext("2d")
     let data = this.el.dataset
     let loaded = false
-    let ratio = getPixelRatio(context)
     let aspectratio = JSON.parse(data.aspectratio)
 
     const player = new Player(data.video)
@@ -22,7 +22,7 @@ export default {
       }
     })
 
-    Object.assign(this, { aspectratio, canvas, context, data, ratio, player })
+    Object.assign(this, { aspectratio, canvas, context, data, player })
 
     this.draw_agents()
   },
@@ -67,15 +67,14 @@ export default {
   },
 
   draw_agents() {
-    let { aspectratio, canvas, context, data, ratio } = this
+    let { aspectratio, canvas, context, data } = this
     const agents = JSON.parse(data.agents)
     const selected = JSON.parse(data.selected)
 
     // should be done once in mount but for some reason properties don't persist there
-    resize(aspectratio, canvas, ratio)
+    resize(aspectratio, canvas)
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-
 
     for (let [agent, position] of Object.entries(agents)) {
       if (position) {
@@ -96,40 +95,3 @@ export default {
   }
 }
 
-const getPixelRatio = context => {
-  var backingStore =
-    context.backingStorePixelRatio ||
-    context.webkitBackingStorePixelRatio ||
-    context.mozBackingStorePixelRatio ||
-    context.msBackingStorePixelRatio ||
-    context.oBackingStorePixelRatio ||
-    context.backingStorePixelRatio ||
-    1;
-
-  return (window.devicePixelRatio || 1) / backingStore;
-}
-
-const resize = (aspectratio, canvas, ratio) => {
-
-  const screen_w = window.innerWidth * ratio
-  const screen_h = (window.innerHeight - 103) * ratio
-  let w = screen_w
-  let h = screen_h
-
-  // screen is wider than video -> fix height and get scaled width
-  if (w / h > aspectratio) w = h * aspectratio
-  else h = w / aspectratio
-
-  // calculate left/top offset
-  const t = h < screen_h ? 56 + (screen_h - h) / 2 : 56
-  const l = w < screen_w ? (screen_w - w) / 2 : 0
-
-  // update canvas
-  canvas.width = w;
-  canvas.height = h;
-  canvas.style.position = 'fixed'
-  canvas.style.top = `${t}px`
-  canvas.style.left = `${l}px`
-  canvas.style.width = `${w}px`
-  canvas.style.height = `${h}px`
-}

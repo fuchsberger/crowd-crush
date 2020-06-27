@@ -8,10 +8,6 @@ defmodule CrowdCrushWeb.Endpoint do
     signing_salt: "3qRtFB7V"
   ]
 
-  socket "/socket", CrowdCrushWeb.UserSocket,
-    websocket: true,
-    longpoll: false
-
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [connect_info: [session: @session_options]]
 

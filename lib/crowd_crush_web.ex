@@ -56,19 +56,6 @@ defmodule CrowdCrushWeb do
     end
   end
 
-  def channel do
-    quote do
-      use Phoenix.Channel
-
-      import CrowdCrushWeb.{ErrorHelpers, Gettext}
-      import CrowdCrushWeb.UserSocket, except: [connect: 2, id: 1]
-
-      alias Phoenix.View
-      alias CrowdCrush.Simulation
-      alias CrowdCrushWeb.Endpoint
-    end
-  end
-
   @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
