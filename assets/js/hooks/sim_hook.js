@@ -1,15 +1,4 @@
-import YTPlayer from 'yt-player'
-
-const PLAYER_PARAMS = {
-  annotations: false,
-  captions: false,
-  controls: false,
-  fullscreen: false,
-  keyboard: false,
-  modestBranding: true,
-  width: "100%",
-  height: "100%",
-}
+import Player from '../components/player'
 
 export default {
   mounted() {
@@ -17,19 +6,15 @@ export default {
     let canvas = document.getElementById('canvas')
     let context = canvas.getContext("2d")
     let data = this.el.dataset
-    let loaded = false;
+    let loaded = false
     let ratio = getPixelRatio(context)
     let aspectratio = JSON.parse(data.aspectratio)
 
-    const player = new YTPlayer(document.getElementById('player'), PLAYER_PARAMS)
+    const player = new Player(data.video)
 
-    player.load(data.video)
-    player.mute()
-    player.play()
-
-    player.on('playing', () => {
+    player.player.on('playing', () => {
       if (!loaded) {
-        this.pushEvent('set_duration', { duration: player.getDuration()})
+        this.pushEvent('set_duration', { duration: this.player.duration })
         this.pushEvent("control", { action: "stop" })
         loaded = true
       } else {
@@ -37,38 +22,8 @@ export default {
       }
     })
 
-    player.on('paused', () => {
-      const time = Math.floor(player.getCurrentTime())
-      this.player.seek(time)
-      this.pushEvent("ping", { time })
-    })
-
-    player.on('ended', () => hook.pushEvent("control", { action: "stop" }))
-
-    // add key controls
-    const hook = this
-    document.addEventListener('keydown', e => {
-      let time = player.getCurrentTime()
-      switch (e.keyCode) {
-        case 65: // (a) backward
-          if (time <= 0) break
-          time--
-          player.seek(time)
-          hook.pushEvent("pause", { time })
-          break
-
-        case 68: // (d) forward
-          if(time > player.getDuration()- 1) break
-          time++
-          player.seek(time)
-          hook.pushEvent("pause", { time })
-          break
-
-        case 83: // (s)  deselect
-          if (JSON.parse(document.getElementById('canvas-wrapper').dataset.selected))
-            hook.pushEvent("deselect")
-          break
-      }
+    player.player.on('paused', () => {
+      this.pushEvent("ping", { action: "paused", time: this.player.time })
     })
 
     Object.assign(this, { aspectratio, canvas, context, data, ratio, player })
@@ -77,50 +32,47 @@ export default {
   },
 
   updated() {
-    let time = this.player.getCurrentTime()
 
-    switch (this.el.dataset.action) {
-      case 'play':
-        this.player.play()
-        break
+    console.log(this.player.time)
 
-      case 'playing':
-        const hook = this
-        // guard to ensure rendering keeps up with updates
-        if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)
+    // request an animation frame only when necessary, delete previous frame if in existance.
+    if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest)
+    this.animationFrameRequest = requestAnimationFrame(() => {
 
-        // request an animation frame only when necessary
-        this.animationFrameRequest = requestAnimationFrame(() => {
-          this.draw_agents()
-          if (!JSON.parse(data.paused))
-            hook.pushEvent("ping", { time: window.player.getCurrentTime() })
-        })
-        break
+      this.draw_agents()
 
-      case 'pause':
-        this.player.pause()
-        break
+      const time = this.player.time
+      switch (this.el.dataset.action) {
+        case 'play':
+          this.player.play();
+          break
 
-      case 'stop':
-        this.pushEvent("control", { action: "pause" })
-        this.player.seek(0)
-        this.player.pause()
-        break
+        case 'pause':
+          this.player.pause();
+          this.pushEvent("ping", { action: "paused", time })
+          break
 
-      case 'backward':
-        this.pushEvent("control", { action: "pause" })
-        time--
-        this.player.seek(time)
-        this.pushEvent("ping", { time })
-        break
+        case 'stop':
+          this.player.stop();
+          break
 
-      case 'forward':
-        this.pushEvent("control", { action: "pause" })
-        time++
-        this.player.seek(time)
-        this.pushEvent("ping", { time })
-        break
-    }
+        case 'backward':
+          this.player.backward();
+          this.pushEvent("ping", { action: "paused", time: time - 1 })
+          break
+
+        case 'forward':
+          this.player.forward();
+          this.pushEvent("ping", {
+            action: "paused",
+            time: Math.min(this.player.duration, time + 1)
+          })
+          break
+
+        case 'playing':
+          this.pushEvent("ping", { action: "playing", time })
+      }
+    })
   },
 
   draw_agents() {

@@ -1,30 +1,31 @@
-<div class='wrapper' phx-update='ignore'>
-  <div data-video="<%= @video.youtubeID %>" phx-hook='player'></div>
-</div>
-
 <div
+  data-action='<%= @action %>'
   data-agents="<%= Jason.encode!(@agent_positions) %>"
   data-aspectratio="<%= @video.aspectratio %>"
   data-paused="<%= @paused %>"
   data-selected="<%= Jason.encode!(@selected) %>"
-  phx-hook='canvas'
->
-  <canvas phx-click='click' phx-update="ignore">Canvas is not supported!</canvas>
+  data-time="<%= @time %>"
+  data-video="<%= @video.youtubeID %>"
+  phx-hook='sim'
+  phx-window-keyup='keyup'
+></div>
+
+<div class='wrapper' phx-update='ignore'>
+  <div id='player'></div>
+  <canvas id='canvas' phx-click='click'>Canvas is not supported!</canvas>
 </div>
 
-<%# Control Bar at bottom %>
+<%# Control Bar %>
 <nav class="navbar navbar-dark bg-dark fixed-bottom">
   <div class='container-fluid'>
-    <div>
-      <button id='btn-play' class="btn btn-sm btn-outline-light my-2 my-sm-0" type='button'>
-        <i class='icon-play'></i>
-      </button>
-      <button id='btn-stop' class="btn btn-sm btn-outline-light my-2 my-sm-0" type='button'>
-        <i class='icon-stop'></i>
-      </button>
-      <button id='btn-backward' class='btn btn-sm btn-outline-light my-2 my-sm-0<%= if @time == 0 || not @paused, do: " disabled"%>' type='button'><i class='icon-backward'></i></button>
-      <button id='btn-forward' class='btn btn-sm btn-outline-light my-2 my-sm-0<%= if @time > (@duration - 2) or not @paused, do: " disabled"%>' type='button'><i class='icon-forward'></i></button>
+
+    <div class="btn-group" role="group" aria-label="Player Controls">
+      <%= if @action == "playing", do: btn("pause"), else: btn("play") %>
+      <%= btn("stop", @time == 0) %>
+      <%= btn("backward", @time < 1 or @action == "playing") %>
+      <%= btn("forward", @time >= @duration or @action == "playing") %>
     </div>
+
     <div>
       <%= if @selected do %>
         <span class="navbar-text">Agent <%= @selected %> selected. Click on canvas to create/overwrite marker at current time.</span>
@@ -49,7 +50,7 @@
     </div>
     <span class="navbar-text py-0">
       <i class='icon-clock'></i>
-      <%= @time %>/<%= @duration %>
+      <%= floor(@time) %>/<%= @duration %>
     </span>
   </div>
 </nav>

@@ -16,6 +16,7 @@ defmodule CrowdCrushWeb.SimLive do
 
       video ->
         {:ok, socket
+        |> assign(:action, "paused")
         |> assign(:selected, nil)
         |> assign(:agent_positions, [])
         |> assign(:duration, 0)
@@ -27,7 +28,7 @@ defmodule CrowdCrushWeb.SimLive do
   end
 
   def handle_event("set_duration", %{"duration" => duration}, socket) do
-    {:noreply, assign(socket, :duration, round(duration))}
+    {:noreply, assign(socket, :duration, floor(duration))}
   end
 
   def handle_event("click", %{"x" => x, "y" => y}, socket) do
@@ -78,25 +79,36 @@ defmodule CrowdCrushWeb.SimLive do
   def handle_event("deselect", _params, socket), do: {:noreply, assign(socket, :selected, nil)}
 
   @doc """
-  Receive a timestamp and respond with agent data. Runs when client requests.
+  Control buttons only set the action.
   """
-  def handle_event("ping", %{"time" => time}, socket) do
-    {:noreply, socket
-    |> assign(:agent_positions, agent_positions(socket, time))
-    |> assign(:time, round(time))}
+  def handle_event("control", %{"action" => action}, socket) do
+    {:noreply, assign(socket, :action, action)}
   end
 
-  def handle_event("play", %{"time" => time}, socket) do
+  @doc """
+  Ping events update agents, time and action.
+  """
+  def handle_event("ping", %{"action" => action, "time" => time}, socket) do
     {:noreply, socket
+    |> assign(:action, (if time >= socket.assigns.duration, do: "pause", else: action))
     |> assign(:agent_positions, agent_positions(socket, time))
-    |> assign(:paused, false)}
-  end
-
-  def handle_event("pause", %{"time" => time}, socket) do
-    {:noreply, socket
-    |> assign(:agent_positions, agent_positions(socket, time))
-    |> assign(:paused, true)
     |> assign(:time, time)}
+  end
+
+  def handle_event("keyup", %{"key" => key}, socket) do
+    cond do
+      key == "a" && socket.assigns.time > 0 ->
+        {:noreply, assign(socket, :action, "backward")}
+
+      key == "d" && socket.assigns.time < socket.assigns.duration ->
+        {:noreply, assign(socket, :action, "forward")}
+
+      key == "s" && not is_nil(socket.assigns.selected) ->
+        {:noreply, assign(socket, :selected, nil)}
+
+      true ->
+        {:noreply, socket}
+    end
   end
 
   defp agent_positions(socket, time \\ nil) do

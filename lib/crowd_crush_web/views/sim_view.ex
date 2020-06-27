@@ -12,4 +12,12 @@ defmodule CrowdCrushWeb.SimView do
       agent -> Enum.count(agent)
     end
   end
+
+  def btn(action, disabled \\ false) do
+    content_tag :button, icon(action),
+      class: "btn btn-sm btn-outline-light",
+      disabled: disabled,
+      phx_click: "control",
+      phx_value_action: action
+  end
 end
