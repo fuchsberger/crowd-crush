@@ -18,9 +18,12 @@ defmodule CrowdCrushWeb.SimLive do
         {:ok, socket
         |> assign(:action, "paused")
         |> assign(:selected, nil)
+        |> assign(:agent_goals, nil)
         |> assign(:agent_positions, [])
         |> assign(:duration, 0)
         |> assign(:paused, true)
+        |> assign(:mode, "annotate")
+        |> assign(:show_overlay, false)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
         |> assign(:video, video)}
@@ -31,25 +34,39 @@ defmodule CrowdCrushWeb.SimLive do
     {:noreply, assign(socket, :duration, floor(duration))}
   end
 
+  def handle_event("set_mode", %{"mode" => mode}, socket) do
+    case mode do
+      "annotate" ->
+        {:noreply, socket
+        |> assign(:action, "stop")
+        |> assign(:agent_positions, agent_positions(socket, 0))
+        |> assign(:mode, mode)
+        |> assign(:time, 0)}
+
+      "sim" ->
+        {:noreply, socket
+        |> assign(:action, "prepare_sim")
+        # starting positions of agents (at current time)
+        |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
+        |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
+        |> assign(:mode, mode)}
+    end
+  end
+
   def handle_event("click", %{"x" => x, "y" => y}, socket) do
     case {socket.assigns.selected, Enum.count(socket.assigns.agent_positions)} do
-      {_, 0} ->
-        # no markers created yet, do nothing
-        {:noreply, socket}
-
       {nil, _count} ->
         # find closest agent and select it
         agent =
           socket.assigns.agent_positions
-          |> Enum.reject(fn {_id, coords} -> is_nil(coords) end)
-          |> Enum.sort_by(fn {_agent, [x1, y1]} ->
+          |> Enum.sort_by(fn [_id, x1, y1] ->
               :math.sqrt(:math.pow(x1 - x, 2) + :math.pow(y1 - y, 2))
             end)
           |> List.first()
 
         case agent do
           nil -> {:noreply, socket}
-          {id, _coords} -> {:noreply, assign(socket, :selected, id)}
+          [id, _x, _y] -> {:noreply, assign(socket, :selected, id)}
         end
 
       {id, _count} ->
@@ -100,7 +117,16 @@ defmodule CrowdCrushWeb.SimLive do
   Control buttons only set the action.
   """
   def handle_event("control", %{"action" => action}, socket) do
-    {:noreply, assign(socket, :action, action)}
+    if action == "play" && socket.assigns.mode == "sim" do
+      # when running simulation force the server to update
+      Process.send_after(self(), :update, 16)
+
+      {:noreply, socket
+      |> assign(:action, "playing")
+      |> assign(:time, 0)}
+    else
+      {:noreply, assign(socket, :action, action)}
+    end
   end
 
   @doc """
@@ -111,6 +137,10 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:action, (if time > socket.assigns.duration, do: "stop", else: action))
     |> assign(:agent_positions, agent_positions(socket, time))
     |> assign(:time, time)}
+  end
+
+  def handle_event("toggle-overlay", _params, socket) do
+    {:noreply, assign(socket, :show_overlay, !socket.assigns.show_overlay)}
   end
 
   def handle_event("keyup", %{"key" => key}, socket) do
@@ -134,18 +164,18 @@ defmodule CrowdCrushWeb.SimLive do
 
     socket.assigns.video.markers
     |> Enum.group_by(fn {id, _, _, _} -> id end, fn {_, t, x, y} -> {t, x, y} end)
-    |> Enum.into(%{}, fn {id, markers} ->
+    |> Enum.map(fn {id, markers} ->
 
       # find first marker where it's time is at or after current time
       case Enum.find_index(markers, fn {t, _x, _y} ->  t >= time end) do
         nil ->  # time is after last marker -> show nothing
-          {id, nil}
+          nil
 
         0 ->    # time is before or at first marker
           {t, x, y} = List.first(markers)
           case t == time do
-            true -> {id, [x, y]}
-            false -> {id, nil}
+            true -> [id, x, y]
+            false -> nil
           end
 
         idx ->  # idx is the marker after, idx-1 the marker before -> approximate
@@ -155,9 +185,32 @@ defmodule CrowdCrushWeb.SimLive do
           percentage = (time - t1) / (t2 - t1)
           x = x1 + (x2 - x1) * percentage
           y = y1 + (y2 - y1) * percentage
-
-          {id, [x, y]}
+          [id, x, y]
       end
+    end)
+    # ignore agents that are not currently present
+    |> Enum.reject(& is_nil(&1))
+  end
+
+  def handle_info(:update, %{assigns: %{action: action, time: time}} = socket) do
+    if action == "playing" do
+      Process.send_after(self(), :update, 16)
+      {:noreply, assign(socket, :time, time + 0.016)}
+    else
+      {:noreply, socket
+      |> assign(:action, "paused")
+      |> assign(:agent_positions, agent_positions(socket, 0))
+      |> assign(:time, 0)}
+    end
+  end
+
+  # Find the last marker of each agent and create map of final agent positions.
+  defp agent_goals(markers) do
+    markers
+    |> Enum.group_by(fn {id, _, _, _} -> id end, fn {_, t, x, y} -> {t, x, y} end)
+    |> Enum.into(%{}, fn {id, markers} ->
+      {_time, x, y } = List.last(markers)
+      {id, [x, y]}
     end)
   end
 end

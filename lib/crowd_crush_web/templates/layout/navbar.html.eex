@@ -26,20 +26,18 @@
         <li class="nav-item">
           <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.VideoLive) %>">Videos</a>
         </li>
-        <li class="nav-item dropdown">
-          <a id='testDropdown' class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">Test</a>
-          <ul class="dropdown-menu" aria-labelledby="testDropdown">
-            <li><a class="dropdown-item" href="<%= Routes.live_path(@conn, CrowdCrushWeb.AgentsLive) %>">Agents</a></li>
-            <li><a class="dropdown-item" href="<%= Routes.live_path(@conn, CrowdCrushWeb.CanvasLive) %>">Canvas / FPS</a></li>
-          </ul>
+        <li class="nav-item">
+          <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.AgentsLive) %>">Test: Agents</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.CanvasLive) %>">Test: Canvas / FPS</a>
         </li>
       </ul>
 
       <ul class="navbar-nav mr-auto">
         <%= if @current_user do %>
-          <li class="nav-item"><span class='navbar-text'><%= @current_user.username %></span></li>
-          <li class="nav-item">
-            <%= link [icon("off"), "Logout"],
+          <li class="nav-item" title='Logout'>
+            <%= link [icon("off"), @current_user.username],
               to: Routes.session_path(@conn, :delete, @current_user),
               class: "nav-link",
               method: "delete"

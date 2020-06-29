@@ -1,8 +1,11 @@
 <div
   data-action='<%= @action %>'
+  data-agent-goals='<%= Jason.encode!(@agent_goals) %>''
   data-agents="<%= Jason.encode!(@agent_positions) %>"
   data-aspectratio="<%= @video.aspectratio %>"
+  data-mode="<%= @mode %>"
   data-paused="<%= @paused %>"
+  data-show-overlay="<%= @show_overlay %>"
   data-selected="<%= Jason.encode!(@selected) %>"
   data-time="<%= @time %>"
   data-video="<%= @video.youtubeID %>"
@@ -19,40 +22,55 @@
 <nav class="navbar navbar-dark bg-dark fixed-bottom">
   <div class='container-fluid'>
 
-    <div class="btn-group" role="group" aria-label="Player Controls">
-      <%= if @action == "playing", do: btn("pause"), else: btn("play") %>
-      <%= btn("stop", @time == 0) %>
-      <%= btn("backward", @time < 1 or @action == "playing") %>
-      <%= btn("forward", @time >= @duration or @action == "playing") %>
-    </div>
-
-    <div>
+    <div class="btn-group" role="group" aria-label="Annotation Controls">
       <%= if @selected do %>
-        <span class="navbar-text">Agent <%= @selected %> selected. Click on canvas to create/overwrite marker at current time.</span>
-        <button class='btn btn-outline-light btn-sm' phx-click='deselect'>
-          deselect
+        <button class='btn btn-outline-light btn-sm' phx-click='deselect' title='deselect agent'>
+          <i class='icon-user mr-1'></i><%= @selected %>
         </button>
-        <button class='btn btn-outline-danger btn-sm' data-confirm='Are you sure?' phx-click='delete'>
-          <i class='icon-cancel'></i>
-          remove agent (<%= count_markers(@video, @selected) %> markers)
+        <button class='btn btn-outline-light btn-sm' data-confirm='Delete all markers of this agent?' phx-click='delete' title="Delete agent's markers?">
+          <i class='icon-markers mr-1'></i><%= count_markers(@video, @selected) %>
         </button>
       <% else %>
-        <span class="navbar-text">Click on canvas to select closest agent.</span>
-        <button class='btn btn-outline-light btn-sm' phx-click='create'>
+        <button class='btn btn-outline-light btn-sm' phx-click='create' title='Create Agent' >
           <i class='icon-add'></i>
-          create agent
         </button>
-        <%= if Enum.count(@agent_positions) > 0 do %>
-          <button class='btn btn-outline-danger btn-sm' data-confirm='Are you sure?' phx-click='delete'>
-            <i class='icon-cancel'></i>
-            remove all agents (<%= Enum.count(@agent_positions) %>)
-          </button>
-        <% end %>
+        <button class='btn btn-outline-light btn-sm' data-confirm='Delete all agents?' phx-click='delete' title='delete all agents' disabled='<%= Enum.count(@agent_positions) == 0 %>'>
+          <i class='icon-markers mr-1'></i><%= Enum.count(@agent_positions) %>
+        </button>
       <% end %>
     </div>
-    <span class="navbar-text py-0">
-      <i class='icon-clock'></i>
-      <%= floor(@time) %>/<%= @duration %>
-    </span>
+
+    <div class="btn-group" role="group" aria-label="Player Controls">
+      <%= if @action == "playing", do: btn("pause"), else: btn("play") %>
+      <%= btn("stop", @mode == "annotate" and @time == 0) %>
+      <%= btn("backward", @time < 1 or @action == "playing"  or @mode == "sim") %>
+      <%= btn("forward", @time >= @duration or @action == "playing" or @mode == "sim") %>
+      <button class='btn btn-outline-light btn-sm' disabled>
+        <i class='icon-clock'></i>
+        <%= floor(@time) %>
+        <%= if @mode == "annotate" do %>/ <%= @duration %><% end %>
+      </button>
+
+      <button
+        class='btn btn-outline-light btn-sm<%= unless @show_overlay, do: " active" %>'
+        title='Toggle Overlay'
+        phx-click='toggle-overlay'
+      ><i class='icon-video'></i></button>
+    </div>
+
+    <div class="btn-group" role="group" aria-label="Mode Control">
+      <button
+        class='btn btn-outline-light btn-sm<%= if @mode == "annotate", do: " active" %>'
+        title='Mode: Annotate'
+        phx-click='set_mode'
+        phx-value-mode='annotate'
+      ><strong>A</strong></button>
+      <button
+        class='btn btn-outline-light btn-sm<%= if @mode == "sim", do: " active" %>'
+        title='Mode: Simulation'
+        phx-click='set_mode'
+        phx-value-mode='sim'
+      ><strong>S</strong></button>
+    </div>
   </div>
 </nav>
