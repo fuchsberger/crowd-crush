@@ -1,0 +1,83 @@
+<div id="modal-settings" class="modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <%= f = form_for @changeset, "#",
+        class: "#{unless is_nil(@changeset.action), do: "was-validated"}",
+        novalidate: true,
+        phx_update: "validate-settings",
+        phx_submit: "update-settings"
+      %>
+        <div class="modal-header">
+          <h5 class="modal-title">Simulation Settings</h5>
+          <button type="button" class="close" phx-click="toggle-settings" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body py-0">
+
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th colspan='2' scope="col">Parameter</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <%# Radius %>
+              <tr>
+                <th scope='row'>Radius</th>
+                <td><%= number_input f, :radius %></td>
+                <td class='small'>The radius of agents.<%= error_tag(f, :radius) %></td>
+              </tr>
+
+              <%# Max Speed %>
+              <tr>
+                <th scope='row'>Max Speed</th>
+                <td><%= number_input f, :max_speed %></td>
+                <td class='small'>The maximum speed of of agents.<%= error_tag(f, :max_speed) %></td>
+              </tr>
+
+              <%# Max Speed %>
+              <tr>
+                <th scope='row'>Initial Velocity</th>
+                <td><%= number_input f, :velocity %></td>
+                <td class='small'>The initial two-dimensional linear velocity of agents.<%= error_tag(f, :velocity) %></td>
+              </tr>
+
+              <%# Max Neighbors %>
+              <tr>
+                <th scope='row'>Max Neighbors</th>
+                <td><%= number_input f, :max_neighbors %></td>
+                <td class='small'>The maximum number of other agents agents takes into account in the navigation. The larger this number, the longer the running time of the simulation. If the number is too low, the simulation will not be safe.<%= error_tag(f, :max_neighbors) %></td>
+              </tr>
+
+              <%# Neighbor Distance %>
+              <tr>
+                <th scope='row'>Neighbor Distance</th>
+                <td><%= number_input f, :neighbor_dist %></td>
+                <td class='small'>The maximum distance (center point to center point) to other agents agents takes into account in the navigation. The larger this number, the longer the running time of the simulation. If the number is too low, the simulation will not be safe.<%= error_tag(f, :neighbor_dist) %></td>
+              </tr>
+
+              <%# Time Horizon %>
+              <tr>
+                <th scope='row'>Time Horizon</th>
+                <td><%= number_input f, :time_horizon %></td>
+                <td class='small'>The minimal amount of time for which agents' velocities that are computed by the simulation are safe with respect to other agents. The larger this number, the sooner agents will respond to the presence of other agents, but the less freedom they have in choosing their velocities.<%= error_tag(f, :time_horizon) %></td>
+              </tr>
+
+              <%# Time Horizon Obstacles %>
+              <tr>
+                <th scope='row'>Time Horizon Obstacles</th>
+                <td><%= number_input f, :time_horizon_obst %></td>
+                <td class='small'>The minimal amount of time for which this agent's velocities that are computed by the simulation are safe with respect to obstacles. The larger this number, the sooner this agent will respond to the presence of obstacles, but the less freedom this agent has in choosing its velocities.<%= error_tag(f, :time_horizon_obst) %></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <%= submit "Update Settings", class: "btn btn-primary" %>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

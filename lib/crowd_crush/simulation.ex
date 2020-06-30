@@ -10,19 +10,6 @@ defmodule CrowdCrush.Simulation do
   alias CrowdCrush.Repo
   alias CrowdCrush.Simulation.{ Overlay, Marker, Video }
 
-  def get_video(id) do
-
-    overlay_query = from(o in Overlay, select: [ o.title, o.youtubeID ])
-
-    marker_query = from(m in Marker,
-      select: {m.agent, m.time, m.x, m.y},
-      order_by: [m.agent, m.time]
-    )
-
-    from(v in Video, preload: [overlays: ^overlay_query, markers: ^marker_query])
-    |> Repo.get(id)
-  end
-
   def get_video!(id), do: Repo.get! Video, id
 
   def change_video(%Video{} = video, params), do: Video.changeset(video, params)
@@ -47,6 +34,8 @@ defmodule CrowdCrush.Simulation do
     |> Repo.update()
   end
 
+
+
   def delete_video(id), do: Repo.get(Video, id) |> Repo.delete()
 
   def list_videos do
@@ -61,16 +50,7 @@ defmodule CrowdCrush.Simulation do
   # )
 
   def get_video_by_youtube_id(id) do
-
-    overlay_query = from(o in Overlay, select: [ o.title, o.youtubeID ])
-
-    marker_query = from(m in Marker,
-      select: {m.agent, m.time, m.x, m.y},
-      order_by: [m.agent, m.time]
-    )
-
-    from(v in Video, preload: [overlays: ^overlay_query, markers: ^marker_query])
-    |> Repo.get_by(youtubeID: id)
+    Repo.get_by(from(v in Video, preload: [markers: ^marker_query()]), youtubeID: id)
   end
 
   def get_video_details(video_id) do
@@ -92,6 +72,16 @@ defmodule CrowdCrush.Simulation do
     |> Repo.update_all([set: params], [returning: true])
   end
 
+  # SIMULATION SPECIFIC
+
+  def change_sim(%Video{} = video, params), do: Video.changeset_simulation(video, params)
+
+  def update_sim(video, attrs \\ %{}) do
+    video
+    |> Video.changeset_simulation(attrs)
+    |> Repo.update()
+  end
+
   @doc """
   Gets all agents, assumes that markers are sorted by first agent and then time
   """
@@ -101,7 +91,6 @@ defmodule CrowdCrush.Simulation do
   end
 
   # OVERLAYS
-
   def get_overlay!(id), do: Repo.get!(Overlay, id)
 
   def create_overlay(%Video{} = video, attrs \\ %{}) do
@@ -163,5 +152,11 @@ defmodule CrowdCrush.Simulation do
       nil  -> %Marker{}   # Marker not found, we build new one
       marker -> marker    # Marker exists, let's use it
     end
+  end
+
+  def load_markers(video), do: Repo.preload(video, [markers: marker_query()])
+
+  defp marker_query do
+    from m in Marker, select: {m.agent, m.time, m.x, m.y}, order_by: [m.agent, m.time]
   end
 end

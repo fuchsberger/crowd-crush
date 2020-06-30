@@ -23,6 +23,8 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:duration, 0)
         |> assign(:paused, true)
         |> assign(:mode, "annotate")
+        |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
+        |> assign(:show_settings, false)
         |> assign(:show_overlay, false)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
@@ -139,12 +141,19 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:time, time)}
   end
 
+  def handle_event("toggle-settings", _params, socket) do
+    {:noreply, assign(socket, :show_settings, !socket.assigns.show_settings)}
+  end
+
   def handle_event("toggle-overlay", _params, socket) do
     {:noreply, assign(socket, :show_overlay, !socket.assigns.show_overlay)}
   end
 
   def handle_event("keyup", %{"key" => key}, socket) do
     cond do
+      socket.assigns.show_settings ->
+        {:noreply, socket}
+
       key == "a" && socket.assigns.time > 0 ->
         {:noreply, assign(socket, :action, "backward")}
 
@@ -156,6 +165,24 @@ defmodule CrowdCrushWeb.SimLive do
 
       true ->
         {:noreply, socket}
+    end
+  end
+
+  def handle_event("validate-settings", %{"video" => params}, socket) do
+    changeset = Simulation.change_sim(socket.assigns.video, params)
+    {:noreply, assign(socket, :sim_changeset, changeset)}
+  end
+
+  def handle_event("update-settings", %{"video" => params}, socket) do
+    case Simulation.update_sim(socket.assigns.video, params) do
+      {:ok, video} ->
+        {:noreply, socket
+        |> assign(:show_settings, false)
+        |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
+        |> assign(:video, Simulation.load_markers(video))}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, :sim_changeset, changeset)}
     end
   end
 

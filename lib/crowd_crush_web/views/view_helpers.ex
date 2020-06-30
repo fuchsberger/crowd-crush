@@ -4,6 +4,8 @@ defmodule CrowdCrushWeb.ViewHelpers do
   """
   use Phoenix.HTML
 
+  import CrowdCrushWeb.ErrorHelpers, only: [error_class: 2]
+
   alias Phoenix.HTML.Form
 
   def icon(name, opts \\ [] ), do: content_tag(:i, "",
@@ -11,6 +13,13 @@ defmodule CrowdCrushWeb.ViewHelpers do
 
 
   def new?(changeset), do: changeset && changeset.data.__meta__.state == :built
+
+  # Bootstrap form fields
+  def number_input(form, field, opts \\ []) do
+    opts = Keyword.put(opts, :class, "form-control#{error_class(form, field)} #{Keyword.get(opts, :class, "")}")
+
+    Form.number_input(form, field, opts ++ Form.input_validations(form, field))
+  end
 
   def text_input(form, field, opts \\ []),
     do: Form.text_input(form, field, opts ++ Form.input_validations(form, field))

@@ -1,6 +1,8 @@
 const RVO = require('rvo-js/index.js')
 const Simulator = RVO.Simulator
 const RVOMath = RVO.RVOMath
+
+import Modal from 'bootstrap/js/dist/modal'
 import Player from '../components/player'
 import { resize } from '../helpers/canvas'
 
@@ -14,6 +16,7 @@ window.Obstacle = () => { }
 export default {
   mounted() {
 
+    const hook = this
     let canvas = document.getElementById('canvas')
     let context = canvas.getContext('2d')
     let data = this.el.dataset
@@ -32,19 +35,29 @@ export default {
       }
     })
 
-    Object.assign(this, { aspectratio, canvas, context, data, player })
+    const settingsModal = new Modal(document.getElementById('modal-settings'), {
+      backdrop: 'static'
+    })
+
+    Object.assign(this, { aspectratio, canvas, context, data, player, settingsModal })
 
     this.draw_agents()
   },
 
   updated() {
 
-    const { animationFrameRequest, aspectratio, canvas, data, interval, player, simulator } = this
+    const { animationFrameRequest, aspectratio, canvas, data, interval, player, simulator, settingsModal } = this
 
     // request an animation frame only when necessary, delete previous frame if in existance.
     if (animationFrameRequest) cancelAnimationFrame(animationFrameRequest)
 
     this.animationFrameRequest = requestAnimationFrame(() => {
+
+      // show or hide settings modal if needed
+      const showSettings = JSON.parse(data.showSettings)
+      if (showSettings && ! settingsModal._isShown) settingsModal.show()
+      else if (!showSettings && settingsModal._isShown) settingsModal.hide()
+      console.log(settingsModal)
 
       // should be done once in mount but for some reason properties don't persist there
       resize(aspectratio, canvas)
@@ -81,12 +94,12 @@ export default {
 
         case 'backward':
           player.backward();
-          this.pushEvent("ping", { action: "paused", time: time - 1 })
+          this.pushEvent("ping", { action: "paused", time: player.time - 1 })
           break
 
         case 'forward':
           player.forward();
-          this.pushEvent("ping", { action: "paused", time: time + 1 })
+          this.pushEvent("ping", { action: "paused", time: player.time + 1 })
           break
 
         case 'playing':
@@ -100,7 +113,7 @@ export default {
 
           simulator.setAgentDefaults(
             300, // neighbor distance (min = radius * radius)
-            30, // max neighbors
+            10, // max neighbors
             600, // time horizon
             600, // time horizon obstacles
             15, // agent radius
@@ -127,7 +140,6 @@ export default {
           const bot = new RVO.Vector2(0.3 * w, h)
           const bot2 = new RVO.Vector2(0.32 * w, h)
 
-          // console.log(top)
           const vertices = [top, top2, bot2, bot]
           simulator.addObstacle(vertices)
           simulator.processObstacles()
@@ -211,10 +223,9 @@ export default {
 
     simulator.run()
 
-    if (simulator.reachedGoal()) {
-      clearInterval(this.interval)
-      console.log('finish')
-    }
+    // if (simulator.reachedGoal()) {
+
+    // }
   }
 }
 

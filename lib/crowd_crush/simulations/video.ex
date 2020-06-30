@@ -3,12 +3,25 @@ defmodule CrowdCrush.Simulation.Video do
 
   import Ecto.Changeset
 
+  @sim_fields ~w(radius max_speed velocity max_neighbors neighbor_dist time_horizon time_horizon_obst)a
+
   schema "videos" do
     field :url, :string, virtual: true
     field :aspectratio, :float
     field :duration, :integer
     field :title, :string
     field :youtubeID, :string
+
+    # simulation
+    field :radius, :float, default: 5
+    field :max_speed, :float, default: 10
+    field :velocity, :float, default: 1
+    field :max_neighbors, :integer, default: 10
+    field :neighbor_dist, :float, default: 25
+    field :time_horizon, :float, default: 600
+    field :time_horizon_obst, :float, default: 600
+
+    # real-world coord translation
     field :m0_x, :float, default: 0.8
     field :m0_y, :float, default: 0.8
     field :mX_x, :float, default: 0.9
@@ -19,6 +32,7 @@ defmodule CrowdCrush.Simulation.Video do
     field :mR_y, :float, default: 0.9
     field :dist_x, :float
     field :dist_y, :float
+
     has_many :markers, CrowdCrush.Simulation.Marker
     has_many :overlays, CrowdCrush.Simulation.Overlay
     timestamps()
@@ -47,6 +61,19 @@ defmodule CrowdCrush.Simulation.Video do
     |> validate_number(:dist_x, greater_than: 0)
     |> validate_number(:dist_y, greater_than: 0)
     |> unique_constraint(:youtubeID)
+  end
+
+  def changeset_simulation(struct, params) do
+    struct
+    |> cast(params, @sim_fields)
+    |> validate_required(@sim_fields)
+    |> validate_number(:radius, greater_than_or_equal_to: 0)
+    |> validate_number(:max_speed, greater_than_or_equal_to: 0)
+    |> validate_number(:velocity, greater_than_or_equal_to: 0)
+    |> validate_number(:max_neighbors, greater_than_or_equal_to: 0)
+    |> validate_number(:neighbor_dist, greater_than_or_equal_to: 0)
+    |> validate_number(:time_horizon, greater_than: 0)
+    |> validate_number(:time_horizon_obst, greater_than: 0)
   end
 
   def rename_changeset(struct, params) do

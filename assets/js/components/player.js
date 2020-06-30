@@ -30,7 +30,6 @@ export default class Player {
 
   pause() {
     // pauses at the closest completed minute mark
-    console.log("pause", Math.floor(this._player.getCurrentTime()))
     this._player.seek(Math.floor(this._player.getCurrentTime()))
     this._player.pause()
   }

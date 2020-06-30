@@ -19,9 +19,9 @@ defmodule CrowdCrushWeb.ErrorHelpers do
   """
   def error_class(form, field) do
     cond do
-      form.errors[field] -> " is-invalid"
-      form.params[Atom.to_string(field)] -> " is-valid"
-      true -> ""
+      is_nil(form.source.action) -> ""
+      Keyword.has_key?(form.errors, field) -> " is-invalid"
+      true -> " is-valid"
     end
   end
 
@@ -39,7 +39,7 @@ defmodule CrowdCrushWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn (error) ->
-      content_tag :span, translate_error(error), class: "help-block"
+      content_tag :span, translate_error(error), class: "invalid-feedback"
     end)
   end
 

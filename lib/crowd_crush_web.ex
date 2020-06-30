@@ -35,7 +35,7 @@ defmodule CrowdCrushWeb do
       use Phoenix.View, root: "lib/crowd_crush_web/templates", namespace: CrowdCrushWeb
       use Phoenix.HTML
 
-      import Phoenix.HTML.Form, except: [select: 4, text_input: 3, url_input: 3]
+      import Phoenix.HTML.Form, except: [select: 4, number_input: 2, text_input: 3, url_input: 3]
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2]
 
       import Phoenix.LiveView.Helpers
