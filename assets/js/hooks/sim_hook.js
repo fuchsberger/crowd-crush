@@ -57,7 +57,6 @@ export default {
       const showSettings = JSON.parse(data.showSettings)
       if (showSettings && ! settingsModal._isShown) settingsModal.show()
       else if (!showSettings && settingsModal._isShown) settingsModal.hide()
-      console.log(settingsModal)
 
       // should be done once in mount but for some reason properties don't persist there
       resize(aspectratio, canvas)

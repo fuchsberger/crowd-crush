@@ -27,9 +27,6 @@
           <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.VideoLive) %>">Videos</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.AgentsLive) %>">Test: Agents</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="<%= Routes.live_path(@conn, CrowdCrushWeb.CanvasLive) %>">Test: Canvas / FPS</a>
         </li>
       </ul>
