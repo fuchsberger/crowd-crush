@@ -13,6 +13,14 @@ defmodule CrowdCrushWeb.SimView do
     end
   end
 
+  def encode_video(video) do
+    video
+    |> Map.take([
+        :radius, :max_speed, :velocity, :max_neighbors, :neighbor_dist, :time_horizon, :time_horizon_obst, :aspectratio, :youtubeID
+      ])
+    |> Jason.encode!()
+  end
+
   def btn(action, disabled \\ false) do
     content_tag :button, icon(action),
       class: "btn btn-sm btn-outline-light",

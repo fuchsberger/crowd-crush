@@ -21,9 +21,9 @@ export default {
     let context = canvas.getContext('2d')
     let data = this.el.dataset
     let loaded = false
-    let aspectratio = JSON.parse(data.aspectratio)
+    const video = JSON.parse(data.video)
 
-    const player = new Player(data.video)
+    const player = new Player(video.youtubeID)
 
     player.player.on('playing', () => {
       if (!loaded) {
@@ -39,14 +39,14 @@ export default {
       backdrop: 'static'
     })
 
-    Object.assign(this, { aspectratio, canvas, context, data, player, settingsModal })
+    Object.assign(this, { canvas, context, data, player, settingsModal, video })
 
     this.draw_agents()
   },
 
   updated() {
 
-    const { animationFrameRequest, aspectratio, canvas, data, interval, player, simulator, settingsModal } = this
+    const { animationFrameRequest, canvas, data, interval, player, simulator, settingsModal, video } = this
 
     // request an animation frame only when necessary, delete previous frame if in existance.
     if (animationFrameRequest) cancelAnimationFrame(animationFrameRequest)
@@ -59,7 +59,7 @@ export default {
       else if (!showSettings && settingsModal._isShown) settingsModal.hide()
 
       // should be done once in mount but for some reason properties don't persist there
-      resize(aspectratio, canvas)
+      resize(video.aspectratio, canvas)
 
       // depending on mode draw either agents or synthetic agents
       if (data.mode == 'annotate') this.draw_agents()
@@ -87,7 +87,7 @@ export default {
             }
           } else {
             if (interval) clearInterval(interval)
-            if(data.mode == 'sim') this.pushEvent("ping", { action: "prepare_sim", time: 0 })
+            if(data.mode == 'sim') this.pushEvent("ping", { action: "prepare-sim", time: 0 })
           }
           break
 
@@ -105,47 +105,8 @@ export default {
           this.pushEvent("ping", { action: "playing", time: player.time })
           break
 
-        case 'prepare_sim':
-          const simulator = new RVO.Simulator()
-
-          simulator.setTimeStep(0.25)
-
-          simulator.setAgentDefaults(
-            300, // neighbor distance (min = radius * radius)
-            10, // max neighbors
-            600, // time horizon
-            600, // time horizon obstacles
-            15, // agent radius
-            30, // max speed
-            5, // default velocity for x
-            5, // default velocity for y
-          )
-
-          // add agents to simulation
-          const agents = JSON.parse(this.data.agents)
-          const goals = JSON.parse(this.data.agentGoals)
-          const w = canvas.width
-          const h = canvas.height
-
-          for (let i = 0; i < agents.length; i++) {
-            const id = agents[i][0]
-            simulator.addAgent()
-            simulator.setAgentPosition(i, agents[i][1] * w, agents[i][2] * h)
-            simulator.setAgentGoal(i, goals[id][0] * w, goals[id][1] * h)
-          }
-
-          const top = new RVO.Vector2(0.3 * w, 0)
-          const top2 = new RVO.Vector2(0.32 * w, 0)
-          const bot = new RVO.Vector2(0.3 * w, h)
-          const bot2 = new RVO.Vector2(0.32 * w, h)
-
-          const vertices = [top, top2, bot2, bot]
-          simulator.addObstacle(vertices)
-          simulator.processObstacles()
-
-          this.simulator = simulator
-
-          this.pushEvent("ping", { action: "pause", time: 0 })
+        case 'prepare-sim':
+          this.prepareSimulation()
           break
       }
     })
@@ -225,6 +186,51 @@ export default {
     // if (simulator.reachedGoal()) {
 
     // }
+  },
+
+  prepareSimulation() {
+    const simulator = new RVO.Simulator()
+
+    simulator.setTimeStep(0.25)
+
+    simulator.setAgentDefaults(
+      this.video.neighbor_dist, // neighbor distance (min = radius * radius)
+      this.video.max_neighbors, // max neighbors
+      this.video.time_horizon, // time horizon
+      this.video.time_horizon_obst, // time horizon obstacles
+      this.video.radius, // agent radius
+      this.video.max_speed, // max speed
+      this.video.velocity, // default velocity for x
+      this.video.velocity, // default velocity for y
+    )
+
+    // add agents to simulation
+    const agents = JSON.parse(this.data.agents)
+    const goals = JSON.parse(this.data.agentGoals)
+    const w = canvas.width
+    const h = canvas.height
+
+    for (let i = 0; i < agents.length; i++) {
+      const id = agents[i][0]
+      simulator.addAgent()
+      simulator.setAgentPosition(i, agents[i][1] * w, agents[i][2] * h)
+      simulator.setAgentGoal(i, goals[id][0] * w, goals[id][1] * h)
+    }
+
+    const top = new RVO.Vector2(0.3 * w, 0)
+    const top2 = new RVO.Vector2(0.32 * w, 0)
+    const bot = new RVO.Vector2(0.3 * w, h)
+    const bot2 = new RVO.Vector2(0.32 * w, h)
+
+    const vertices = [top, top2, bot2, bot]
+    simulator.addObstacle(vertices)
+    simulator.processObstacles()
+
+    this.simulator = simulator
+
+    console.log("prepared")
+
+    this.pushEvent("ping", { action: "pause", time: 0 })
   }
 }
 

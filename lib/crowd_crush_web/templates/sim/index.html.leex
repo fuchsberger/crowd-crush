@@ -2,14 +2,13 @@
   data-action='<%= @action %>'
   data-agent-goals='<%= Jason.encode!(@agent_goals) %>''
   data-agents="<%= Jason.encode!(@agent_positions) %>"
-  data-aspectratio="<%= @video.aspectratio %>"
   data-mode="<%= @mode %>"
   data-paused="<%= @paused %>"
   data-show-settings="<%= @show_settings %>"
   data-show-overlay="<%= @show_overlay %>"
   data-selected="<%= Jason.encode!(@selected) %>"
   data-time="<%= @time %>"
-  data-video="<%= @video.youtubeID %>"
+  data-video="<%= encode_video(@video) %>"
   phx-hook='sim'
   phx-window-keyup='keyup'
 ></div>

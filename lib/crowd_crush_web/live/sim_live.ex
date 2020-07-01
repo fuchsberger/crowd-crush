@@ -47,7 +47,7 @@ defmodule CrowdCrushWeb.SimLive do
 
       "sim" ->
         {:noreply, socket
-        |> assign(:action, "prepare_sim")
+        |> assign(:action, "prepare-sim")
         # starting positions of agents (at current time)
         |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
         |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
@@ -177,8 +177,13 @@ defmodule CrowdCrushWeb.SimLive do
     case Simulation.update_sim(socket.assigns.video, params) do
       {:ok, video} ->
         {:noreply, socket
+        |> assign(:action, "prepare-sim")
+        |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
+        |> assign(:agent_positions, agent_positions(socket, 0))
+        |> assign(:mode, "sim")
         |> assign(:show_settings, false)
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
+        |> assign(:time, 0)
         |> assign(:video, Simulation.load_markers(video))}
 
       {:error, changeset} ->
