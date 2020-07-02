@@ -21,10 +21,10 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:agent_goals, nil)
         |> assign(:agent_positions, [])
         |> assign(:duration, 0)
-        |> assign(:paused, true)
         |> assign(:mode, "annotate")
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
         |> assign(:show_settings, false)
+        |> assign(:show_obstacles, true)
         |> assign(:show_overlay, false)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
@@ -141,12 +141,12 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:time, time)}
   end
 
-  def handle_event("toggle-settings", _params, socket) do
-    {:noreply, assign(socket, :show_settings, !socket.assigns.show_settings)}
-  end
-
-  def handle_event("toggle-overlay", _params, socket) do
-    {:noreply, assign(socket, :show_overlay, !socket.assigns.show_overlay)}
+  def handle_event("toggle", %{"setting" => setting}, socket) do
+    case setting do
+      "obstacles" -> {:noreply, assign(socket, :show_obstacles, !socket.assigns.show_obstacles)}
+      "overlay"   -> {:noreply, assign(socket, :show_overlay, !socket.assigns.show_overlay)}
+      "settings"  -> {:noreply, assign(socket, :show_settings, !socket.assigns.show_settings)}
+    end
   end
 
   def handle_event("keyup", %{"key" => key}, socket) do

@@ -3,8 +3,8 @@
   data-agent-goals='<%= Jason.encode!(@agent_goals) %>''
   data-agents="<%= Jason.encode!(@agent_positions) %>"
   data-mode="<%= @mode %>"
-  data-paused="<%= @paused %>"
   data-show-settings="<%= @show_settings %>"
+  data-show-obstacles="<%= @show_obstacles %>"
   data-show-overlay="<%= @show_overlay %>"
   data-selected="<%= Jason.encode!(@selected) %>"
   data-time="<%= @time %>"
@@ -32,12 +32,7 @@
         <%= floor(@time) %>
         <%= if @mode == "annotate" do %>/ <%= @duration %><% end %>
       </button>
-
-      <button
-        class='btn btn-outline-light btn-sm<%= unless @show_overlay, do: " active" %>'
-        title='Toggle Overlay'
-        phx-click='toggle-overlay'
-      ><i class='icon-video'></i></button>
+      <%= btn_toggle("overlay", !@show_overlay, "video") %>
     </div>
 
     <div class="btn-group" role="group" aria-label="Annotation Controls">
@@ -58,8 +53,6 @@
       <% end %>
     </div>
 
-
-
     <div class="btn-group" role="group" aria-label="Mode Control">
       <button
         class='btn btn-outline-light btn-sm<%= if @mode == "annotate", do: " active" %>'
@@ -76,11 +69,8 @@
     </div>
 
     <div class="btn-group" role="group" aria-label="Simulation Control">
-      <button
-        class='btn btn-outline-light btn-sm'
-        title='Simulation Settings'
-        phx-click='toggle-settings'
-      ><i class='icon-settings'></i></button>
+      <%= btn_toggle("settings", @show_settings) %>
+      <%= btn_toggle("obstacles", @show_obstacles) %>
     </div>
   </div>
 </nav>

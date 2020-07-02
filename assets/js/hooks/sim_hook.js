@@ -16,7 +16,6 @@ window.Obstacle = () => { }
 export default {
   mounted() {
 
-    const hook = this
     let canvas = document.getElementById('canvas')
     let context = canvas.getContext('2d')
     let data = this.el.dataset
@@ -39,7 +38,25 @@ export default {
       backdrop: 'static'
     })
 
-    Object.assign(this, { canvas, context, data, player, settingsModal, video })
+    // create obstacles
+    // TODO: Load from database
+    const obstacles = [
+      [
+        { x: 0.3, y: 0 },
+        { x: 0.32, y: 0 },
+        { x: 0.32, y: 1 },
+        { x: 0.3, y: 1 }
+      ],
+      [
+        { x: 0.56, y: 0.3 },
+        { x: 0.45, y: 1 }
+      ],
+      [
+        { x: 0.8, y: 0.2 }
+      ]
+    ]
+
+    Object.assign(this, { canvas, context, data, obstacles, player, settingsModal, video })
 
     this.draw_agents()
   },
@@ -61,7 +78,9 @@ export default {
       // should be done once in mount but for some reason properties don't persist there
       resize(video.aspectratio, canvas)
 
-      // depending on mode draw either agents or synthetic agents
+      // draw elements
+      this.draw_background()
+      if (JSON.parse(data.showObstacles)) this.draw_obstacles()
       if (data.mode == 'annotate') this.draw_agents()
       else if(simulator) this.draw_synth_agents()
 
@@ -119,14 +138,6 @@ export default {
     const selected = JSON.parse(data.selected)
     const show_overlay = JSON.parse(data.showOverlay)
 
-    // background
-    if (show_overlay) {
-      context.fillStyle = "white";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    } else {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
     for (let i = 0; i < agents.length; i++) {
       if (show_overlay) context.fillStyle = "black";
       else context.fillStyle = selected == agents[i][0] ? COLORS.CYAN : COLORS.GREEN
@@ -143,16 +154,55 @@ export default {
     }
   },
 
+  draw_background() {
+    let { canvas, context, data } = this
+
+    if (data.mode == 'sim' || JSON.parse(data.showOverlay)) {
+      context.fillStyle = "white";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    } else {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  },
+
+  draw_obstacles() {
+    const { canvas, context, obstacles } = this
+
+    context.strokeStyle = context.fillStyle = "rgba(255,0,0,0.5)"
+    context.lineWidth = 3;
+
+    for (var i = 0; i < obstacles.length; i++){
+      const o = obstacles[i]
+
+      if (o.length == 1) {
+        // draw single dot
+        context.beginPath()
+        context.arc(o[0].x * canvas.width, o[0].y * canvas.height, 3, 0, 2 * Math.PI, true)
+        context.fill()
+
+      } else if (o.length == 2) {
+        // draw line
+        context.beginPath()
+        context.moveTo(o[0].x * canvas.width, o[0].y * canvas.height)
+        context.lineTo(o[1].x * canvas.width, o[1].y * canvas.height)
+        context.stroke()
+
+      } else {
+        // draw polygon
+        context.beginPath()
+        context.moveTo(o[0].x * canvas.width, o[0].y * canvas.height)
+        for (var j = 1; j < o.length; j++) {
+          context.lineTo(o[j].x * canvas.width, o[j].y * canvas.height)
+        }
+        context.closePath()
+        context.fill()
+      }
+    }
+  },
+
   draw_synth_agents() {
 
-    const { canvas, context, simulator } = this
-    const w = canvas.width
-
-    context.fillStyle = "white";
-    context.fillRect(0, 0, w, canvas.height);
-
-    context.fillStyle = "gray";
-    context.fillRect(0.3 * w, 0, 0.02 * w, canvas.height);
+    const { context, simulator } = this
 
     context.fillStyle = "black"
 
@@ -173,6 +223,11 @@ export default {
         // Agent is within one radius of its goal, set preferred velocity to zero
         simulator.setAgentPrefVelocity(i, 0.0, 0.0)
 
+        // remove agent from simulation
+        console.log(simulator)
+        simulator.agents.splice(i, 1)
+        i--
+
       } else {
         // Agent is far away from its goal
         // set preferred velocity as unit vector towards agent's goal.
@@ -183,14 +238,15 @@ export default {
 
     simulator.run()
 
-    // if (simulator.reachedGoal()) {
-
-    // }
+    if (simulator.reachedGoal()) {
+      // reset simulation
+      this.prepareSimulation()
+    }
   },
 
   prepareSimulation() {
     const simulator = new RVO.Simulator()
-
+    window.agentTree = []
     simulator.setTimeStep(0.25)
 
     simulator.setAgentDefaults(
@@ -217,18 +273,23 @@ export default {
       simulator.setAgentGoal(i, goals[id][0] * w, goals[id][1] * h)
     }
 
-    const top = new RVO.Vector2(0.3 * w, 0)
-    const top2 = new RVO.Vector2(0.32 * w, 0)
-    const bot = new RVO.Vector2(0.3 * w, h)
-    const bot2 = new RVO.Vector2(0.32 * w, h)
+    // add obstacles to simulation
+    for (let i = 0; i < this.obstacles.length; i++) {
+      const obst = []
+      for (let j = 0; j < this.obstacles[i].length; j++) {
+        obst.push(new RVO.Vector2(
+          this.obstacles[i][j].x * this.canvas.width,
+          this.obstacles[i][j].y * this.canvas.height
+        ))
+      }
+      simulator.addObstacle(obst)
+    }
 
-    const vertices = [top, top2, bot2, bot]
-    simulator.addObstacle(vertices)
     simulator.processObstacles()
 
     this.simulator = simulator
 
-    console.log("prepared")
+    console.log("Prepared Simulation.")
 
     this.pushEvent("ping", { action: "pause", time: 0 })
   }

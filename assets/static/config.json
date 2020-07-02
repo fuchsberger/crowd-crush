@@ -25,12 +25,6 @@
       "src": "fontawesome"
     },
     {
-      "uid": "e5d624264734620fa9f98d59e6dc941f",
-      "css": "compass",
-      "code": 61774,
-      "src": "fontawesome"
-    },
-    {
       "uid": "cf772d9d1eca484c9772a98045dd39d6",
       "css": "markers",
       "code": 59395,
@@ -121,27 +115,9 @@
       "src": "fontawesome"
     },
     {
-      "uid": "2d6150442079cbda7df64522dc24f482",
-      "css": "down",
-      "code": 59409,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "3a00327e61b997b58518bd43ed83c3df",
-      "css": "start",
-      "code": 59410,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "0d20938846444af8deb1920dc85a29fb",
-      "css": "exit",
-      "code": 59411,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "921e3974e54ff9e8b7cd906a3dc74636",
-      "css": "direction",
-      "code": 61732,
+      "uid": "09bdae120f85e79f2db16145a9e1f6d8",
+      "css": "obstacles",
+      "code": 61733,
       "src": "fontawesome"
     }
   ]

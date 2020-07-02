@@ -28,4 +28,12 @@ defmodule CrowdCrushWeb.SimView do
       phx_click: "control",
       phx_value_action: action
   end
+
+  def btn_toggle(setting, active \\ false, icon \\ nil) do
+    content_tag :button, icon(icon || setting),
+      class: "btn btn-outline-light btn-sm#{if active, do: " active"}",
+      title: "Toggle #{String.capitalize(setting)}",
+      phx_click: "toggle",
+      phx_value_setting: setting
+  end
 end
