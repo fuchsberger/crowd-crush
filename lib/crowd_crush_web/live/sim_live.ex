@@ -24,7 +24,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:mode, "annotate")
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
         |> assign(:show_settings, false)
-        |> assign(:show_obstacles, true)
+        |> assign(:show_obstacles, false)
         |> assign(:show_overlay, false)
         |> assign(:time, 0)
         |> assign(:user_id, Map.get(session, "user_id"))
