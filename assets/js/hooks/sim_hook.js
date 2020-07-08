@@ -71,9 +71,8 @@ export default {
     this.animationFrameRequest = requestAnimationFrame(() => {
 
       // show or hide settings modal if needed
-      const showSettings = JSON.parse(data.showSettings)
-      if (showSettings && ! settingsModal._isShown) settingsModal.show()
-      else if (!showSettings && settingsModal._isShown) settingsModal.hide()
+      if (data.mode == 'settings') settingsModal.show()
+      else settingsModal.hide()
 
       // should be done once in mount but for some reason properties don't persist there
       resize(video.aspectratio, canvas)

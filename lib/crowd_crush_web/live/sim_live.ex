@@ -23,7 +23,6 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:duration, 0)
         |> assign(:mode, "annotate")
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
-        |> assign(:show_settings, false)
         |> assign(:show_obstacles, false)
         |> assign(:show_overlay, false)
         |> assign(:time, 0)
@@ -36,15 +35,8 @@ defmodule CrowdCrushWeb.SimLive do
     {:noreply, assign(socket, :duration, floor(duration))}
   end
 
-  def handle_event("set_mode", %{"mode" => mode}, socket) do
+  def handle_event("set", %{"mode" => mode}, socket) do
     case mode do
-      "annotate" ->
-        {:noreply, socket
-        |> assign(:action, "stop")
-        |> assign(:agent_positions, agent_positions(socket, 0))
-        |> assign(:mode, mode)
-        |> assign(:time, 0)}
-
       "sim" ->
         {:noreply, socket
         |> assign(:action, "prepare-sim")
@@ -52,6 +44,9 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
         |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
         |> assign(:mode, mode)}
+
+      mode ->
+        {:noreply, assign(socket, :mode, mode)}
     end
   end
 

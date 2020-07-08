@@ -34,8 +34,6 @@ defmodule CrowdCrush.Simulation do
     |> Repo.update()
   end
 
-
-
   def delete_video(id), do: Repo.get(Video, id) |> Repo.delete()
 
   def list_videos do
@@ -44,13 +42,8 @@ defmodule CrowdCrush.Simulation do
       preload: [markers: ^from(m in Marker, group_by: m.video_id, select: count())]
   end
 
-  # def list_videos, do: Repo.all(from v in Video,
-  #   select: map(v, ~w(id title duration youtubeID)a),
-  #   order_by: v.title
-  # )
-
   def get_video_by_youtube_id(id) do
-    Repo.get_by(from(v in Video, preload: [markers: ^marker_query()]), youtubeID: id)
+    Repo.get_by(from(v in Video, preload: [:obstacles, markers: ^marker_query()]), youtubeID: id)
   end
 
   def get_video_details(video_id) do

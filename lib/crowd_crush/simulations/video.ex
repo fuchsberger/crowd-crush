@@ -34,6 +34,7 @@ defmodule CrowdCrush.Simulation.Video do
     field :dist_y, :float
 
     has_many :markers, CrowdCrush.Simulation.Marker
+    has_many :obstacles, CrowdCrush.Simulation.Obstacle
     has_many :overlays, CrowdCrush.Simulation.Overlay
     timestamps()
   end
