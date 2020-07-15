@@ -21,6 +21,7 @@ export default {
     let data = this.el.dataset
 
     const video = JSON.parse(data.video)
+    console.log(data)
     const player = new Player(video.youtubeID, (event, data) => this.pushEvent(event, data))
 
     const settingsModal = new Modal(document.getElementById('modal-settings'), {
@@ -47,7 +48,7 @@ export default {
 
     Object.assign(this, { canvas, context, data, obstacles, player, settingsModal, video })
 
-    this.draw_agents()
+    this.render_canvas()
   },
 
   updated() {
@@ -59,18 +60,7 @@ export default {
 
     this.animationFrameRequest = requestAnimationFrame(() => {
 
-      // should be done once in mount but for some reason properties don't persist there
-      resize(video.aspectratio, canvas)
 
-      // draw elements
-      data.mode == 'play-annot' || data.mode == 'play-synth'
-        ? this.draw_background() : this.clear_canvas()
-
-      if (data.mode == 'add-obstacles' || data.mode == 'remove-obstacles') this.draw_obstacles()
-
-      simulator && data.mode == 'play-synth' ? this.draw_synth_agents() : this.draw_agents()
-
-      data.mode == 'settings' ? settingsModal.show() : settingsModal.hide()
 
       switch (this.el.dataset.action) {
 
@@ -120,6 +110,34 @@ export default {
     })
   },
 
+  render_canvas(){
+    const {canvas, context, get, settingsModal, show_settings, video} = this
+
+    // should be done once in mount but for some reason properties don't persist there
+    resize(video.aspectratio, canvas)
+
+    // draw background
+    if(get("show_video")){
+      context.clearRect(0, 0, canvas.width, canvas.height)
+    } else {
+      context.fillStyle = "white"
+      context.fillRect(0, 0, canvas.width, canvas.height)
+    }
+
+    if (get("show_obstacles")) this.draw_obstacles()
+
+    if(get("show_markers")){
+      get("show_video") ? this.draw_agents() : this.draw_synth_agents()
+    }
+
+    show_settings ? settingsModal.show() : settingsModal.hide()
+  },
+
+  get(key){
+    console.log(this, key)
+    return JSON.parse(this.data[key])
+  },
+
   draw_agents() {
     let { canvas, context, data } = this
 
@@ -141,15 +159,6 @@ export default {
       )
       context.fill()
     }
-  },
-
-  clear_canvas() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-  },
-
-  draw_background() {
-    this.context.fillStyle = "white"
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
   },
 
   draw_obstacles() {

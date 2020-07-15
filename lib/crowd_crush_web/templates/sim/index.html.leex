@@ -1,12 +1,13 @@
 <div
-  data-action='<%= @action %>'
-  data-agent-goals='<%= Jason.encode!(@agent_goals) %>''
-  data-agents="<%= Jason.encode!(@agent_positions) %>"
-  data-mode="<%= @mode %>"
-  data-show-obstacles="<%= @show_obstacles %>"
-  data-show-overlay="<%= @show_overlay %>"
+  id='data'
+  data-agent-positions="<%= Jason.encode!(@agent_positions) %>"
+  data-agent-goals='<%= Jason.encode!(@agent_goals) %>'
+  data-sim-mode='<%= @sim? %>'
+  data-show_video='<%= @video? %>'
+  data-show-markers="<%= @show_markers? %>"
+  data-show-obstacles="<%= @show_obstacles? %>"
+  data-show-debugging="<%= @show_debugging? %>"
   data-selected="<%= Jason.encode!(@selected) %>"
-  data-time="<%= @time %>"
   data-video="<%= encode_video(@video) %>"
   phx-hook='sim'
   phx-window-keyup='keyup'
@@ -22,41 +23,42 @@
   <div class='container'>
 
     <div class="btn-group" role="group" aria-label="Player Controls">
-      <%= if @action == "playing", do: btn("pause"), else: btn("play") %>
-      <%= btn("stop", @mode == "annotate" and @time == 0) %>
-      <%= btn("backward", @time < 1 or @action == "playing"  or @mode == "sim") %>
-      <%= btn("forward", @time >= @duration or @action == "playing" or @mode == "sim") %>
+      <%= btn "play" %>
+      <%= btn "pause" %>
+      <%= btn "stop" %>
+      <%= btn "backward", not @sim? %>
+      <%= btn "forward", not @sim? %>
 
-      <button class='btn btn-outline-light btn-sm' disabled>
+      <button id='time-wrapper' class='btn btn-outline-light btn-sm' disabled phx-ignore='true'>
         <i class='icon-clock'></i>
-        <%= floor(@time) %>
-        <%= if @duration, do: "/#{floor(@duration)}" %>
+        <span id='time'>0</span> /
+        <span id='duration'>?</span>
       </button>
     </div>
-
+<!--
     <div class="btn-group" role="group" aria-label="Annotation Controls">
       <button class='btn btn-outline-light btn-sm' disabled>
-        <strong><i class='icon-markers'></i></strong> <%= Enum.count(@video.markers) %>
+        <strong><i class='icon-markers'></i></strong> <%# Enum.count(@video.markers) %>
       </button>
-      <%= btn_mode "markers+", @mode, "add" %>
-      <%= btn_mode "markers-", @mode, "cancel" %>
+      <%# btn_mode "markers+", @mode, "add" %>
+      <%# btn_mode "markers-", @mode, "cancel" %>
     </div>
 
     <div class="btn-group" role="group" aria-label="Obstacle Control">
       <button class='btn btn-outline-light btn-sm' disabled>
-        <strong><i class='icon-obstacles'></i></strong> <%= Enum.count(@video.obstacles) %>
+        <strong><i class='icon-obstacles'></i></strong> <%# Enum.count(@video.obstacles) %>
       </button>
-      <%= btn_mode "obstacles+", @mode, "add" %>
-      <%= btn_mode "obstacles-", @mode, "cancel" %>
+      <%# btn_mode "obstacles+", @mode, "add" %>
+      <%# btn_mode "obstacles-", @mode, "cancel" %>
     </div>
 
     <div class="btn-group" role="group" aria-label="Mode Control">
-      <%= btn_mode "play-video", @mode, "video" %>
-      <%= btn_mode "play-annot", @mode, "direction" %>
-      <%= btn_mode "play-synth", @mode, "sim" %>
-      <%= btn_mode "settings", @mode, "settings" %>
+      <%# btn_mode "play-video", @mode, "video" %>
+      <%# btn_mode "play-annot", @mode, "direction" %>
+      <%# btn_mode "play-synth", @mode, "sim" %>
+      <%# btn_mode "settings", @mode, "settings" %>
     </div>
-  </div>
+  </div> -->
 </nav>
 
 <%= render "settings.html", changeset: @sim_changeset %>

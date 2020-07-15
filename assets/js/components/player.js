@@ -23,8 +23,7 @@ export default class Player {
       if (!this.loaded) {
         player.pause()
         player.seek(0)
-        push('control', { action: "pause" })
-        push('set_duration', { duration: player.getDuration() })
+        document.getElementById('duration').innerHTML = Math.floor(player.getDuration())
         this.loaded = true
       }
     })

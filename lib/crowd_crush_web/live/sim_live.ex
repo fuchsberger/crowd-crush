@@ -16,16 +16,16 @@ defmodule CrowdCrushWeb.SimLive do
 
       video ->
         {:ok, socket
-        |> assign(:action, "paused")    # used to triger server events, defaults to "paused"
-        |> assign(:mode, "play-video")  # alternate between viewing, simulating, markers,...
+        |> assign(:sim?, false)   # true - use simulation markers, false: use annotated markers
+        |> assign(:video?, true)  # true - show/play video, false: show white background
+        |> assign(:show_markers?, true)
+        |> assign(:show_obstacles?, false)
+        |> assign(:show_debugging?, false)
         |> assign(:selected, nil)
-        |> assign(:agent_goals, nil)
-        |> assign(:agent_positions, [])
-        |> assign(:duration, 0)
+        |> assign(:agent_goals, agent_goals(video.markers))
+        |> assign(:agent_positions, agent_positions(video.markers, 0))
+        |> assign(:duration, nil)
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
-        |> assign(:show_obstacles, false)
-        |> assign(:show_overlay, false)
-        |> assign(:time, 0)
         |> assign(:video, video)}
     end
   end
@@ -77,7 +77,8 @@ defmodule CrowdCrushWeb.SimLive do
           {:ok, _marker} ->
             socket = assign(socket, :video, Simulation.get_video_by_youtube_id(socket.assigns.video.youtubeID))
 
-            {:noreply, assign(socket, :agent_positions, agent_positions(socket))}
+            # {:noreply, assign(socket, :agent_positions, agent_positions(socket))}
+            {:noreply, socket}
           {:error, _reason} ->
             {:noreply, socket}
         end
@@ -185,10 +186,10 @@ defmodule CrowdCrushWeb.SimLive do
     end
   end
 
-  defp agent_positions(socket, time \\ nil) do
-    time = if is_nil(time), do: socket.assigns.time  * 1000, else: time * 1000
+  defp agent_positions(markers, time) do
+    time = time * 1000
 
-    socket.assigns.video.markers
+    markers
     |> Enum.group_by(fn {id, _, _, _} -> id end, fn {_, t, x, y} -> {t, x, y} end)
     |> Enum.map(fn {id, markers} ->
 
