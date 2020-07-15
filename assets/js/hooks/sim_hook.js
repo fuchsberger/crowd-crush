@@ -1,7 +1,4 @@
-const RVO = require('rvo-js/index.js')
-const Simulator = RVO.Simulator
-const RVOMath = RVO.RVOMath
-
+import RVO from 'rvo-js'
 import Modal from 'bootstrap/js/dist/modal'
 import Player from '../components/player'
 import { resize } from '../helpers/canvas'
@@ -18,157 +15,89 @@ export default {
 
     let canvas = document.getElementById('canvas')
     let context = canvas.getContext('2d')
-    let data = this.el.dataset
 
-    const video = JSON.parse(data.video)
-    console.log(data)
-    const player = new Player(video.youtubeID, (event, data) => this.pushEvent(event, data))
+    this.get_data()
+    // this.prepareSimulation()
+
+    const player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
 
     const settingsModal = new Modal(document.getElementById('modal-settings'), {
       backdrop: 'static'
     })
 
-    // create obstacles
-    // TODO: Load from database
-    const obstacles = [
-      [
-        { x: 0.3, y: 0 },
-        { x: 0.32, y: 0 },
-        { x: 0.32, y: 1 },
-        { x: 0.3, y: 1 }
-      ],
-      [
-        { x: 0.56, y: 0.3 },
-        { x: 0.45, y: 1 }
-      ],
-      [
-        { x: 0.8, y: 0.2 }
-      ]
-    ]
-
-    Object.assign(this, { canvas, context, data, obstacles, player, settingsModal, video })
+    Object.assign(this, { canvas, context, player, settingsModal })
 
     this.render_canvas()
   },
 
   updated() {
+    this.get_data()
+    this.render_canvas()
+  },
 
-    const { animationFrameRequest, canvas, data, interval, player, simulator, settingsModal, video } = this
+  get_data() {
+    const d = this.el.dataset
 
-    // request an animation frame only when necessary, delete previous frame if in existance.
-    if (animationFrameRequest) cancelAnimationFrame(animationFrameRequest)
-
-    this.animationFrameRequest = requestAnimationFrame(() => {
-
-
-
-      switch (this.el.dataset.action) {
-
-        case 'play':
-          if (data.mode == 'play-video' || data.mode == 'play-annot') player.play()
-          else this.pushEvent("control", { action: "playing" })
-          break
-
-        case 'pause':
-          if (data.mode == 'play-video' || data.mode == 'play-annot') player.pause()
-          else if (interval) clearInterval(interval)
-
-          this.pushEvent("ping", { action: "paused", time: player.time })
-          break
-
-        case 'stop':
-          if (data.mode == 'video' || data.mode == 'original') {
-            if (player.time != 0) {
-              player.stop()
-              this.pushEvent("ping", { action: "paused", time: 0 })
-            }
-          } else {
-            if (interval) clearInterval(interval)
-            if (data.mode == 'synthetic')
-              this.pushEvent("ping", { action: "prepare-sim", time: 0 })
-          }
-          break
-
-        case 'backward':
-          player.backward();
-          this.pushEvent("ping", { action: "paused", time: player.time - 1 })
-          break
-
-        case 'forward':
-          player.forward();
-          this.pushEvent("ping", { action: "paused", time: player.time + 1 })
-          break
-
-        case 'playing':
-          this.pushEvent("ping", { action: "playing", time: player.time })
-          break
-
-        case 'prepare-sim':
-          this.prepareSimulation()
-          break
-      }
-    })
+    this.simMode = JSON.parse(d.simMode)
+    this.showGoals = JSON.parse(d.showGoals)
+    this.showMarkers = JSON.parse(d.showMarkers)
+    this.showObstacles = JSON.parse(d.showObstacles)
+    this.showVideo = JSON.parse(d.showVideo)
+    this.selected = JSON.parse(d.selected)
+    this.goals = JSON.parse(d.goals)
+    this.positions = JSON.parse(d.positions)
+    this.video = JSON.parse(d.video)
   },
 
   render_canvas(){
-    const {canvas, context, get, settingsModal, show_settings, video} = this
+    const {canvas, context, settingsModal, show_settings, video} = this
 
     // should be done once in mount but for some reason properties don't persist there
     resize(video.aspectratio, canvas)
 
     // draw background
-    if(get("show_video")){
+    if(this.showVideo){
       context.clearRect(0, 0, canvas.width, canvas.height)
     } else {
       context.fillStyle = "white"
       context.fillRect(0, 0, canvas.width, canvas.height)
     }
 
-    if (get("show_obstacles")) this.draw_obstacles()
+    if (this.showObstacles) this.draw_obstacles()
 
-    if(get("show_markers")){
-      get("show_video") ? this.draw_agents() : this.draw_synth_agents()
+    if(this.showMarkers){
+      this.showVideo ? this.draw_agents() : this.draw_synth_agents()
     }
 
-    show_settings ? settingsModal.show() : settingsModal.hide()
-  },
-
-  get(key){
-    console.log(this, key)
-    return JSON.parse(this.data[key])
+    false ? settingsModal.show() : settingsModal.hide()
   },
 
   draw_agents() {
-    let { canvas, context, data } = this
+    const ctx = this.context
 
-    const agents = JSON.parse(data.agents)
-    const selected = JSON.parse(data.selected)
-    const show_overlay = JSON.parse(data.showOverlay)
+    for (const agent of this.positions) {
+      if (this.showOverlay) ctx.fillStyle = "black";
+      else ctx.fillStyle = this.selected == agent[0] ? COLORS.CYAN : COLORS.GREEN
 
-    for (let i = 0; i < agents.length; i++) {
-      if (show_overlay) context.fillStyle = "black";
-      else context.fillStyle = selected == agents[i][0] ? COLORS.CYAN : COLORS.GREEN
-
-      context.beginPath()
-      context.arc(
-        canvas.width * agents[i][1],
-        canvas.height * agents[i][2],
+      ctx.beginPath()
+      ctx.arc(
+        this.canvas.width * agent[1],
+        this.canvas.height * agent[2],
         5,  // radius
         0,
         2 * Math.PI
       )
-      context.fill()
+      ctx.fill()
     }
   },
 
   draw_obstacles() {
-    const { canvas, context, obstacles } = this
+    const { canvas, context } = this
 
     context.strokeStyle = context.fillStyle = "rgba(255,0,0,0.5)"
     context.lineWidth = 3;
 
-    for (var i = 0; i < obstacles.length; i++){
-      const o = obstacles[i]
+    for (const o of this.obstacles){
 
       if (o.length == 1) {
         // draw single dot
@@ -215,19 +144,19 @@ export default {
       )
       context.fill()
 
-      if (RVOMath.absSq(simulator.getGoal(i).minus(simulator.getAgentPosition(i))) < RVOMath.RVO_EPSILON) {
+      if (RVO.RVOMath.absSq(simulator.getGoal(i).minus(simulator.getAgentPosition(i))) < RVO.RVOMath.RVO_EPSILON) {
         // Agent is within one radius of its goal, set preferred velocity to zero
         simulator.setAgentPrefVelocity(i, 0.0, 0.0)
 
         // remove agent from simulation
-        console.log(simulator)
+
         simulator.agents.splice(i, 1)
         i--
 
       } else {
         // Agent is far away from its goal
         // set preferred velocity as unit vector towards agent's goal.
-        let v = RVOMath.normalize(simulator.getGoal(i).minus(simulator.getAgentPosition(i)))
+        let v = RVO.RVOMath.normalize(simulator.getGoal(i).minus(simulator.getAgentPosition(i)))
         simulator.setAgentPrefVelocity(i, v.x, v.y)
       }
     }
@@ -257,8 +186,7 @@ export default {
     )
 
     // add agents to simulation
-    const agents = JSON.parse(this.data.agents)
-    const goals = JSON.parse(this.data.agentGoals)
+    const agents = this.positions
     const w = canvas.width
     const h = canvas.height
 
@@ -266,16 +194,16 @@ export default {
       const id = agents[i][0]
       simulator.addAgent()
       simulator.setAgentPosition(i, agents[i][1] * w, agents[i][2] * h)
-      simulator.setAgentGoal(i, goals[id][0] * w, goals[id][1] * h)
+      simulator.setAgentGoal(i, this.goals[id][0] * w, this.goals[id][1] * h)
     }
 
     // add obstacles to simulation
-    for (let i = 0; i < this.obstacles.length; i++) {
+    for (const o of this.obstacles) {
       const obst = []
-      for (let j = 0; j < this.obstacles[i].length; j++) {
+      for (let j = 0; j < o.length; j++) {
         obst.push(new RVO.Vector2(
-          this.obstacles[i][j].x * this.canvas.width,
-          this.obstacles[i][j].y * this.canvas.height
+          o[j].x * this.canvas.width,
+          o[j].y * this.canvas.height
         ))
       }
       simulator.addObstacle(obst)
@@ -284,10 +212,6 @@ export default {
     simulator.processObstacles()
 
     this.simulator = simulator
-
-    console.log("Prepared Simulation.")
-
-    this.pushEvent("ping", { action: "pause", time: 0 })
   }
 }
 

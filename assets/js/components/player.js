@@ -19,6 +19,10 @@ export default class Player {
     player.mute()
     player.play()
 
+    document.getElementById('play').addEventListener('click', () => this.play())
+    document.getElementById('pause').addEventListener('click', () => this.pause())
+    document.getElementById('stop').addEventListener('click', () => this.stop())
+
     player.on('playing', () => {
       if (!this.loaded) {
         player.pause()
@@ -37,18 +41,40 @@ export default class Player {
   get time() { return this._player.getCurrentTime() }
   get player() { return this._player }
 
-  play() { this._player.play() }
-  backward() { this._player.seek(this._player.getCurrentTime() - 1) }
-  forward() { this._player.seek(this._player.getCurrentTime() + 1) }
+  play() {
+    document.getElementById('play').style.display = "none";
+    document.getElementById('pause').style.display = "block";
+    this._player.play()
+
+    // start event loop
+    const loop = () => {
+      window.animationRequest = requestAnimationFrame(loop)
+      this.push('ping', {time: this.player.getCurrentTime()})
+    }
+    requestAnimationFrame(loop)
+  }
 
   pause() {
-    // pauses at the closest completed minute mark
+    if (window.animationRequest) cancelAnimationFrame(window.animationRequest)
+    document.getElementById('play').style.display = "block";
+    document.getElementById('pause').style.display = "none";
     this._player.seek(Math.floor(this._player.getCurrentTime()))
     this._player.pause()
   }
 
   stop() {
+    if (window.animationRequest) cancelAnimationFrame(window.animationRequest)
+    document.getElementById('play').style.display = "block";
+    document.getElementById('pause').style.display = "none";
     this._player.pause()
     this._player.seek(0)
+  }
+
+  backward() {
+    this._player.seek(this._player.getCurrentTime() - 1)
+  }
+
+  forward() {
+    this._player.seek(this._player.getCurrentTime() + 1)
   }
 }

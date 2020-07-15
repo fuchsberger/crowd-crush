@@ -20,18 +20,13 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:video?, true)  # true - show/play video, false: show white background
         |> assign(:show_markers?, true)
         |> assign(:show_obstacles?, false)
-        |> assign(:show_debugging?, false)
+        |> assign(:show_goals?, false)
         |> assign(:selected, nil)
         |> assign(:agent_goals, agent_goals(video.markers))
         |> assign(:agent_positions, agent_positions(video.markers, 0))
-        |> assign(:duration, nil)
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
         |> assign(:video, video)}
     end
-  end
-
-  def handle_event("set_duration", %{"duration" => duration}, socket) do
-    {:noreply, assign(socket, :duration, duration)}
   end
 
   def handle_event("set", %{"mode" => mode}, socket) do
@@ -129,11 +124,9 @@ defmodule CrowdCrushWeb.SimLive do
   @doc """
   Ping events update agents, time and action.
   """
-  def handle_event("ping", %{"action" => action, "time" => time}, socket) do
-    {:noreply, socket
-    |> assign(:action, (if time > socket.assigns.duration, do: "stop", else: action))
-    |> assign(:agent_positions, agent_positions(socket, time))
-    |> assign(:time, time)}
+  def handle_event("ping", %{"time" => time}, socket) do
+    agent_positions = agent_positions(socket.assigns.video.markers, time)
+    {:noreply, assign(socket, :agent_positions, agent_positions)}
   end
 
   def handle_event("toggle", %{"setting" => setting}, socket) do

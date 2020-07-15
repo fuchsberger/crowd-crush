@@ -1,12 +1,12 @@
 <div
   id='data'
-  data-agent-positions="<%= Jason.encode!(@agent_positions) %>"
-  data-agent-goals='<%= Jason.encode!(@agent_goals) %>'
+  data-positions="<%= Jason.encode!(@agent_positions) %>"
+  data-goals='<%= Jason.encode!(@agent_goals) %>'
   data-sim-mode='<%= @sim? %>'
-  data-show_video='<%= @video? %>'
+  data-show-video='<%= @video? %>'
   data-show-markers="<%= @show_markers? %>"
   data-show-obstacles="<%= @show_obstacles? %>"
-  data-show-debugging="<%= @show_debugging? %>"
+  data-show-goals="<%= @show_goals? %>"
   data-selected="<%= Jason.encode!(@selected) %>"
   data-video="<%= encode_video(@video) %>"
   phx-hook='sim'
@@ -23,9 +23,19 @@
   <div class='container'>
 
     <div class="btn-group" role="group" aria-label="Player Controls">
-      <%= btn "play" %>
-      <%= btn "pause" %>
-      <%= btn "stop" %>
+
+      <button id='play' class='btn btn-sm btn-outline-light' type='button'>
+        <i class='icon-play'></i>
+      </button>
+
+      <button id='pause' class='btn btn-sm btn-outline-light' type='button' style='display: none;'>
+        <i class='icon-pause'></i>
+      </button>
+
+      <button id='stop' class='btn btn-sm btn-outline-light' type='button'>
+        <i class='icon-stop'></i>
+      </button>
+
       <%= btn "backward", not @sim? %>
       <%= btn "forward", not @sim? %>
 
