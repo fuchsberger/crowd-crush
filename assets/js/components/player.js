@@ -12,12 +12,26 @@ const PLAYER_PARAMS = {
 }
 
 export default class Player {
-  constructor(youtubeID) {
-    // do not play the simulation on loading
-    this._player = new YTPlayer(document.getElementById('player'), PLAYER_PARAMS)
-    this._player.load(youtubeID)
-    this._player.mute()
-    this._player.play()
+  constructor(youtubeID, push) {
+    const player = new YTPlayer(document.getElementById('player'), PLAYER_PARAMS)
+
+    player.load(youtubeID)
+    player.mute()
+    player.play()
+
+    player.on('playing', () => {
+      if (!this.loaded) {
+        player.pause()
+        player.seek(0)
+        push('control', { action: "pause" })
+        push('set_duration', { duration: player.getDuration() })
+        this.loaded = true
+      }
+    })
+
+    this.loaded = false
+    this._player = player
+    this.push = push
   }
 
   get duration() { return this._player.getDuration() }

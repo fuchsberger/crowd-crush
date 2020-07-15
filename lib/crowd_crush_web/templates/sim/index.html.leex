@@ -26,74 +26,35 @@
       <%= btn("stop", @mode == "annotate" and @time == 0) %>
       <%= btn("backward", @time < 1 or @action == "playing"  or @mode == "sim") %>
       <%= btn("forward", @time >= @duration or @action == "playing" or @mode == "sim") %>
+
       <button class='btn btn-outline-light btn-sm' disabled>
         <i class='icon-clock'></i>
         <%= floor(@time) %>
-        <%= if @mode == "annotate" do %>/ <%= @duration %><% end %>
+        <%= if @duration, do: "/#{floor(@duration)}" %>
       </button>
-      <%= btn_toggle("overlay", !@show_overlay, "video") %>
     </div>
 
     <div class="btn-group" role="group" aria-label="Annotation Controls">
-      <%= if @selected do %>
-        <button class='btn btn-outline-light btn-sm' data-confirm='Delete all markers of this agent?' phx-click='delete' title="Delete agent's markers?">
-          <i class='icon-markers mr-1'></i><%= count_markers(@video, @selected) %>
-        </button>
-        <button class='btn btn-outline-light btn-sm' phx-click='deselect' title='deselect agent'>
-          <i class='icon-user mr-1'></i><%= @selected %>
-        </button>
-      <% else %>
-        <button class='btn btn-outline-light btn-sm' data-confirm='Delete all agents?' phx-click='delete' title='delete all agents' disabled='<%= Enum.count(@agent_positions) == 0 %>'>
-          <i class='icon-markers mr-1'></i><%= Enum.count(@agent_positions) %>
-        </button>
-        <button class='btn btn-outline-light btn-sm' phx-click='create' title='Create Agent' >
-          <i class='icon-add'></i>
-        </button>
-      <% end %>
-      <button
-        class='btn btn-outline-light btn-sm'
-        title='Remove Marker'
-        phx-click='set'
-        phx-value-mode='remove-marker'
-      ><strong><i class='icon-cancel'></i></strong></button>
+      <button class='btn btn-outline-light btn-sm' disabled>
+        <strong><i class='icon-markers'></i></strong> <%= Enum.count(@video.markers) %>
+      </button>
+      <%= btn_mode "markers+", @mode, "add" %>
+      <%= btn_mode "markers-", @mode, "cancel" %>
     </div>
 
     <div class="btn-group" role="group" aria-label="Obstacle Control">
-      <button
-        class='btn btn-outline-light btn-sm<%= if @show_obstacles, do: " active" %>'
-        title='Toggle: Obstacles'
-        phx-click='toggle'
-        phx-value-setting='obstacles'
-      ><strong><i class='icon-obstacles'></i></strong> <%= Enum.count(@video.obstacles) %></button>
-      <button
-        class='btn btn-outline-light btn-sm'
-        title='Add Obstacles'
-        phx-click='set'
-        phx-value-mode='add-obstacle'
-      ><strong><i class='icon-add'></i></strong></button>
-      <button
-        class='btn btn-outline-light btn-sm'
-        title='Add Obstacles'
-        phx-click='set'
-        phx-value-mode='remove-obstacle'
-      ><strong><i class='icon-cancel'></i></strong></button>
+      <button class='btn btn-outline-light btn-sm' disabled>
+        <strong><i class='icon-obstacles'></i></strong> <%= Enum.count(@video.obstacles) %>
+      </button>
+      <%= btn_mode "obstacles+", @mode, "add" %>
+      <%= btn_mode "obstacles-", @mode, "cancel" %>
     </div>
 
     <div class="btn-group" role="group" aria-label="Mode Control">
-      <%= btn_mode "annotate", @mode, "markers" %>
+      <%= btn_mode "play-video", @mode, "video" %>
+      <%= btn_mode "play-annot", @mode, "direction" %>
+      <%= btn_mode "play-synth", @mode, "sim" %>
       <%= btn_mode "settings", @mode, "settings" %>
-      <button
-        class='btn btn-outline-light btn-sm<%= if @mode == "annotate", do: " active" %>'
-        title='Mode: Annotate'
-        phx-click='set'
-        phx-value-mode='annotate'
-      ><strong>A</strong></button>
-      <button
-        class='btn btn-outline-light btn-sm<%= if @mode == "sim", do: " active" %>'
-        title='Mode: Simulation'
-        phx-click='set'
-        phx-value-mode='sim'
-      ><strong>S</strong></button>
     </div>
   </div>
 </nav>

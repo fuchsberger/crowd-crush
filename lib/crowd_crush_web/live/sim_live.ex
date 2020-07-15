@@ -6,7 +6,7 @@ defmodule CrowdCrushWeb.SimLive do
 
   def render(assigns), do: CrowdCrushWeb.SimView.render("index.html", assigns)
 
-  def mount(%{"id" => youtubeID}, session, socket) do
+  def mount(%{"id" => youtubeID}, _session, socket) do
 
     case Simulation.get_video_by_youtube_id(youtubeID) do
       nil ->
@@ -16,28 +16,27 @@ defmodule CrowdCrushWeb.SimLive do
 
       video ->
         {:ok, socket
-        |> assign(:action, "paused")
+        |> assign(:action, "paused")    # used to triger server events, defaults to "paused"
+        |> assign(:mode, "play-video")  # alternate between viewing, simulating, markers,...
         |> assign(:selected, nil)
         |> assign(:agent_goals, nil)
         |> assign(:agent_positions, [])
         |> assign(:duration, 0)
-        |> assign(:mode, "annotate")
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
         |> assign(:show_obstacles, false)
         |> assign(:show_overlay, false)
         |> assign(:time, 0)
-        |> assign(:user_id, Map.get(session, "user_id"))
         |> assign(:video, video)}
     end
   end
 
   def handle_event("set_duration", %{"duration" => duration}, socket) do
-    {:noreply, assign(socket, :duration, floor(duration))}
+    {:noreply, assign(socket, :duration, duration)}
   end
 
   def handle_event("set", %{"mode" => mode}, socket) do
     case mode do
-      "sim" ->
+      "play-synth" ->
         {:noreply, socket
         |> assign(:action, "prepare-sim")
         # starting positions of agents (at current time)
@@ -114,7 +113,7 @@ defmodule CrowdCrushWeb.SimLive do
   Control buttons only set the action.
   """
   def handle_event("control", %{"action" => action}, socket) do
-    if action == "play" && socket.assigns.mode == "sim" do
+    if action == "play" && socket.assigns.mode == "play-synth" do
       # when running simulation force the server to update
       Process.send_after(self(), :update, 16)
 
@@ -175,7 +174,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:action, "prepare-sim")
         |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
         |> assign(:agent_positions, agent_positions(socket, 0))
-        |> assign(:mode, "sim")
+        |> assign(:mode, "play-synth")
         |> assign(:show_settings, false)
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
         |> assign(:time, 0)

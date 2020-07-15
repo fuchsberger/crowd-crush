@@ -19,20 +19,9 @@ export default {
     let canvas = document.getElementById('canvas')
     let context = canvas.getContext('2d')
     let data = this.el.dataset
-    let loaded = false
+
     const video = JSON.parse(data.video)
-
-    const player = new Player(video.youtubeID)
-
-    player.player.on('playing', () => {
-      if (!loaded) {
-        this.pushEvent('set_duration', { duration: this.player.duration })
-        this.pushEvent("control", { action: "stop" })
-        loaded = true
-      } else {
-        this.pushEvent("control", { action: "playing" })
-      }
-    })
+    const player = new Player(video.youtubeID, (event, data) => this.pushEvent(event, data))
 
     const settingsModal = new Modal(document.getElementById('modal-settings'), {
       backdrop: 'static'
@@ -70,42 +59,43 @@ export default {
 
     this.animationFrameRequest = requestAnimationFrame(() => {
 
-      // show or hide settings modal if needed
-      if (data.mode == 'settings') settingsModal.show()
-      else settingsModal.hide()
-
       // should be done once in mount but for some reason properties don't persist there
       resize(video.aspectratio, canvas)
 
       // draw elements
-      this.draw_background()
-      if (JSON.parse(data.showObstacles)) this.draw_obstacles()
-      if (data.mode == 'annotate') this.draw_agents()
-      else if(simulator) this.draw_synth_agents()
+      data.mode == 'play-annot' || data.mode == 'play-synth'
+        ? this.draw_background() : this.clear_canvas()
+
+      if (data.mode == 'add-obstacles' || data.mode == 'remove-obstacles') this.draw_obstacles()
+
+      simulator && data.mode == 'play-synth' ? this.draw_synth_agents() : this.draw_agents()
+
+      data.mode == 'settings' ? settingsModal.show() : settingsModal.hide()
 
       switch (this.el.dataset.action) {
 
         case 'play':
-          if (data.mode == 'annotate') player.play()
+          if (data.mode == 'play-video' || data.mode == 'play-annot') player.play()
           else this.pushEvent("control", { action: "playing" })
           break
 
         case 'pause':
-          if (data.mode == 'annotate') player.pause()
+          if (data.mode == 'play-video' || data.mode == 'play-annot') player.pause()
           else if (interval) clearInterval(interval)
 
           this.pushEvent("ping", { action: "paused", time: player.time })
           break
 
         case 'stop':
-          if (data.mode == 'annotate') {
+          if (data.mode == 'video' || data.mode == 'original') {
             if (player.time != 0) {
               player.stop()
               this.pushEvent("ping", { action: "paused", time: 0 })
             }
           } else {
             if (interval) clearInterval(interval)
-            if(data.mode == 'sim') this.pushEvent("ping", { action: "prepare-sim", time: 0 })
+            if (data.mode == 'synthetic')
+              this.pushEvent("ping", { action: "prepare-sim", time: 0 })
           }
           break
 
@@ -153,15 +143,13 @@ export default {
     }
   },
 
-  draw_background() {
-    let { canvas, context, data } = this
+  clear_canvas() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+  },
 
-    if (data.mode == 'sim' || JSON.parse(data.showOverlay)) {
-      context.fillStyle = "white";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    } else {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }
+  draw_background() {
+    this.context.fillStyle = "white"
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
   },
 
   draw_obstacles() {
