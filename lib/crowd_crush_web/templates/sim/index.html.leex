@@ -45,6 +45,12 @@
         <span id='duration'>?</span>
       </button>
     </div>
+
+    <div class="btn-group" role="group" aria-label="Toggle Elements">
+      <button class='btn btn-outline-light btn-sm' phx-click='toggle-settings'>
+        <i class='icon-settings'></i>
+      </button>
+    </div>
 <!--
     <div class="btn-group" role="group" aria-label="Annotation Controls">
       <button class='btn btn-outline-light btn-sm' disabled>
@@ -71,4 +77,4 @@
   </div> -->
 </nav>
 
-<%= render "settings.html", changeset: @sim_changeset %>
+<%= render "settings.html", changeset: @sim_changeset, open?: @show_settings? %>

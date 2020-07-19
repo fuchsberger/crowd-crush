@@ -18,9 +18,10 @@ defmodule CrowdCrushWeb.SimLive do
         {:ok, socket
         |> assign(:sim?, false)   # true - use simulation markers, false: use annotated markers
         |> assign(:video?, true)  # true - show/play video, false: show white background
+        |> assign(:show_goals?, false)
         |> assign(:show_markers?, true)
         |> assign(:show_obstacles?, false)
-        |> assign(:show_goals?, false)
+        |> assign(:show_settings?, false)
         |> assign(:selected, nil)
         |> assign(:agent_goals, agent_goals(video.markers))
         |> assign(:agent_positions, agent_positions(video.markers, 0))
@@ -133,8 +134,11 @@ defmodule CrowdCrushWeb.SimLive do
     case setting do
       "obstacles" -> {:noreply, assign(socket, :show_obstacles, !socket.assigns.show_obstacles)}
       "overlay"   -> {:noreply, assign(socket, :show_overlay, !socket.assigns.show_overlay)}
-      "settings"  -> {:noreply, assign(socket, :show_settings, !socket.assigns.show_settings)}
     end
+  end
+
+  def handle_event("toggle-settings", _params, socket) do
+    {:noreply, assign(socket, :show_settings?, !socket.assigns.show_settings?)}
   end
 
   def handle_event("keyup", %{"key" => key}, socket) do

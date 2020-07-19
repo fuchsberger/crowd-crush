@@ -1,5 +1,4 @@
 import RVO from 'rvo-js'
-import Modal from 'bootstrap/js/dist/modal'
 import Player from '../components/player'
 import { resize } from '../helpers/canvas'
 
@@ -21,11 +20,9 @@ export default {
 
     const player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
 
-    const settingsModal = new Modal(document.getElementById('modal-settings'), {
-      backdrop: 'static'
-    })
 
-    Object.assign(this, { canvas, context, player, settingsModal })
+
+    Object.assign(this, { canvas, context, player })
 
     this.render_canvas()
   },
@@ -50,7 +47,7 @@ export default {
   },
 
   render_canvas(){
-    const {canvas, context, settingsModal, show_settings, video} = this
+    const {canvas, context, settingsModal, showSettings, video} = this
 
     // should be done once in mount but for some reason properties don't persist there
     resize(video.aspectratio, canvas)
@@ -68,8 +65,6 @@ export default {
     if(this.showMarkers){
       this.showVideo ? this.draw_agents() : this.draw_synth_agents()
     }
-
-    false ? settingsModal.show() : settingsModal.hide()
   },
 
   draw_agents() {
