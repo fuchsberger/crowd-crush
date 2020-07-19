@@ -24,25 +24,43 @@
 
     <div class="btn-group" role="group" aria-label="Player Controls">
 
-      <button id='play' class='btn btn-sm btn-outline-light' type='button'>
-        <i class='icon-play'></i>
-      </button>
+      <button
+        id='play'
+        class='btn btn-sm btn-outline-light<%= if @playing?, do: " d-none" %>'
+        type='button'
+      ><i class='icon-play'></i></button>
 
-      <button id='pause' class='btn btn-sm btn-outline-light' type='button' style='display: none;'>
-        <i class='icon-pause'></i>
-      </button>
+      <button
+        id='pause'
+        class='btn btn-sm btn-outline-light<%= unless @playing?, do: " d-none" %>'
+        type='button'
+      ><i class='icon-pause'></i></button>
 
-      <button id='stop' class='btn btn-sm btn-outline-light' type='button'>
-        <i class='icon-stop'></i>
-      </button>
+      <button
+        id='stop'
+        class='btn btn-sm btn-outline-light'
+        type='button'
+        <%= if @time == 0, do: " disabled" %>
+      ><i class='icon-stop'></i></button>
 
-      <%= btn "backward", not @sim? %>
-      <%= btn "forward", not @sim? %>
+      <button
+        id='backward'
+        class='btn btn-sm btn-outline-light'
+        type='button'
+        <%= if @time < 1, do: " disabled" %>
+      ><i class='icon-backward'></i></button>
+
+      <button
+        id='forward'
+        class='btn btn-sm btn-outline-light'
+        type='button'
+        <%= if @time > Float.floor(@duration) - 1, do: " disabled" %>
+      ><i class='icon-forward'></i></button>
 
       <button id='time-wrapper' class='btn btn-outline-light btn-sm' disabled phx-ignore='true'>
         <i class='icon-clock'></i>
-        <span id='time'>0</span> /
-        <span id='duration'>?</span>
+        <span><%= trunc(@time) %></span> /
+        <span id='duration'><%= trunc(@duration) %></span>
       </button>
     </div>
 

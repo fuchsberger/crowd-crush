@@ -20,8 +20,6 @@ export default {
 
     const player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
 
-
-
     Object.assign(this, { canvas, context, player })
 
     this.render_canvas()
@@ -47,7 +45,7 @@ export default {
   },
 
   render_canvas(){
-    const {canvas, context, settingsModal, showSettings, video} = this
+    const {canvas, context, video} = this
 
     // should be done once in mount but for some reason properties don't persist there
     resize(video.aspectratio, canvas)

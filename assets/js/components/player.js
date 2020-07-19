@@ -22,12 +22,14 @@ export default class Player {
     document.getElementById('play').addEventListener('click', () => this.play())
     document.getElementById('pause').addEventListener('click', () => this.pause())
     document.getElementById('stop').addEventListener('click', () => this.stop())
+    document.getElementById('backward').addEventListener('click', () => this.backward())
+    document.getElementById('forward').addEventListener('click', () => this.forward())
 
     player.on('playing', () => {
       if (!this.loaded) {
         player.pause()
         player.seek(0)
-        document.getElementById('duration').innerHTML = Math.floor(player.getDuration())
+        this.push('set', { duration: player.getDuration() })
         this.loaded = true
       }
     })
@@ -42,8 +44,6 @@ export default class Player {
   get player() { return this._player }
 
   play() {
-    document.getElementById('play').style.display = "none";
-    document.getElementById('pause').style.display = "block";
     this._player.play()
 
     // start event loop
@@ -56,25 +56,29 @@ export default class Player {
 
   pause() {
     if (window.animationRequest) cancelAnimationFrame(window.animationRequest)
-    document.getElementById('play').style.display = "block";
-    document.getElementById('pause').style.display = "none";
-    this._player.seek(Math.floor(this._player.getCurrentTime()))
+
+    const time = Math.floor(this._player.getCurrentTime())
     this._player.pause()
+    this._player.seek(time)
+    this.push('jump', {time})
   }
 
   stop() {
     if (window.animationRequest) cancelAnimationFrame(window.animationRequest)
-    document.getElementById('play').style.display = "block";
-    document.getElementById('pause').style.display = "none";
     this._player.pause()
     this._player.seek(0)
+    this.push('jump', {time: 0})
   }
 
   backward() {
-    this._player.seek(this._player.getCurrentTime() - 1)
+    const time = this._player.getCurrentTime() - 1
+    this._player.seek(time)
+    this.push('jump', {time})
   }
 
   forward() {
-    this._player.seek(this._player.getCurrentTime() + 1)
+    const time = this._player.getCurrentTime() + 1
+    this._player.seek(time)
+    this.push('jump', {time})
   }
 }
