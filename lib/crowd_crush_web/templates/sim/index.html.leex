@@ -69,6 +69,12 @@
       <%= mode "obstacles", @mode == "obstacles" %>
     </div>
 
+    <div class="btn-group" role="group" aria-label="Add / Edit Mode">
+      <%= toggle "add", not @edit?, @mode == "play" %>
+      <%= toggle "edit", @edit?, @mode == "play" %>
+      <%= toggle "cancel", false, is_nil(@selected) %>
+    </div>
+
     <div class="btn-group" role="group" aria-label="Toggle Elements">
       <%= toggle "sim", @show_goals? %>
       <%= toggle "video", @show_video? %>
@@ -77,29 +83,6 @@
       <%= toggle "obstacles", @show_obstacles? %>
       <%= toggle "settings", @show_settings? %>
     </div>
-<!--
-    <div class="btn-group" role="group" aria-label="Annotation Controls">
-      <button class='btn btn-outline-light btn-sm' disabled>
-        <strong><i class='icon-markers'></i></strong> <%# Enum.count(@video.markers) %>
-      </button>
-      <%# btn_mode "markers+", @mode, "add" %>
-      <%# btn_mode "markers-", @mode, "cancel" %>
-    </div>
-
-    <div class="btn-group" role="group" aria-label="Obstacle Control">
-      <button class='btn btn-outline-light btn-sm' disabled>
-        <strong><i class='icon-obstacles'></i></strong> <%# Enum.count(@video.obstacles) %>
-      </button>
-      <%# btn_mode "obstacles+", @mode, "add" %>
-      <%# btn_mode "obstacles-", @mode, "cancel" %>
-    </div>
-
-    <div class="btn-group" role="group" aria-label="Mode Control">
-      <%# btn_mode "play-video", @mode, "video" %>
-      <%# btn_mode "play-annot", @mode, "direction" %>
-      <%# btn_mode "play-synth", @mode, "sim" %>
-    </div>
-  </div> -->
 </nav>
 
 <%= render "settings.html", changeset: @changeset, open?: @show_settings? %>

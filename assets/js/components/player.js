@@ -48,15 +48,6 @@ export default class Player {
       this.push('jump', { time, stopped: false })
     })
 
-    // register keyboard controls
-    const hook = this
-    window.addEventListener('keydown', e => {
-      switch(e.keyCode){
-        case 65: hook.backward(); break;
-        case 68: hook.forward(); break;
-      }
-    })
-
     this._player = player
     this.push = push
   }

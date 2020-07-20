@@ -4,7 +4,9 @@ import { resize } from '../helpers/canvas'
 
 const COLORS = {
   CYAN: "rgba(0, 255, 208, 1)",
-  GREEN: "rgba(0, 255, 0, 1)"
+  GREEN: "rgba(0, 255, 0, 1)",
+  RED: "rgba(255, 17, 0, 1)",
+  PURPLE: "rgba(255, 0, 255, 0.7)"
 }
 
 window.Obstacle = () => { }
@@ -19,6 +21,17 @@ export default {
     // this.prepareSimulation()
 
     const player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
+
+    // register keyboard controls
+    const hook = this
+    window.addEventListener('keydown', e => {
+      switch(e.keyCode){
+        case 65: player.backward(); break;          // A
+        case 68: player.forward(); break;           // D
+        case 83: hook.pushEvent("deselect"); break; // S
+        case 88: hook.pushEvent("toggle-cancel"); break; // S
+      }
+    })
 
     Object.assign(this, { canvas, context, player })
 
@@ -61,16 +74,19 @@ export default {
     if (this.showObstacles) this.draw_obstacles()
 
     if(this.showMarkers){
-      this.showVideo ? this.draw_agents() : this.draw_synth_agents()
+      this.simMode ? this.draw_synth_agents() : this.draw_agents()
     }
+
+    if(this.showGoals) this.draw_goals()
   },
 
   draw_agents() {
     const ctx = this.context
 
     for (const agent of this.positions) {
-      if (this.showOverlay) ctx.fillStyle = "black";
-      else ctx.fillStyle = this.selected == agent[0] ? COLORS.CYAN : COLORS.GREEN
+      if (this.showVideo) ctx.fillStyle = this.selected == agent[0] ? COLORS.CYAN : COLORS.GREEN
+      else ctx.fillStyle = "black"
+
 
       ctx.beginPath()
       ctx.arc(
@@ -84,37 +100,32 @@ export default {
     }
   },
 
+  draw_goals(){
+    const { canvas, context, goals, positions } = this
+    context.strokeStyle = context.fillStyle = COLORS.PURPLE
+
+    for (const agent of positions) {
+      const id = agent[0]
+      context.beginPath()
+      context.moveTo(agent[1] * canvas.width, agent[2] * canvas.height)
+      context.lineTo(goals[id][0] * canvas.width, goals[id][1] * canvas.height)
+      context.stroke()
+    }
+  },
+
   draw_obstacles() {
+
     const { canvas, context } = this
 
-    context.strokeStyle = context.fillStyle = "rgba(255,0,0,0.5)"
+    context.strokeStyle = context.fillStyle = COLORS.RED
     context.lineWidth = 3;
 
-    for (const o of this.obstacles){
-
-      if (o.length == 1) {
-        // draw single dot
-        context.beginPath()
-        context.arc(o[0].x * canvas.width, o[0].y * canvas.height, 3, 0, 2 * Math.PI, true)
-        context.fill()
-
-      } else if (o.length == 2) {
-        // draw line
-        context.beginPath()
-        context.moveTo(o[0].x * canvas.width, o[0].y * canvas.height)
-        context.lineTo(o[1].x * canvas.width, o[1].y * canvas.height)
-        context.stroke()
-
-      } else {
-        // draw polygon
-        context.beginPath()
-        context.moveTo(o[0].x * canvas.width, o[0].y * canvas.height)
-        for (var j = 1; j < o.length; j++) {
-          context.lineTo(o[j].x * canvas.width, o[j].y * canvas.height)
-        }
-        context.closePath()
-        context.fill()
-      }
+    for (const o of this.video.obstacles){
+      context.strokeStyle = context.fillStyle = o.id == this.selected ? COLORS.CYAN : COLORS.RED
+      context.beginPath()
+      context.moveTo(o.a_x * canvas.width, o.a_y * canvas.height)
+      context.lineTo(o.b_x * canvas.width, o.b_y * canvas.height)
+      context.stroke()
     }
   },
 
@@ -122,19 +133,13 @@ export default {
 
     const { context, simulator } = this
 
-    context.fillStyle = "black"
+    context.fillStyle = context.fillStyle = this.showVideo ? COLORS.GREEN : "black"
 
     for (let i = 0; i < simulator.getNumAgents(); ++i) {
 
       const pos = simulator.getAgentPosition(i)
       context.beginPath()
-      context.arc(
-        pos.x,
-        pos.y,
-        5,  // radius
-        0,
-        2 * Math.PI
-      )
+      context.arc(pos.x, pos.y, 5, 0, 2 * Math.PI )
       context.fill()
 
       if (RVO.RVOMath.absSq(simulator.getGoal(i).minus(simulator.getAgentPosition(i))) < RVO.RVOMath.RVO_EPSILON) {

@@ -8,7 +8,7 @@ defmodule CrowdCrush.Simulation do
   import CrowdCrush.Service.Simulation
 
   alias CrowdCrush.Repo
-  alias CrowdCrush.Simulation.{ Overlay, Marker, Video }
+  alias CrowdCrush.Simulation.{ Obstacle, Overlay, Marker, Video }
 
   def get_video!(id), do: Repo.get! Video, id
 
@@ -43,7 +43,10 @@ defmodule CrowdCrush.Simulation do
   end
 
   def get_video_by_youtube_id(id) do
-    Repo.get_by(from(v in Video, preload: [:obstacles, markers: ^marker_query()]), youtubeID: id)
+    Repo.get_by(from(v in Video, preload: [
+      markers: ^marker_query(),
+      obstacles: ^obstacle_query()
+    ]), youtubeID: id)
   end
 
   def get_video_details(video_id) do
@@ -148,8 +151,30 @@ defmodule CrowdCrush.Simulation do
   end
 
   def load_markers(video), do: Repo.preload(video, [markers: marker_query()], force: true)
+  def load_obstacles(video), do: Repo.preload(video, [obstacles: obstacle_query()], force: true)
+
+  def set_obstacle(nil, params) do
+    %Obstacle{}
+    |> Obstacle.changeset(params)
+    |> Repo.insert_or_update()
+  end
+
+  def set_obstacle(id, params) do
+    Obstacle
+    |> Repo.get(id)
+    |> Obstacle.changeset(params)
+    |> Repo.insert_or_update()
+  end
+
+  def delete_obstacle!(id) do
+    Obstacle
+    |> Repo.get!(id)
+    |> Repo.delete!()
+  end
 
   defp marker_query do
     from m in Marker, select: {m.agent, m.time, m.x, m.y}, order_by: [m.agent, m.time]
   end
+
+  defp obstacle_query, do: from o in Obstacle, select: map(o, [:id, :a_x, :a_y, :b_x, :b_y])
 end

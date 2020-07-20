@@ -16,7 +16,7 @@ defmodule CrowdCrushWeb.SimView do
   def encode_video(video) do
     video
     |> Map.take([
-        :radius, :max_speed, :velocity, :max_neighbors, :neighbor_dist, :time_horizon, :time_horizon_obst, :aspectratio, :youtubeID
+        :radius, :max_speed, :velocity, :max_neighbors, :neighbor_dist, :time_horizon, :time_horizon_obst, :aspectratio, :youtubeID, :obstacles
       ])
     |> Jason.encode!()
   end
@@ -53,10 +53,11 @@ defmodule CrowdCrushWeb.SimView do
       area_pressed: mode
   end
 
-  def toggle(property, active?) do
+  def toggle(property, active?, disabled \\ false) do
     content_tag :button, icon(property),
       class: "btn btn-outline-light btn-sm#{if active?, do: " active"}",
       phx_click: "toggle-#{property}",
-      area_pressed: active?
+      area_pressed: active?,
+      disabled: disabled
   end
 end

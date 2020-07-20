@@ -22,8 +22,13 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:agent_positions, agent_positions(video.markers, 0))
         |> assign(:changeset, Simulation.change_sim(video, %{}))
         |> assign(:mode, "play")
-        |> assign(:selected, nil)
         |> assign(:video, video)
+
+        # obstacle and marker management
+        |> assign(:edit?, false)  # add or edit mode
+        |> assign(:obs_x, nil)
+        |> assign(:obs_y, nil)
+        |> assign(:selected, nil)
 
         # toggles
         |> assign(:sim?, false)   # true - use simulation markers, false: use annotated markers
@@ -74,41 +79,83 @@ defmodule CrowdCrushWeb.SimLive do
     {:noreply, socket}
   end
 
-  def handle_event("click", %{"x" => x, "y" => y}, socket) do
-    case {socket.assigns.selected, Enum.count(socket.assigns.agent_positions)} do
-      {nil, _count} ->
-        # find closest agent and select it
-        agent =
-          socket.assigns.agent_positions
-          |> Enum.sort_by(fn [_id, x1, y1] ->
-              :math.sqrt(:math.pow(x1 - x, 2) + :math.pow(y1 - y, 2))
-            end)
-          |> List.first()
+  def handle_event("click", %{"x" => x, "y" => y}, %{assigns: %{mode: mode}} = socket) when mode == "markers" do
+    if is_nil(socket.assigns.selected) do
+      # find closest agent and select it
+      agent =
+        socket.assigns.agent_positions
+        |> Enum.sort_by(fn [_id, x1, y1] ->
+            :math.sqrt(:math.pow(x1 - x, 2) + :math.pow(y1 - y, 2))
+          end)
+        |> List.first()
 
-        case agent do
-          nil -> {:noreply, socket}
-          [id, _x, _y] -> {:noreply, assign(socket, :selected, id)}
-        end
+      case agent do
+        nil -> {:noreply, socket}
+        [id, _x, _y] -> {:noreply, assign(socket, :selected, id)}
+      end
+    else
+      # agent was selected, create marker at that time
+      case Simulation.set_marker(%{
+        agent: socket.assigns.selected,
+        time: socket.assigns.time * 1000,
+        video_id: socket.assigns.video.id,
+        x: x,
+        y: y
+      }) do
+        {:ok, _marker} ->
+          video = Simulation.load_markers(socket.assigns.video)
 
-      {id, _count} ->
-        # agent was selected, create marker at that time
-        case Simulation.set_marker(%{
-          agent: id,
-          time: socket.assigns.time * 1000,
+          {:noreply, socket
+          |> assign(:agent_positions, agent_positions(video.markers, socket.assigns.time))
+          |> assign(:video, video)}
+
+        {:error, _reason} ->
+          {:noreply, socket}
+      end
+    end
+  end
+
+  def handle_event("click", %{"x" => x, "y" => y}, %{assigns: %{mode: mode}} = socket) when mode == "obstacles" do
+    if socket.assigns.edit? && is_nil(socket.assigns.selected) do
+      # find closest obstacle and select it
+      obstacle =
+        socket.assigns.video.obstacles
+        |> Enum.sort_by(& min(
+            :math.sqrt(:math.pow(&1.a_x - x, 2) + :math.pow(&1.a_y - y, 2)),
+            :math.sqrt(:math.pow(&1.b_x - x, 2) + :math.pow(&1.b_y - y, 2))
+          ))
+        |> List.first()
+
+      case obstacle do
+        nil -> {:noreply, socket}
+        %{id: id} -> {:noreply, assign(socket, :selected, id)}
+      end
+    else
+      # obstacle was selected fill obs_x, obs_y, or insert to database
+      if is_nil(socket.assigns.obs_x) do
+        {:noreply, socket
+        |> assign(:obs_x, x)
+        |> assign(:obs_y, y)}
+      else
+        case Simulation.set_obstacle(socket.assigns.selected, %{
           video_id: socket.assigns.video.id,
-          x: x,
-          y: y
+          a_x: socket.assigns.obs_x,
+          a_y: socket.assigns.obs_y,
+          b_x: x,
+          b_y: y
         }) do
-          {:ok, _marker} ->
-            video = Simulation.load_markers(socket.assigns.video)
+          {:ok, _obstacle} ->
+            video = Simulation.load_obstacles(socket.assigns.video)
 
             {:noreply, socket
-            |> assign(:agent_positions, agent_positions(video.markers, socket.assigns.time))
+            |> assign(:obs_x, x)
+            |> assign(:obs_y, y)
             |> assign(:video, video)}
 
           {:error, _reason} ->
             {:noreply, socket}
         end
+      end
     end
   end
 
@@ -123,19 +170,37 @@ defmodule CrowdCrushWeb.SimLive do
     end
   end
 
-  def handle_event("delete", _params, socket) do
+  def handle_event("toggle-cancel", _params, socket) do
 
-    Simulation.delete_markers(socket.assigns.video, socket.assigns.selected)
+    case { socket.assigns.selected, socket.assigns.mode } do
+      {nil, _mode} ->
+        {:noreply, socket}
 
-    socket =
-      assign(socket, :video, Simulation.get_video_by_youtube_id(socket.assigns.video.youtubeID))
+      {id, "markers"} ->
+        Simulation.delete_markers(socket.assigns.video, socket.assigns.selected)
 
-    {:noreply, socket
-    |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
-    |> assign(:selected, nil)}
+        socket =
+          assign(socket, :video, Simulation.get_video_by_youtube_id(socket.assigns.video.youtubeID))
+
+        {:noreply, socket
+        |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
+        |> assign(:selected, nil)}
+
+      {id, "obstacles"} ->
+        Simulation.delete_obstacle!(socket.assigns.selected)
+
+        {:noreply, socket
+        |> assign(:selected, nil)
+        |> assign(:video, Simulation.load_obstacles(socket.assigns.video))}
+    end
   end
 
-  def handle_event("deselect", _params, socket), do: {:noreply, assign(socket, :selected, nil)}
+  def handle_event("deselect", _params, socket) do
+    {:noreply, socket
+    |> assign(:obs_x, nil)
+    |> assign(:obs_y, nil)
+    |> assign(:selected, nil)}
+  end
 
   @doc """
   Control buttons only set the action.
@@ -186,6 +251,14 @@ defmodule CrowdCrushWeb.SimLive do
 
   def handle_event("toggle-settings", _params, socket) do
     {:noreply, assign(socket, :show_settings?, !socket.assigns.show_settings?)}
+  end
+
+  def handle_event("toggle-add", _params, socket) do
+    {:noreply, assign(socket, :edit?, false)}
+  end
+
+  def handle_event("toggle-edit", _params, socket) do
+    {:noreply, assign(socket, :edit?, true)}
   end
 
   def handle_event("toggle-sim", _params, socket) do
