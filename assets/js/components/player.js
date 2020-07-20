@@ -7,6 +7,7 @@ const PLAYER_PARAMS = {
   fullscreen: false,
   keyboard: false,
   modestBranding: true,
+  related: false,
   width: "100%",
   height: "100%",
 }
@@ -17,24 +18,46 @@ export default class Player {
 
     player.load(youtubeID)
     player.mute()
-    player.play()
 
-    document.getElementById('play').addEventListener('click', () => this.play())
-    document.getElementById('pause').addEventListener('click', () => this.pause())
-    document.getElementById('stop').addEventListener('click', () => this.stop())
+    document.getElementById('play').addEventListener('click', () => player.play())
+    document.getElementById('pause').addEventListener('click', () => player.pause())
+    document.getElementById('stop').addEventListener('click', () => player.stop())
     document.getElementById('backward').addEventListener('click', () => this.backward())
     document.getElementById('forward').addEventListener('click', () => this.forward())
 
+    // state after loading and when stopped
+    player.on('cued', () => {
+      if(window.animationRequest) cancelAnimationFrame(window.animationRequest)
+      this.push('jump', { time : 0, stopped: true })
+    })
+
     player.on('playing', () => {
-      if (!this.loaded) {
-        player.pause()
-        player.seek(0)
-        this.push('set', { duration: player.getDuration() })
-        this.loaded = true
+      document.getElementById('backward').disabled = false
+
+      const loop = () => {
+        window.animationRequest = requestAnimationFrame(loop)
+        this.push('ping', {time: this.player.getCurrentTime()})
+      }
+      requestAnimationFrame(loop)
+    })
+
+    player.on('paused', () => {
+      console.log('paused')
+      cancelAnimationFrame(window.animationRequest)
+      const time = Math.floor(player.getCurrentTime())
+      player.seek(time)
+      this.push('jump', { time, stopped: false })
+    })
+
+    // register keyboard controls
+    const hook = this
+    window.addEventListener('keydown', e => {
+      switch(e.keyCode){
+        case 65: hook.backward(); break;
+        case 68: hook.forward(); break;
       }
     })
 
-    this.loaded = false
     this._player = player
     this.push = push
   }
@@ -43,42 +66,17 @@ export default class Player {
   get time() { return this._player.getCurrentTime() }
   get player() { return this._player }
 
-  play() {
-    this._player.play()
-
-    // start event loop
-    const loop = () => {
-      window.animationRequest = requestAnimationFrame(loop)
-      this.push('ping', {time: this.player.getCurrentTime()})
-    }
-    requestAnimationFrame(loop)
-  }
-
-  pause() {
-    if (window.animationRequest) cancelAnimationFrame(window.animationRequest)
-
-    const time = Math.floor(this._player.getCurrentTime())
-    this._player.pause()
-    this._player.seek(time)
-    this.push('jump', {time})
-  }
-
-  stop() {
-    if (window.animationRequest) cancelAnimationFrame(window.animationRequest)
-    this._player.pause()
-    this._player.seek(0)
-    this.push('jump', {time: 0})
-  }
-
   backward() {
+    if(window.animationRequest) cancelAnimationFrame(window.animationRequest)
     const time = this._player.getCurrentTime() - 1
     this._player.seek(time)
-    this.push('jump', {time})
+    this.push('jump', { time, stopped: false })
   }
 
   forward() {
+    if(window.animationRequest) cancelAnimationFrame(window.animationRequest)
     const time = this._player.getCurrentTime() + 1
     this._player.seek(time)
-    this.push('jump', {time})
+    this.push('jump', { time, stopped: false })
   }
 }

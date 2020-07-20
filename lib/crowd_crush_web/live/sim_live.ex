@@ -28,9 +28,9 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
 
         # controled by player
-        |> assign(:duration, 0.0)
         |> assign(:time, 0.0)
         |> assign(:playing?, false)
+        |> assign(:stopped?, true)
 
         |> assign(:video, video)}
     end
@@ -135,18 +135,16 @@ defmodule CrowdCrushWeb.SimLive do
     {:noreply, socket
     |> assign(:agent_positions, agent_positions(socket.assigns.video.markers, time))
     |> assign(:playing?, true)
+    |> assign(:stopped?, false)
     |> assign(:time, time)}
   end
 
-  def handle_event("jump", %{"time" => time}, socket) do
+  def handle_event("jump", %{"time" => time, "stopped" => stopped}, socket) do
     {:noreply, socket
     |> assign(:agent_positions, agent_positions(socket.assigns.video.markers, time))
     |> assign(:playing?, false)
+    |> assign(:stopped?, stopped)
     |> assign(:time, time)}
-  end
-
-  def handle_event("set", %{"duration" => duration}, socket) do
-    {:noreply, assign(socket, :duration, duration)}
   end
 
   def handle_event("toggle", %{"setting" => setting}, socket) do
@@ -158,25 +156,6 @@ defmodule CrowdCrushWeb.SimLive do
 
   def handle_event("toggle-settings", _params, socket) do
     {:noreply, assign(socket, :show_settings?, !socket.assigns.show_settings?)}
-  end
-
-  def handle_event("keyup", %{"key" => key}, socket) do
-    cond do
-      socket.assigns.show_settings ->
-        {:noreply, socket}
-
-      key == "a" && socket.assigns.time > 0 ->
-        {:noreply, assign(socket, :action, "backward")}
-
-      key == "d" && socket.assigns.time < socket.assigns.duration ->
-        {:noreply, assign(socket, :action, "forward")}
-
-      key == "s" && not is_nil(socket.assigns.selected) ->
-        {:noreply, assign(socket, :selected, nil)}
-
-      true ->
-        {:noreply, socket}
-    end
   end
 
   def handle_event("validate-settings", %{"video" => params}, socket) do

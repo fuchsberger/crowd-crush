@@ -10,7 +10,6 @@
   data-selected="<%= Jason.encode!(@selected) %>"
   data-video="<%= encode_video(@video) %>"
   phx-hook='sim'
-  phx-window-keyup='keyup'
 ></div>
 
 <div class='wrapper' phx-update='ignore'>
@@ -47,20 +46,20 @@
         id='backward'
         class='btn btn-sm btn-outline-light'
         type='button'
-        <%= if @time < 1, do: " disabled" %>
+        <%= if @playing? || @stopped? || @time < 1, do: " disabled" %>
       ><i class='icon-backward'></i></button>
 
       <button
         id='forward'
         class='btn btn-sm btn-outline-light'
         type='button'
-        <%= if @time > Float.floor(@duration) - 1, do: " disabled" %>
+        <%= if @playing? || @stopped? || @time > @video.duration - 1, do: " disabled" %>
       ><i class='icon-forward'></i></button>
 
       <button id='time-wrapper' class='btn btn-outline-light btn-sm' disabled phx-ignore='true'>
         <i class='icon-clock'></i>
         <span><%= trunc(@time) %></span> /
-        <span id='duration'><%= trunc(@duration) %></span>
+        <span><%= @video.duration %></span>
       </button>
     </div>
 
