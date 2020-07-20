@@ -16,39 +16,62 @@ defmodule CrowdCrushWeb.SimLive do
 
       video ->
         {:ok, socket
+
+        # simulation related
+        |> assign(:agent_goals, agent_goals(video.markers))
+        |> assign(:agent_positions, agent_positions(video.markers, 0))
+        |> assign(:changeset, Simulation.change_sim(video, %{}))
+        |> assign(:mode, "play")
+        |> assign(:selected, nil)
+        |> assign(:video, video)
+
+        # toggles
         |> assign(:sim?, false)   # true - use simulation markers, false: use annotated markers
-        |> assign(:video?, true)  # true - show/play video, false: show white background
         |> assign(:show_goals?, false)
         |> assign(:show_markers?, true)
         |> assign(:show_obstacles?, false)
         |> assign(:show_settings?, false)
-        |> assign(:selected, nil)
-        |> assign(:agent_goals, agent_goals(video.markers))
-        |> assign(:agent_positions, agent_positions(video.markers, 0))
-        |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
+        |> assign(:show_video?, true)
 
-        # controled by player
+        # player control
         |> assign(:time, 0.0)
         |> assign(:playing?, false)
-        |> assign(:stopped?, true)
-
-        |> assign(:video, video)}
+        |> assign(:stopped?, true)}
     end
   end
 
   def handle_event("set", %{"mode" => mode}, socket) do
     case mode do
-      "play-synth" ->
+      "play" ->
         {:noreply, socket
-        |> assign(:action, "prepare-sim")
-        # starting positions of agents (at current time)
-        |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
-        |> assign(:agent_positions, agent_positions(socket, socket.assigns.time))
-        |> assign(:mode, mode)}
+        |> assign(:mode, mode)
+        |> assign(:selected, nil)}
 
-      mode ->
-        {:noreply, assign(socket, :mode, mode)}
+      "markers" ->
+        {:noreply, socket
+        |> assign(:mode, mode)
+        |> assign(:selected, nil)
+        |> assign(:sim?, false)
+        |> assign(:show_goals?, false)
+        |> assign(:show_markers?, true)
+        |> assign(:show_obstacles?, false)
+        |> assign(:show_video?, true)}
+
+      "obstacles" ->
+        {:noreply, socket
+        |> assign(:mode, mode)
+        |> assign(:selected, nil)
+        |> assign(:sim?, false)
+        |> assign(:show_goals?, false)
+        |> assign(:show_markers?, false)
+        |> assign(:show_obstacles?, true)
+        |> assign(:show_video?, true)}
     end
+  end
+
+  # if play mode is selected, do nothing on click
+  def handle_event("click", _params, %{assigns: %{mode: mode}} = socket) when mode == "play" do
+    {:noreply, socket}
   end
 
   def handle_event("click", %{"x" => x, "y" => y}, socket) do
@@ -77,10 +100,12 @@ defmodule CrowdCrushWeb.SimLive do
           y: y
         }) do
           {:ok, _marker} ->
-            socket = assign(socket, :video, Simulation.get_video_by_youtube_id(socket.assigns.video.youtubeID))
+            video = Simulation.load_markers(socket.assigns.video)
 
-            # {:noreply, assign(socket, :agent_positions, agent_positions(socket))}
-            {:noreply, socket}
+            {:noreply, socket
+            |> assign(:agent_positions, agent_positions(video.markers, socket.assigns.time))
+            |> assign(:video, video)}
+
           {:error, _reason} ->
             {:noreply, socket}
         end
@@ -147,37 +172,44 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:time, time)}
   end
 
-  def handle_event("toggle", %{"setting" => setting}, socket) do
-    case setting do
-      "obstacles" -> {:noreply, assign(socket, :show_obstacles, !socket.assigns.show_obstacles)}
-      "overlay"   -> {:noreply, assign(socket, :show_overlay, !socket.assigns.show_overlay)}
-    end
+  def handle_event("toggle-obstacles", _params, socket) do
+    {:noreply, assign(socket, :show_obstacles?, !socket.assigns.show_obstacles?)}
+  end
+
+  def handle_event("toggle-markers", _params, socket) do
+    {:noreply, assign(socket, :show_markers?, !socket.assigns.show_markers?)}
+  end
+
+  def handle_event("toggle-goals", _params, socket) do
+    {:noreply, assign(socket, :show_goals?, !socket.assigns.show_goals?)}
   end
 
   def handle_event("toggle-settings", _params, socket) do
     {:noreply, assign(socket, :show_settings?, !socket.assigns.show_settings?)}
   end
 
+  def handle_event("toggle-sim", _params, socket) do
+    {:noreply, assign(socket, :sim?, !socket.assigns.sim?)}
+  end
+
+  def handle_event("toggle-video", _params, socket) do
+    {:noreply, assign(socket, :show_video?, !socket.assigns.show_video?)}
+  end
+
   def handle_event("validate-settings", %{"video" => params}, socket) do
-    changeset = Simulation.change_sim(socket.assigns.video, params)
-    {:noreply, assign(socket, :sim_changeset, changeset)}
+    {:noreply, assign(socket, :changeset, Simulation.change_sim(socket.assigns.video, params))}
   end
 
   def handle_event("update-settings", %{"video" => params}, socket) do
     case Simulation.update_sim(socket.assigns.video, params) do
       {:ok, video} ->
         {:noreply, socket
-        |> assign(:action, "prepare-sim")
-        |> assign(:agent_goals, agent_goals(socket.assigns.video.markers))
-        |> assign(:agent_positions, agent_positions(socket, 0))
-        |> assign(:mode, "play-synth")
-        |> assign(:show_settings, false)
-        |> assign(:sim_changeset, Simulation.change_sim(video, %{}))
-        |> assign(:time, 0.0)
+        |> assign(:show_settings?, false)
+        |> assign(:changeset, Simulation.change_sim(video, %{}))
         |> assign(:video, Simulation.load_markers(video))}
 
       {:error, changeset} ->
-        {:noreply, assign(socket, :sim_changeset, changeset)}
+        {:noreply, assign(socket, :changeset, changeset)}
     end
   end
 

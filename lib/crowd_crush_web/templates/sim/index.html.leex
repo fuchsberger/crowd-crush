@@ -3,7 +3,7 @@
   data-positions="<%= Jason.encode!(@agent_positions) %>"
   data-goals='<%= Jason.encode!(@agent_goals) %>'
   data-sim-mode='<%= @sim? %>'
-  data-show-video='<%= @video? %>'
+  data-show-video='<%= @show_video? %>'
   data-show-markers="<%= @show_markers? %>"
   data-show-obstacles="<%= @show_obstacles? %>"
   data-show-goals="<%= @show_goals? %>"
@@ -63,10 +63,19 @@
       </button>
     </div>
 
+    <div class="btn-group" role="group" aria-label="Switch Mode">
+      <%= mode "play", @mode == "play" %>
+      <%= mode "markers", @mode == "markers" %>
+      <%= mode "obstacles", @mode == "obstacles" %>
+    </div>
+
     <div class="btn-group" role="group" aria-label="Toggle Elements">
-      <button class='btn btn-outline-light btn-sm' phx-click='toggle-settings'>
-        <i class='icon-settings'></i>
-      </button>
+      <%= toggle "sim", @show_goals? %>
+      <%= toggle "video", @show_video? %>
+      <%= toggle "markers", @show_markers? %>
+      <%= toggle "goals", @show_goals? %>
+      <%= toggle "obstacles", @show_obstacles? %>
+      <%= toggle "settings", @show_settings? %>
     </div>
 <!--
     <div class="btn-group" role="group" aria-label="Annotation Controls">
@@ -89,9 +98,8 @@
       <%# btn_mode "play-video", @mode, "video" %>
       <%# btn_mode "play-annot", @mode, "direction" %>
       <%# btn_mode "play-synth", @mode, "sim" %>
-      <%# btn_mode "settings", @mode, "settings" %>
     </div>
   </div> -->
 </nav>
 
-<%= render "settings.html", changeset: @sim_changeset, open?: @show_settings? %>
+<%= render "settings.html", changeset: @changeset, open?: @show_settings? %>

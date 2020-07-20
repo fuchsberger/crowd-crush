@@ -147,7 +147,7 @@ defmodule CrowdCrush.Simulation do
     end
   end
 
-  def load_markers(video), do: Repo.preload(video, [markers: marker_query()])
+  def load_markers(video), do: Repo.preload(video, [markers: marker_query()], force: true)
 
   defp marker_query do
     from m in Marker, select: {m.agent, m.time, m.x, m.y}, order_by: [m.agent, m.time]

@@ -42,7 +42,6 @@ export default class Player {
     })
 
     player.on('paused', () => {
-      console.log('paused')
       cancelAnimationFrame(window.animationRequest)
       const time = Math.floor(player.getCurrentTime())
       player.seek(time)
@@ -67,6 +66,7 @@ export default class Player {
   get player() { return this._player }
 
   backward() {
+    if(this._player.getState() != 'paused') return
     if(window.animationRequest) cancelAnimationFrame(window.animationRequest)
     const time = this._player.getCurrentTime() - 1
     this._player.seek(time)
@@ -74,6 +74,7 @@ export default class Player {
   }
 
   forward() {
+    if(this._player.getState() != 'paused') return
     if(window.animationRequest) cancelAnimationFrame(window.animationRequest)
     const time = this._player.getCurrentTime() + 1
     this._player.seek(time)
