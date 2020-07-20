@@ -18,12 +18,13 @@ export default {
     let context = canvas.getContext('2d')
 
     this.get_data()
-    // this.prepareSimulation()
 
     const player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
 
-    // register keyboard controls
     const hook = this
+
+    document.getElementById('start').addEventListener('click', () => hook.prepareSimulation())
+
     window.addEventListener('keydown', e => {
       switch(e.keyCode){
         case 65: player.backward(); break;          // A
@@ -101,15 +102,30 @@ export default {
   },
 
   draw_goals(){
-    const { canvas, context, goals, positions } = this
+    const { canvas, context, goals, positions, simMode } = this
     context.strokeStyle = context.fillStyle = COLORS.PURPLE
 
-    for (const agent of positions) {
-      const id = agent[0]
-      context.beginPath()
-      context.moveTo(agent[1] * canvas.width, agent[2] * canvas.height)
-      context.lineTo(goals[id][0] * canvas.width, goals[id][1] * canvas.height)
-      context.stroke()
+    if(simMode){
+
+      for (let i = 0; i < this.simulator.getNumAgents(); ++i) {
+        const pos = this.simulator.getAgentPosition(i)
+        const goal = this.simulator.getGoal(i)
+
+        context.beginPath()
+        context.moveTo(pos.x, pos.y)
+        context.lineTo(goal.x, goal.y)
+        context.stroke()
+      }
+
+    } else {
+
+      for (const agent of positions) {
+        const id = agent[0]
+        context.beginPath()
+        context.moveTo(agent[1] * canvas.width, agent[2] * canvas.height)
+        context.lineTo(goals[id][0] * canvas.width, goals[id][1] * canvas.height)
+        context.stroke()
+      }
     }
   },
 
@@ -130,10 +146,10 @@ export default {
   },
 
   draw_synth_agents() {
-
     const { context, simulator } = this
 
     context.fillStyle = context.fillStyle = this.showVideo ? COLORS.GREEN : "black"
+    context.lineWidth = 0.5;
 
     for (let i = 0; i < simulator.getNumAgents(); ++i) {
 
@@ -162,15 +178,16 @@ export default {
     simulator.run()
 
     if (simulator.reachedGoal()) {
-      // reset simulation
+      // reset simulation and switch back to annotation mode
       this.prepareSimulation()
     }
   },
 
   prepareSimulation() {
+
     const simulator = new RVO.Simulator()
     window.agentTree = []
-    simulator.setTimeStep(0.25)
+    simulator.setTimeStep(0.2)
 
     simulator.setAgentDefaults(
       this.video.neighbor_dist, // neighbor distance (min = radius * radius)
@@ -196,20 +213,20 @@ export default {
     }
 
     // add obstacles to simulation
-    for (const o of this.obstacles) {
-      const obst = []
-      for (let j = 0; j < o.length; j++) {
-        obst.push(new RVO.Vector2(
-          o[j].x * this.canvas.width,
-          o[j].y * this.canvas.height
-        ))
-      }
-      simulator.addObstacle(obst)
+    for (const o of this.video.obstacles) {
+      simulator.addObstacle([
+        new RVO.Vector2(o.a_x * w, o.a_y * h),
+        new RVO.Vector2(o.b_x * w, o.b_y * h)
+      ])
     }
 
     simulator.processObstacles()
 
     this.simulator = simulator
+
+    this.pushEvent("toggle-video")
+    this.pushEvent("toggle-sim")
+    this.player._player.play()
   }
 }
 

@@ -76,7 +76,11 @@
     </div>
 
     <div class="btn-group" role="group" aria-label="Toggle Elements">
-      <%= toggle "sim", @show_goals? %>
+      <button
+        id='start'
+        class='btn btn-sm btn-outline-light<%= if @sim?, do: " active" %>'
+        type='button'
+      ><i class='icon-sim'></i></button>
       <%= toggle "video", @show_video? %>
       <%= toggle "markers", @show_markers? %>
       <%= toggle "goals", @show_goals? %>
