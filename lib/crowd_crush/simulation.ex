@@ -172,9 +172,7 @@ defmodule CrowdCrush.Simulation do
     |> Repo.delete!()
   end
 
-  defp marker_query do
-    from m in Marker, select: {m.agent, m.time, m.x, m.y}, order_by: [m.agent, m.time]
-  end
+  defp marker_query, do: from m in Marker, order_by: [m.agent, m.time]
 
   defp obstacle_query, do: from o in Obstacle, select: map(o, [:id, :a_x, :a_y, :b_x, :b_y])
 end

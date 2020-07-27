@@ -85,15 +85,18 @@ export default {
   draw_agents() {
     const ctx = this.context
 
-    for (const agent of this.positions) {
-      if (this.showVideo) ctx.fillStyle = this.selected == agent[0] ? COLORS.CYAN : COLORS.GREEN
-      else ctx.fillStyle = "black"
+    for (const id in this.positions) {
 
+      const pos = this.positions[id]
+      if(!pos) continue;
+
+      if (this.showVideo) ctx.fillStyle = this.selected == parseInt(id) ? COLORS.CYAN : COLORS.GREEN
+      else ctx.fillStyle = "black"
 
       ctx.beginPath()
       ctx.arc(
-        this.canvas.width * agent[1],
-        this.canvas.height * agent[2],
+        this.canvas.width * pos.x,
+        this.canvas.height * pos.y,
         5,  // radius
         0,
         2 * Math.PI
@@ -108,8 +111,6 @@ export default {
 
 
     if(simMode){
-
-
       for (let i = 0; i < this.simulator.getNumAgents(); i++) {
         const pos = this.simulator.getAgentPosition(i)
         const goal = this.simulator.getGoal(i)
@@ -119,7 +120,6 @@ export default {
         context.lineTo(goal.x, goal.y)
         context.stroke()
       }
-
     } else {
 
       for (const agent of positions) {
@@ -155,35 +155,12 @@ export default {
     context.lineWidth = 0.5;
 
     for (let i = 0; i < simulator.getNumAgents(); ++i) {
-
       const pos = simulator.getAgentPosition(i)
       context.beginPath()
       context.arc(pos.x, pos.y, 5, 0, 2 * Math.PI )
       context.fill()
-
-      // if (RVO.RVOMath.absSq(simulator.getGoal(i).minus(simulator.getAgentPosition(i))) < RVO.RVOMath.RVO_EPSILON) {
-      //   // Agent is within one radius of its goal, set preferred velocity to zero
-      //   simulator.setAgentPrefVelocity(i, 0.0, 0.0)
-
-      //   // remove agent from simulation
-
-      //   // simulator.agents.splice(i, 1)
-      //   // i--
-
-      // } else {
-      //   // Agent is far away from its goal
-      //   // set preferred velocity as unit vector towards agent's goal.
-      //   let v = RVO.RVOMath.normalize(simulator.getGoal(i).minus(simulator.getAgentPosition(i)))
-      //   simulator.setAgentPrefVelocity(i, v.x, v.y)
-      // }
     }
-
     simulator.run()
-
-    // if (simulator.reachedGoal()) {
-    //   // reset simulation and switch back to annotation mode
-    //   this.prepareSimulation()
-    // }
   },
 
   prepareSimulation() {
@@ -204,22 +181,19 @@ export default {
     )
 
     // add agents to simulation
-    const agents = this.positions
     const w = canvas.width
     const h = canvas.height
+    console.log(this.goals)
 
-    for (let i = 0; i < agents.length; i++) {
-      const original_id = agents[i][0]
+    for (const id in this.positions) {
+      const agent = this.positions[id]
+      const goal = this.goals[agent.id]
       const id = simulator.addAgent()
-      simulator.setAgentPosition(id, agents[i][1] * w, agents[i][2] * h)
-      simulator.setAgentGoal(id, this.goals[original_id][0] * w, this.goals[original_id][1] * h)
 
-      // const a = RVO.RVOMath.normalize(simulator.getGoal(id).minus(simulator.getAgentPosition(id)))
+      simulator.setAgentPosition(id, agent.x * w, agent.y * h)
+      simulator.setAgentGoal(id, goal.x * w, goal.y * h)
 
-      // simulator.setAgentPrefVelocity(id, a)
-
-      // console.log(a, simulator.getAgentPrefVelocity(0))
-
+      // normalize agent's prefered velocity
       let v = RVO.RVOMath.normalize(simulator.getGoal(id).minus(simulator.getAgentPosition(id)))
       simulator.setAgentPrefVelocity(id, v.x, v.y)
     }
