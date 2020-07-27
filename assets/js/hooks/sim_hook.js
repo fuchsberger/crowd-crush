@@ -15,12 +15,14 @@ export default {
 
   mounted() {
 
-    let canvas = document.getElementById('canvas')
-    let context = canvas.getContext('2d')
+    this.canvas = document.getElementById('canvas')
+    this.context = canvas.getContext('2d')
 
     this.get_data()
+    // resize(this.video.aspectratio, this.canvas)
+    // this.prepareSimulation()
 
-    const player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
+    this.player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
 
     const hook = this
 
@@ -28,14 +30,12 @@ export default {
 
     window.addEventListener('keydown', e => {
       switch(e.keyCode){
-        case 65: player.backward(); break;          // A
-        case 68: player.forward(); break;           // D
+        case 65: hook.player.backward(); break;          // A
+        case 68: hook.player.forward(); break;           // D
         case 83: hook.pushEvent("deselect"); break; // S
         case 88: hook.pushEvent("toggle-cancel"); break; // S
       }
     })
-
-    Object.assign(this, { canvas, context, player })
 
     this.render_canvas()
   },
@@ -48,6 +48,7 @@ export default {
   get_data() {
     const d = this.el.dataset
 
+    this.nextAgent = JSON.parse(d.nextAgent)
     this.simMode = JSON.parse(d.simMode)
     this.showGoals = JSON.parse(d.showGoals)
     this.showMarkers = JSON.parse(d.showMarkers)
@@ -106,27 +107,32 @@ export default {
   },
 
   draw_goals(){
-    const { canvas, context, goals, positions, simMode } = this
-    context.strokeStyle = context.fillStyle = COLORS.PURPLE
-
+    const { canvas, context, simulator, simMode, positions, goals } = this
+    context.strokeStyle = COLORS.PURPLE
+    context.lineWidth = 1;
 
     if(simMode){
-      for (let i = 0; i < this.simulator.getNumAgents(); i++) {
-        const pos = this.simulator.getAgentPosition(i)
-        const goal = this.simulator.getGoal(i)
+      for(const agent of simulator.agents){
+
+        // ignore goals for agents at final destination (outside screen)
+        if(agent.position.x == -666 && agent.position.y == -666) continue;
+
+        const goal = simulator.getGoal(agent.id)
 
         context.beginPath()
-        context.moveTo(pos.x, pos.y)
+        context.moveTo(agent.position.x, agent.position.y)
         context.lineTo(goal.x, goal.y)
         context.stroke()
       }
     } else {
 
-      for (const agent of positions) {
-        const id = agent[0]
+      // console.log("ANN", positions["1"].x * canvas.width)
+      for(const id in positions){
+        if(!positions[id]) continue;
+
         context.beginPath()
-        context.moveTo(agent[1] * canvas.width, agent[2] * canvas.height)
-        context.lineTo(goals[id][0] * canvas.width, goals[id][1] * canvas.height)
+        context.moveTo(positions[id].x * canvas.width, positions[id].y * canvas.height)
+        context.lineTo(goals[id].x * canvas.width, goals[id].y * canvas.height)
         context.stroke()
       }
     }
@@ -149,27 +155,73 @@ export default {
   },
 
   draw_synth_agents() {
-    const { context, simulator } = this
 
-    context.fillStyle = context.fillStyle = this.showVideo ? COLORS.GREEN : "black"
-    context.lineWidth = 0.5;
+    const time = this.player.getTime()
+    const timestep = time - this.simulator.getGlobalTime()
 
-    for (let i = 0; i < simulator.getNumAgents(); ++i) {
-      const pos = simulator.getAgentPosition(i)
-      context.beginPath()
-      context.arc(pos.x, pos.y, 5, 0, 2 * Math.PI )
-      context.fill()
+    this.simulator.setTimeStep(timestep)
+    this.simulator.run()
+
+    this.context.fillStyle = this.showVideo ? COLORS.GREEN : "black"
+    this.lineWidth = 0.5;
+
+    // time to add next agent to simulation
+    if(time + 0.02 > this.nextAgent.time){
+
+      const id = this.simulator.addAgent(new RVO.Vector2(
+        this.nextAgent.pos_x * canvas.width,
+        this.nextAgent.pos_y * canvas.height
+      ))
+
+      this.simulator.setAgentGoal(
+        id,
+        this.nextAgent.goal_x * canvas.width,
+        this.nextAgent.goal_y * canvas.height
+      )
+
+      // normalize agent's prefered velocity
+      let v = RVO.RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
+
+      this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
+
+      console.log(`ADDED: ${id}`, this.nextAgent)
     }
-    simulator.run()
+
+    for(const agent of this.simulator.agents){
+
+      // check if agent has left frame
+      if(agent.position.x < 12 || agent.position.y < 15 || agent.position.x > canvas.width - 10 || agent.position.y > canvas.height - 10){
+
+        // stop moving agent and teleport them to final destination (outside screen)
+        this.simulator.setAgentPrefVelocity(agent.id, 0, 0)
+        this.simulator.setAgentPosition(agent.id, -666, -666)
+        continue;
+      }
+
+      // agent has reached destination but it is inside frame (just stand there)
+      if (RVO.RVOMath.absSq(this.simulator.goals[agent.id].minus(this.simulator.getAgentPosition(agent.id))) < RVO.RVOMath.RVO_EPSILON) {
+        this.simulator.setAgentPrefVelocity(agent.id, 0, 0)
+        continue;
+      }
+
+      // const pos = simulator.getAgentPosition(i)
+      this.context.beginPath()
+      this.context.arc(agent.position.x, agent.position.y, 5, 0, 2 * Math.PI )
+      this.context.fill()
+    }
+
+
   },
 
   prepareSimulation() {
 
-    const simulator = new RVO.Simulator()
-    window.agentTree = []
-    simulator.setTimeStep(0.1)
+    const {canvas, goals, positions, video} = this
 
-    simulator.setAgentDefaults(
+    this.simulator = new RVO.Simulator()
+
+    // this.simulator.setTimeStep(0.1)
+
+    this.simulator.setAgentDefaults(
       this.video.neighbor_dist, // neighbor distance (min = radius * radius)
       this.video.max_neighbors, // max neighbors
       this.video.time_horizon, // time horizon
@@ -181,38 +233,55 @@ export default {
     )
 
     // add agents to simulation
-    const w = canvas.width
-    const h = canvas.height
-    console.log(this.goals)
+    for (const i in positions) {
 
-    for (const id in this.positions) {
-      const agent = this.positions[id]
-      const goal = this.goals[agent.id]
-      const id = simulator.addAgent()
+      // ignore agents that are not present at start
+      // console.log(i)
 
-      simulator.setAgentPosition(id, agent.x * w, agent.y * h)
-      simulator.setAgentGoal(id, goal.x * w, goal.y * h)
+      if(!positions[i]) continue;
+
+
+
+      if(i > 175) break;
+
+
+      const id = this.simulator.addAgent()
+
+      console.log(id)
+
+      this.simulator.setAgentPosition(
+        id,
+        positions[i].x * canvas.width,
+        positions[i].y * canvas.height
+      )
+
+      this.simulator.setAgentGoal(
+        id,
+        goals[i].x * canvas.width,
+        goals[i].y * canvas.height
+      )
 
       // normalize agent's prefered velocity
-      let v = RVO.RVOMath.normalize(simulator.getGoal(id).minus(simulator.getAgentPosition(id)))
-      simulator.setAgentPrefVelocity(id, v.x, v.y)
+      let v = RVO.RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
+
+      this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
     }
 
     // add obstacles to simulation
-    for (const o of this.video.obstacles) {
-      simulator.addObstacle([
-        new RVO.Vector2(o.a_x * w, o.a_y * h),
-        new RVO.Vector2(o.b_x * w, o.b_y * h)
+    for (const o of video.obstacles) {
+      this.simulator.addObstacle([
+        new RVO.Vector2(o.a_x * canvas.width, o.a_y * canvas.height),
+        new RVO.Vector2(o.b_x * canvas.width, o.b_y * canvas.height)
       ])
     }
 
-    simulator.processObstacles()
+    this.simulator.processObstacles()
 
-    this.simulator = simulator
+    // this.simulator = simulator
 
-    this.pushEvent("toggle-video")
+    // this.pushEvent("toggle-video")
     this.pushEvent("toggle-sim")
-    this.player._player.play()
+    // this.player._player.play()
   }
 }
 

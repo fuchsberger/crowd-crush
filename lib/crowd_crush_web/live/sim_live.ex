@@ -22,6 +22,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:video, group_markers(video))
         |> assign_agent_positions()
         |> assign_agent_goals()
+        |> assign_next_agent()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
         |> assign(:mode, "play")
 
@@ -33,11 +34,11 @@ defmodule CrowdCrushWeb.SimLive do
 
         # toggles
         |> assign(:sim?, false)   # true - use simulation markers, false: use annotated markers
-        |> assign(:show_goals?, false)
+        |> assign(:show_goals?, true)       # default: false
         |> assign(:show_markers?, true)
-        |> assign(:show_obstacles?, false)
+        |> assign(:show_obstacles?, true)   # default: false
         |> assign(:show_settings?, false)
-        |> assign(:show_video?, true)
+        |> assign(:show_video?, true)      # default: false
 
         # player control
 
@@ -207,7 +208,8 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:playing?, true)
     |> assign(:stopped?, false)
     |> assign(:time, time)
-    |> assign_agent_positions()}
+    |> assign_agent_positions()
+    |> assign_next_agent()}
   end
 
   def handle_event("jump", %{"time" => time, "stopped" => stopped}, socket) do
@@ -305,8 +307,35 @@ defmodule CrowdCrushWeb.SimLive do
     assign(socket, :agent_positions, positions)
   end
 
+  defp assign_next_agent(%{assigns: %{video: %{markers: markers}, time: time}} = socket) do
+    time = time * 1000
+
+    marker =
+      markers
+      |> Enum.map(fn {_k, markers} -> List.first(markers) end)
+      |> Enum.filter(& &1.time > time)
+      |> Enum.sort_by(& &1.time)
+      |> List.first()
+
+    case marker do
+      nil ->
+        assign(socket, :next_agent, nil)
+
+      marker ->
+        goal = Map.get(socket.assigns.agent_goals, marker.agent)
+
+        assign(socket, :next_agent, %{
+          time: marker.time / 1000,
+          pos_x: marker.x,
+          pos_y: marker.y,
+          goal_x: goal.x,
+          goal_y: goal.y
+        })
+    end
+  end
+
   defp group_markers(video) do
-    markers = Enum.group_by(video.markers, & &1.agent, & %{time: &1.time, x: &1.x, y: &1.y})
+    markers = Enum.group_by(video.markers, & &1.agent, & Map.take(&1, [:agent, :time, :x, :y]))
     Map.put(video, :markers, markers)
   end
 end
