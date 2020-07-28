@@ -1,4 +1,4 @@
-import RVO from 'rvo-js'
+import { Simulator, RVOMath, Vector2 } from '../rvo'
 import Player from '../components/player'
 import { resize } from '../helpers/canvas'
 
@@ -166,28 +166,37 @@ export default {
     this.lineWidth = 0.5;
 
     // time to add next agent to simulation
-    if(time + 0.02 > this.nextAgent.time){
+    // if(time + 0.02 > this.nextAgent.time){
 
-      const id = this.simulator.addAgent(new RVO.Vector2(
-        this.nextAgent.pos_x * canvas.width,
-        this.nextAgent.pos_y * canvas.height
-      ))
+    //   const id = this.simulator.addAgent(new Vector2(
+    //     this.nextAgent.pos_x * canvas.width,
+    //     this.nextAgent.pos_y * canvas.height
+    //   ))
 
-      this.simulator.setAgentGoal(
-        id,
-        this.nextAgent.goal_x * canvas.width,
-        this.nextAgent.goal_y * canvas.height
-      )
+    //   this.simulator.setAgentGoal(
+    //     id,
+    //     this.nextAgent.goal_x * canvas.width,
+    //     this.nextAgent.goal_y * canvas.height
+    //   )
 
-      // normalize agent's prefered velocity
-      let v = RVO.RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
+    //   // normalize agent's prefered velocity
+    //   let v = RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
 
-      this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
+    //   this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
 
-      console.log(`ADDED: ${id}`, this.nextAgent)
-    }
+    //   console.log(`ADDED: ${id}`, this.nextAgent)
+    // }
 
-    for(const agent of this.simulator.agents){
+    for(let i = 0; i < this.simulator.agents.length; i++){
+
+      const position = this.simulator.getAgentPosition(i)
+
+      // console.log(position)
+      continue
+      const agent = {}
+
+      // ignore agents at final destination (outside screen)
+      if(agent.position.x == -666 && agent.position.y == -666) continue;
 
       // check if agent has left frame
       if(agent.position.x < 12 || agent.position.y < 15 || agent.position.x > canvas.width - 10 || agent.position.y > canvas.height - 10){
@@ -199,7 +208,7 @@ export default {
       }
 
       // agent has reached destination but it is inside frame (just stand there)
-      if (RVO.RVOMath.absSq(this.simulator.goals[agent.id].minus(this.simulator.getAgentPosition(agent.id))) < RVO.RVOMath.RVO_EPSILON) {
+      if (RVOMath.absSq(this.simulator.goals[agent.id].minus(this.simulator.getAgentPosition(agent.id))) < RVOMath.RVO_EPSILON) {
         this.simulator.setAgentPrefVelocity(agent.id, 0, 0)
         continue;
       }
@@ -217,9 +226,7 @@ export default {
 
     const {canvas, goals, positions, video} = this
 
-    this.simulator = new RVO.Simulator()
-
-    // this.simulator.setTimeStep(0.1)
+    this.simulator = new Simulator()
 
     this.simulator.setAgentDefaults(
       this.video.neighbor_dist, // neighbor distance (min = radius * radius)
@@ -236,24 +243,13 @@ export default {
     for (const i in positions) {
 
       // ignore agents that are not present at start
-      // console.log(i)
-
       if(!positions[i]) continue;
 
-
-
-      if(i > 175) break;
-
-
-      const id = this.simulator.addAgent()
-
-      console.log(id)
-
-      this.simulator.setAgentPosition(
-        id,
+      const id = this.simulator.addAgent(new Vector2(
         positions[i].x * canvas.width,
         positions[i].y * canvas.height
-      )
+      ))
+
 
       this.simulator.setAgentGoal(
         id,
@@ -261,8 +257,10 @@ export default {
         goals[i].y * canvas.height
       )
 
+
+
       // normalize agent's prefered velocity
-      let v = RVO.RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
+      let v = RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
 
       this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
     }
@@ -270,8 +268,8 @@ export default {
     // add obstacles to simulation
     for (const o of video.obstacles) {
       this.simulator.addObstacle([
-        new RVO.Vector2(o.a_x * canvas.width, o.a_y * canvas.height),
-        new RVO.Vector2(o.b_x * canvas.width, o.b_y * canvas.height)
+        new Vector2(o.a_x * canvas.width, o.a_y * canvas.height),
+        new Vector2(o.b_x * canvas.width, o.b_y * canvas.height)
       ])
     }
 

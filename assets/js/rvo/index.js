@@ -1,0 +1,5 @@
+export { default as Agent } from "./agent"
+export { default as KdTree } from "./kd_tree"
+export { default as RVOMath } from "./rvo_math"
+export { default as Simulator } from "./simulator"
+export { default as Vector2 } from "./vector2"
