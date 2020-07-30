@@ -19,7 +19,8 @@ export default {
     this.context = canvas.getContext('2d')
 
     this.get_data()
-    // resize(this.video.aspectratio, this.canvas)
+    resize(this.video.aspectratio, this.canvas)
+
     // this.prepareSimulation()
 
     this.player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
@@ -61,10 +62,7 @@ export default {
   },
 
   render_canvas(){
-    const {canvas, context, video} = this
-
-    // should be done once in mount but for some reason properties don't persist there
-    resize(video.aspectratio, canvas)
+    const { canvas, context } = this
 
     // draw background
     if(this.showVideo){
