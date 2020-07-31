@@ -22,7 +22,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:video, group_markers(video))
         |> assign_agent_positions()
         |> assign_agent_goals()
-        |> assign_next_agent()
+        |> assign_future_agents()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
         |> assign(:mode, "play")
 
@@ -208,8 +208,7 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:playing?, true)
     |> assign(:stopped?, false)
     |> assign(:time, time)
-    |> assign_agent_positions()
-    |> assign_next_agent()}
+    |> assign_agent_positions()}
   end
 
   def handle_event("jump", %{"time" => time, "stopped" => stopped}, socket) do
@@ -307,31 +306,23 @@ defmodule CrowdCrushWeb.SimLive do
     assign(socket, :agent_positions, positions)
   end
 
-  defp assign_next_agent(%{assigns: %{video: %{markers: markers}, time: time}} = socket) do
-    time = time * 1000
+  # track first and last marker and remove all that have a starting time of 0
+  defp assign_future_agents(%{assigns: %{video: %{markers: markers}}} = socket) do
+    agents = Enum.map(markers, fn {agent, markers} ->
+      start = List.first(markers)
+      goal = List.last(markers)
+      %{
+        id: agent,
+        time: start.time / 1000,
+        x: start.x,
+        y: start.y,
+        goal_x: goal.x,
+        goal_y: goal.y
+      }
+    end)
+    |> Enum.filter(& &1.time > 0)
 
-    marker =
-      markers
-      |> Enum.map(fn {_k, markers} -> List.first(markers) end)
-      |> Enum.filter(& &1.time > time)
-      |> Enum.sort_by(& &1.time)
-      |> List.first()
-
-    case marker do
-      nil ->
-        assign(socket, :next_agent, nil)
-
-      marker ->
-        goal = Map.get(socket.assigns.agent_goals, marker.agent)
-
-        assign(socket, :next_agent, %{
-          time: marker.time / 1000,
-          pos_x: marker.x,
-          pos_y: marker.y,
-          goal_x: goal.x,
-          goal_y: goal.y
-        })
-    end
+    assign(socket, :future_agents, agents)
   end
 
   defp group_markers(video) do

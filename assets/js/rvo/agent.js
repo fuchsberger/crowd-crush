@@ -373,89 +373,68 @@ export default class Agent {
   }
 
   linearProgram1 (lines, lineNo, radius, optVelocity, directionOpt) {
-    var dotProduct = lines[lineNo].point.multiply(lines[lineNo].direction)
-    var discriminant = RVOMath.sqr(dotProduct) + RVOMath.sqr(radius) - RVOMath.absSq(lines[lineNo].point)
+    const dotProduct = lines[lineNo].point.multiply(lines[lineNo].direction)
+    const discriminant =
+      RVOMath.sqr(dotProduct) + RVOMath.sqr(radius) - RVOMath.absSq(lines[lineNo].point)
 
-    if (discriminant < 0.0) {
-      /* Max speed circle fully invalidates line lineNo. */
-      return false
-    }
+    /* Max speed circle fully invalidates line lineNo. */
+    if (discriminant < 0.0) return false
 
-    var sqrtDiscriminant = Math.sqrt(discriminant)
-    var tLeft = -dotProduct - sqrtDiscriminant
-    var tRight = -dotProduct + sqrtDiscriminant
+    let tLeft = -dotProduct - Math.sqrt(discriminant)
+    let tRight = -dotProduct + Math.sqrt(discriminant)
 
     for (var i = 0; i < lineNo; ++i) {
-      var denominator = RVOMath.det(lines[lineNo].direction, lines[i].direction)
-      var numerator = RVOMath.det(lines[i].direction, lines[lineNo].point.minus(lines[i].point))
+      const denominator = RVOMath.det(lines[lineNo].direction, lines[i].direction)
+      const numerator = RVOMath.det(lines[i].direction, lines[lineNo].point.minus(lines[i].point))
 
       if (Math.abs(denominator) <= RVOMath.RVOEPSILON) {
         /* Lines lineNo and i are (almost) parallel. */
-        if (numerator < 0.0) {
-          return false
-        } else {
-          continue
-        }
+        if (numerator < 0.0) return false
+        else continue
       }
 
-      var t = numerator / denominator
+      // Line i bounds line lineNo on the right (if) or left (else).
+      if (denominator >= 0.0) tRight = Math.min(tRight, numerator / denominator)
+      else tLeft = Math.max(tLeft, numerator / denominator)
 
-      if (denominator >= 0.0) {
-        /* Line i bounds line lineNo on the right. */
-        tRight = Math.min(tRight, t)
-      } else {
-        /* Line i bounds line lineNo on the left. */
-        tLeft = Math.max(tLeft, t)
-      }
-
-      if (tLeft > tRight) {
-        return false
-      }
+      if (tLeft > tRight) return false
     }
 
     if (directionOpt) {
-      if (optVelocity.multiply(lines[lineNo].direction) > 0.0) {
-        // Take right extreme
+      // take right (if) / left (else) extreme.
+      if (optVelocity.multiply(lines[lineNo].direction) > 0.0)
         this.newVelocity = lines[lineNo].direction.scale(tRight).plus(lines[lineNo].point)
-      } else {
-        // Take left extreme.
+      else
         this.newVelocity = lines[lineNo].direction.scale(tLeft).plus(lines[lineNo].point)
-      }
+
     } else {
       // Optimize closest point
-      t = lines[lineNo].direction.multiply(optVelocity.minus(lines[lineNo].point))
+      const t = lines[lineNo].direction.multiply(optVelocity.minus(lines[lineNo].point))
 
-      if (t < tLeft) {
+      if (t < tLeft)
         this.newVelocity = lines[lineNo].direction.scale(tLeft).plus(lines[lineNo].point)
-      } else if (t > tRight) {
+      else if (t > tRight)
         this.newVelocity = lines[lineNo].direction.scale(tRight).plus(lines[lineNo].point)
-      } else {
+      else
         this.newVelocity = lines[lineNo].direction.scale(t).plus(lines[lineNo].point)
-      }
     }
 
     // TODO ugly hack by palmerabollo
-    if (isNaN(this.newVelocity.x) || isNaN(this.newVelocity.y)) {
-      return false
-    }
-
+    if (isNaN(this.newVelocity.x) || isNaN(this.newVelocity.y)) return false
     return true
   }
 
   linearProgram2 (lines, radius, optVelocity, directionOpt) {
-    if (directionOpt) {
-      /*
-       * Optimize direction. Note that the optimization velocity is of unit
-       * length in this case.
-       */
-      this.newVelocity = optVelocity.scale(radius)
-    } else if (RVOMath.absSq(optVelocity) > RVOMath.sqr(radius)) {
-      /* Optimize closest point and outside circle. */
+
+    // Optimize direction. Note that the optimization velocity is of unit length in this case.
+    if (directionOpt) this.newVelocity = optVelocity.scale(radius)
+
+    // Optimize closest point and outside circle.
+    else if (RVOMath.absSq(optVelocity) > RVOMath.sqr(radius))
       this.newVelocity = RVOMath.normalize(optVelocity).scale(radius)
-    } else {
-      /* Optimize closest point and inside circle. */
-      this.newVelocity = optVelocity
-    }
+
+    // Optimize closest point and inside circle.
+    else this.newVelocity = optVelocity
 
     for (var i = 0; i < lines.length; ++i) {
       if (RVOMath.det(lines[i].direction, lines[i].point.minus(this.newVelocity)) > 0.0) {

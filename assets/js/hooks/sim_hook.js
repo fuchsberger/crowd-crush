@@ -49,7 +49,7 @@ export default {
   get_data() {
     const d = this.el.dataset
 
-    this.nextAgent = JSON.parse(d.nextAgent)
+    this.futureAgents = JSON.parse(d.futureAgents)
     this.simMode = JSON.parse(d.simMode)
     this.showGoals = JSON.parse(d.showGoals)
     this.showMarkers = JSON.parse(d.showMarkers)
@@ -155,37 +155,33 @@ export default {
   draw_synth_agents() {
 
     const time = this.player.getTime()
-    const timestep = time - this.simulator.getGlobalTime()
+    const lastTime = this.simulator.getGlobalTime()
 
-    this.simulator.setTimeStep(timestep)
+    this.simulator.setTimeStep(time - lastTime)
     this.simulator.run()
 
     this.context.fillStyle = this.showVideo ? COLORS.GREEN : "black"
     this.lineWidth = 0.5;
 
+    // add new agents
+    for(let i = 0; i < this.futureAgents.length; i++){
+      const agent = this.futureAgents[i]
+      if(agent.time > lastTime && agent.time <= time){
+        // time to add next agent to simulation
 
-    // time to add next agent to simulation
-    // if(time + 0.02 > this.nextAgent.time){
+        const position = new Vector2(agent.x * canvas.width, agent.y * canvas.height)
 
-    //   const id = this.simulator.addAgent(new Vector2(
-    //     this.nextAgent.pos_x * canvas.width,
-    //     this.nextAgent.pos_y * canvas.height
-    //   ))
+        const id = this.simulator.addAgent(position)
+        this.simulator.setAgentGoal(id, agent.goal_x * canvas.width, agent.goal_y * canvas.height)
 
-    //   this.simulator.setAgentGoal(
-    //     id,
-    //     this.nextAgent.goal_x * canvas.width,
-    //     this.nextAgent.goal_y * canvas.height
-    //   )
+        // normalize agent's prefered velocity
+        const v = RVOMath.normalize(this.simulator.getGoal(id).minus(position))
 
-    //   // normalize agent's prefered velocity
-    //   let v = RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
+        this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
+      }
+    }
 
-    //   this.simulator.setAgentPrefVelocity(id, v.x * this.video.velocity, v.y * this.video.velocity)
-
-    //   console.log(`ADDED: ${id}`, this.nextAgent)
-    // }
-
+    // go through all agents and draw their positions / update finished agents
     for(let i = 0; i < this.simulator.agents.length; i++){
 
       const position = this.simulator.getAgentPosition(i)
