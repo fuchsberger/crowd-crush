@@ -4,7 +4,7 @@ defmodule CrowdCrush.Mixfile do
   def project do
     [
       app: :crowd_crush,
-      version: "0.15.0",
+      version: "0.16.0",
       elixir: "~> 1.10.0",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -33,15 +33,15 @@ defmodule CrowdCrush.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.3"},
+      {:phoenix, "~> 1.5.4"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.1"},
-      {:ecto_sql, "~> 3.3"},
+      {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.14"},
-      {:phoenix_live_view, "~> 0.12"},
+      {:phoenix_live_view, "~> 0.14.4"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.17"},
+      {:gettext, "~> 0.18"},
       {:httpoison, "~> 1.6"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.1"},
