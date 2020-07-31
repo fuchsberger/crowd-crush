@@ -1,6 +1,6 @@
-import { RVOMath } from './'
+import RVOMath from './rvo_math'
 
-function KdTree() {
+export default function KdTree() {
   var MAXLEAF_SIZE = 500
 
   function FloatPair(a, b) {
@@ -139,8 +139,9 @@ function KdTree() {
         let obstacleI2 = obstacleI1.nextObstacle
 
         for (var j = 0; j < obstacles.length; j++) {
-
-          if (i == j) continue
+          if (i == j) {
+            continue
+          }
 
           let obstacleJ1 = obstacles[j]
           let obstacleJ2 = obstacleJ1.nextObstacle
@@ -148,9 +149,11 @@ function KdTree() {
           let j1LeftOfI = RVOMath.leftOf(obstacleI1.point, obstacleI2.point, obstacleJ1.point)
           let j2LeftOfI = RVOMath.leftOf(obstacleI1.point, obstacleI2.point, obstacleJ2.point)
 
-          if (j1LeftOfI >= -RVOMath.RVO_EPSILON && j2LeftOfI >= -RVOMath.RVO_EPSILON) ++leftSize
-          else if (j1LeftOfI <= RVOMath.RVO_EPSILON && j2LeftOfI <= RVOMath.RVO_EPSILON) ++rightSize
-          else {
+          if (j1LeftOfI >= -RVOMath.RVO_EPSILON && j2LeftOfI >= -RVOMath.RVO_EPSILON) {
+            ++leftSize
+          } else if (j1LeftOfI <= RVOMath.RVO_EPSILON && j2LeftOfI <= RVOMath.RVO_EPSILON) {
+            ++rightSize
+          } else {
             ++leftSize
             ++rightSize
           }
@@ -158,7 +161,9 @@ function KdTree() {
           var fp1 = new FloatPair(Math.max(leftSize, rightSize), Math.min(leftSize, rightSize))
           var fp2 = new FloatPair(Math.max(minLeft, minRight), Math.min(minLeft, minRight))
 
-          if (fp1.get(fp2)) break
+          if (fp1.get(fp2)) {
+            break
+          }
         }
 
         var fp1 = new FloatPair(Math.max(leftSize, rightSize), Math.min(leftSize, rightSize))
@@ -183,23 +188,25 @@ function KdTree() {
         let rightCounter = 0
         let i = optimalSplit
 
-        let obstacleI1 = obstacles[i]
-        let obstacleI2 = obstacleI1.nextObstacle
+        const obstacleI1 = obstacles[i]
+        const obstacleI2 = obstacleI1.nextObstacle
 
         for (var j = 0; j < obstacles.length; ++j) {
+          if (i == j) {
+            continue
+          }
 
-          if (i == j) continue
-          let obstacleJ1 = obstacles[j]
-          let obstacleJ2 = obstacleJ1.nextObstacle
+          const obstacleJ1 = obstacles[j]
+          const obstacleJ2 = obstacleJ1.nextObstacle
 
-          let j1LeftOfI = RVOMath.leftOf(obstacleI1.point, obstacleI2.point, obstacleJ1.point)
-          let j2LeftOfI = RVOMath.leftOf(obstacleI1.point, obstacleI2.point, obstacleJ2.point)
+          const j1LeftOfI = RVOMath.leftOf(obstacleI1.point, obstacleI2.point, obstacleJ1.point)
+          const j2LeftOfI = RVOMath.leftOf(obstacleI1.point, obstacleI2.point, obstacleJ2.point)
 
-          if (j1LeftOfI >= -RVOMath.RVO_EPSILON && j2LeftOfI >= -RVOMath.RVO_EPSILON)
+          if (j1LeftOfI >= -RVOMath.RVO_EPSILON && j2LeftOfI >= -RVOMath.RVO_EPSILON) {
             leftObstacles[leftCounter++] = obstacles[j]
-          else if (j1LeftOfI <= RVOMath.RVO_EPSILON && j2LeftOfI <= RVOMath.RVO_EPSILON)
+          } else if (j1LeftOfI <= RVOMath.RVO_EPSILON && j2LeftOfI <= RVOMath.RVO_EPSILON) {
             rightObstacles[rightCounter++] = obstacles[j]
-          else {
+          } else {
             /* Split obstacle j. */
             t = RVOMath.det(obstacleI2.point.minus(obstacleI1.point), obstacleJ1.point.minus(obstacleI1.point)) /
               RVOMath.det(obstacleI2.point.minus(obstacleI1.point), obstacleJ1.point.minus(obstacleJ2.point))
@@ -252,12 +259,12 @@ function KdTree() {
         agent.insertAgentNeighbor(agents[i], rangeSq)
       }
     } else {
-      distSqLeft = RVOMath.sqr(Math.max(0, agentTree[agentTree[node].left].minX - agent.position.x)) +
+      const distSqLeft = RVOMath.sqr(Math.max(0, agentTree[agentTree[node].left].minX - agent.position.x)) +
         RVOMath.sqr(Math.max(0, agent.position.x - agentTree[agentTree[node].left].maxX)) +
         RVOMath.sqr(Math.max(0, agentTree[agentTree[node].left].minY - agent.position.y)) +
         RVOMath.sqr(Math.max(0, agent.position.y - agentTree[agentTree[node].left].maxY))
 
-      distSqRight = RVOMath.sqr(Math.max(0, agentTree[agentTree[node].right].minX - agent.position.x)) +
+      const distSqRight = RVOMath.sqr(Math.max(0, agentTree[agentTree[node].right].minX - agent.position.x)) +
         RVOMath.sqr(Math.max(0, agent.position.x - agentTree[agentTree[node].right].maxX)) +
         RVOMath.sqr(Math.max(0, agentTree[agentTree[node].right].minY - agent.position.y)) +
         RVOMath.sqr(Math.max(0, agent.position.y - agentTree[agentTree[node].right].maxY))
@@ -288,14 +295,14 @@ function KdTree() {
     if (node == null) {
       return
     } else {
+      const obstacle1 = node.obstacle
+      const obstacle2 = obstacle1.nextObstacle
 
-      let obstacle1 = node.obstacle
-      let obstacle2 = obstacle1.nextObstacle
-      let agentLeftOfLine = RVOMath.leftOf(obstacle1.point, obstacle2.point, agent.position)
+      const agentLeftOfLine = RVOMath.leftOf(obstacle1.point, obstacle2.point, agent.position)
 
       queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0 ? node.left : node.right))
 
-      let distSqLine = RVOMath.sqr(agentLeftOfLine) / RVOMath.absSq(obstacle2.point.minus(obstacle1.point))
+      const distSqLine = RVOMath.sqr(agentLeftOfLine) / RVOMath.absSq(obstacle2.point.minus(obstacle1.point))
 
       if (distSqLine < rangeSq) {
         if (agentLeftOfLine < 0) {
@@ -344,5 +351,3 @@ function KdTree() {
     }
   }
 }
-
-export default KdTree

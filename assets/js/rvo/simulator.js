@@ -2,15 +2,25 @@ import { Agent, KdTree, RVOMath, Vector2 } from './'
 
 export default class Simulator {
 
-  constructor(){
+  constructor(video){
     this.agents = [] // Agent[]
     this.obstacles = [] // Obstacle[]
     this.goals = [] // Vector2
     this.kdTree = new KdTree()
     this.kdTree.simulator = this
     this.timeStep = 0.25
-    this.defaultAgent // Agent
     this.time = 0.0
+
+    // handle default agent
+    this.defaultAgent = new Agent()
+    this.defaultAgent.maxNeighbors = video.max_neighbors
+    this.defaultAgent.maxSpeed = video.max_speed
+    this.defaultAgent.neighborDist = video.neighbor_dist
+    this.defaultAgent.radius = video.radius
+    this.defaultAgent.timeHorizon = video.time_horizon
+    this.defaultAgent.timeHorizonObst = video.time_horizon_obst
+    this.defaultAgent.velocity = new Vector2(video.velocity, video.velocity)
+    this.defaultAgent.simulator = this
   }
 
   getAgentOrcaLines (i){ return this.agents[i].orcaLines }
@@ -28,13 +38,11 @@ export default class Simulator {
   setTimeStep (timeStep) { this.timeStep = timeStep }
 
   addAgent (position) {
-
-    if (!this.defaultAgent) throw new Error("no default agent")
     if (!position) position = new Vector2(0, 0)
 
     var agent = new Agent()
 
-    agent.position = position
+    agent.pos = position
     agent.maxNeighbors = this.defaultAgent.maxNeighbors
     agent.maxSpeed = this.defaultAgent.maxSpeed
     agent.neighborDist = this.defaultAgent.neighborDist
@@ -49,21 +57,6 @@ export default class Simulator {
     this.goals.push(position)
 
     return this.agents.length - 1
-  }
-
-  //  /** float */ neighborDist, /** int */ maxNeighbors, /** float */ timeHorizon, /** float */ timeHorizonObst, /** float */ radius, /** float*/ maxSpeed, /** Vector2 */ velocity)
-  setAgentDefaults (neighborDist, maxNeighbors, timeHorizon, timeHorizonObst, radius, maxSpeed, velocityX, velocityY) {
-
-    if (!this.defaultAgent) this.defaultAgent = new Agent()
-
-    this.defaultAgent.maxNeighbors = maxNeighbors
-    this.defaultAgent.maxSpeed = maxSpeed
-    this.defaultAgent.neighborDist = neighborDist
-    this.defaultAgent.radius = radius
-    this.defaultAgent.timeHorizon = timeHorizon
-    this.defaultAgent.timeHorizonObst = timeHorizonObst
-    this.defaultAgent.velocity = new Vector2(velocityX, velocityY)
-    this.defaultAgent.simulator = this
   }
 
   run () {
@@ -91,7 +84,7 @@ export default class Simulator {
 
   getGoal (goalNo) {  return this.goals[goalNo] }
 
-  addObstacle ( /** IList<Vector2> */ vertices) {
+  addObstacle (vertices) {
 
     if (vertices.length < 2) return -1
 

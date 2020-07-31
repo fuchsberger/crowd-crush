@@ -1,12 +1,9 @@
-export default class Vector2 {
+export default function Vector2(x, y) {
+  this.x = x
+  this.y = y
 
-  constructor(x, y){
-    this.x = x
-    this.y = y
-  }
-
-  plus (vector) { return new Vector2(this.x + vector.x, this.y + vector.y) }
-  minus (vector) { return new Vector2(this.x - vector.x, this.y - vector.y) }
-  multiply (vector) { return new Vector2(this.x * vector.x, this.y * vector.y) }
-  scale (k) { return new Vector2(this.x * k, this.y * k) }
+  this.plus     = vector => new Vector2(x + vector.x, y + vector.y)
+  this.minus    = vector => new Vector2(x - vector.x, y - vector.y)
+  this.multiply = vector => x * vector.x + y * vector.y
+  this.scale    = k => new Vector2(x * k, y * k)
 }

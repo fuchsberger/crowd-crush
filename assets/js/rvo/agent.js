@@ -10,13 +10,16 @@ export default class Agent {
     this.newVelocity; // Vector 2
     this.obstaclNeighbors = []; // new List<KeyValuePair<float, Obstacle>>()
     this.orcaLines = []; // new List<Line>()
-    this.position; // Vector2
     this.prefVelocity; // Vector2
     this.radius = 0.0
     this.timeHorizon = 0.0
     this.timeHorizonObst = 0.0
     this.velocity; // Vector2
     this.id = 0
+  }
+
+  set pos(position){
+    this.position = position
   }
 
   computeNeighbors () {
@@ -103,7 +106,7 @@ export default class Agent {
        * vertex. Legs extend cut-off line when nonconvex vertex.
        */
 
-      var leftLegDirection, rightLegDirection
+      let leftLegDirection, rightLegDirection
 
       if (s < 0 && distSqLine <= radiusSq) {
         /*
@@ -115,41 +118,45 @@ export default class Agent {
 
         obstacle2 = obstacle1
 
-        leg1 = Math.sqrt(distSq1 - radiusSq)
+        const leg1 = Math.sqrt(distSq1 - radiusSq)
         leftLegDirection = (new Vector2(relativePosition1.x * leg1 - relativePosition1.y * this.radius, relativePosition1.x * this.radius + relativePosition1.y * leg1)).scale(1 / distSq1)
         rightLegDirection = (new Vector2(relativePosition1.x * leg1 + relativePosition1.y * this.radius, -relativePosition1.x * this.radius + relativePosition1.y * leg1)).scale(1 / distSq1)
       } else if (s > 1 && distSqLine <= radiusSq) {
+
         /*
          * Obstacle viewed obliquely so that
          * right vertex defines velocity obstacle.
          */
-        if (!obstacle2.isConvex) {
-          /* Ignore obstacle. */
-          continue
-        }
+        if (!obstacle2.isConvex) continue /* Ignore obstacle. */
 
         obstacle1 = obstacle2
 
-        leg2 = Math.sqrt(distSq2 - radiusSq)
+        const leg2 = Math.sqrt(distSq2 - radiusSq)
         leftLegDirection = (new Vector2(relativePosition2.x * leg2 - relativePosition2.y * this.radius, relativePosition2.x * this.radius + relativePosition2.y * leg2)).scale(1 / distSq2)
         rightLegDirection = (new Vector2(relativePosition2.x * leg2 + relativePosition2.y * this.radius, -relativePosition2.x * this.radius + relativePosition2.y * leg2)).scale(1 / distSq2)
       } else {
         /* Usual situation. */
         if (obstacle1.isConvex) {
-          leg1 = Math.sqrt(distSq1 - radiusSq)
-          leftLegDirection = (new Vector2(relativePosition1.x * leg1 - relativePosition1.y * this.radius, relativePosition1.x * this.radius + relativePosition1.y * leg1)).scale(1 / distSq1)
-        } else {
-          /* Left vertex non-convex; left leg extends cut-off line. */
-          leftLegDirection = obstacle1.unitDir.scale(-1)
+          const leg1 = Math.sqrt(distSq1 - radiusSq)
+          leftLegDirection =
+            new Vector2(
+              relativePosition1.x * leg1 - relativePosition1.y * this.radius,
+              relativePosition1.x * this.radius + relativePosition1.y * leg1
+            ).scale(1 / distSq1)
         }
 
+        /* Left vertex non-convex; left leg extends cut-off line. */
+        else leftLegDirection = obstacle1.unitDir.scale(-1)
+
         if (obstacle2.isConvex) {
-          leg2 = Math.sqrt(distSq2 - radiusSq)
-          rightLegDirection = (new Vector2(relativePosition2.x * leg2 + relativePosition2.y * this.radius, -relativePosition2.x * this.radius + relativePosition2.y * leg2)).scale(1 / distSq2)
-        } else {
-          /* Right vertex non-convex; right leg extends cut-off line. */
-          rightLegDirection = obstacle1.unitDir
+          const leg2 = Math.sqrt(distSq2 - radiusSq)
+          rightLegDirection = new Vector2(
+            relativePosition2.x * leg2 + relativePosition2.y * this.radius,
+            -relativePosition2.x * this.radius + relativePosition2.y * leg2
+          ).scale(1 / distSq2)
         }
+        /* Right vertex non-convex; right leg extends cut-off line. */
+        else rightLegDirection = obstacle1.unitDir
       }
 
       /*
@@ -158,10 +165,10 @@ export default class Agent {
        * "foreign" leg, no constraint is added.
        */
 
-      leftNeighbor = obstacle1.prevObstacle
+      const leftNeighbor = obstacle1.prevObstacle
 
-      isLeftLegForeign = false
-      isRightLegForeign = false
+      let isLeftLegForeign = false
+      let isRightLegForeign = false
 
       if (obstacle1.isConvex && RVOMath.det(leftLegDirection, leftNeighbor.unitDir.scale(-1)) >= 0.0) {
         /* Left leg points into obstacle. */
@@ -176,16 +183,16 @@ export default class Agent {
       }
 
       /* Compute cut-off centers. */
-      leftCutoff = obstacle1.point.minus(this.position).scale(invTimeHorizonObst)
-      rightCutoff = obstacle2.point.minus(this.position).scale(invTimeHorizonObst)
-      cutoffVec = rightCutoff.minus(leftCutoff)
+      const leftCutoff = obstacle1.point.minus(this.position).scale(invTimeHorizonObst)
+      const rightCutoff = obstacle2.point.minus(this.position).scale(invTimeHorizonObst)
+      const cutoffVec = rightCutoff.minus(leftCutoff)
 
       /* Project current velocity on velocity obstacle. */
 
       /* Check if current velocity is projected on cutoff circles. */
-      t = obstacle1 == obstacle2 ? 0.5 : this.velocity.minus(leftCutoff).multiply(cutoffVec) / RVOMath.absSq(cutoffVec)
-      tLeft = this.velocity.minus(leftCutoff).multiply(leftLegDirection)
-      tRight = this.velocity.minus(rightCutoff).multiply(rightLegDirection)
+      const t = obstacle1 == obstacle2 ? 0.5 : this.velocity.minus(leftCutoff).multiply(cutoffVec) / RVOMath.absSq(cutoffVec)
+      const tLeft = this.velocity.minus(leftCutoff).multiply(leftLegDirection)
+      const tRight = this.velocity.minus(rightCutoff).multiply(rightLegDirection)
 
       if ((t < 0.0 && tLeft < 0.0) || (obstacle1 == obstacle2 && tLeft < 0.0 && tRight < 0.0)) {
         /* Project on left cut-off circle. */
@@ -209,9 +216,17 @@ export default class Agent {
        * Project on left leg, right leg, or cut-off line, whichever is closest
        * to velocity.
        */
-      distSqCutoff = ((t < 0.0 || t > 1.0 || obstacle1 == obstacle2) ? Infinity : RVOMath.absSq(this.velocity.minus(cutoffVec.scale(t).plus(leftCutoff))))
-      distSqLeft = ((tLeft < 0.0) ? Infinity : RVOMath.absSq(this.velocity.minus(leftLegDirection.scale(tLeft).plus(leftCutoff))))
-      distSqRight = ((tRight < 0.0) ? Infinity : RVOMath.absSq(this.velocity.minus(rightLegDirection.scale(tRight).plus(rightCutoff))))
+      const distSqCutoff = t < 0.0 || t > 1.0 || obstacle1 == obstacle2
+        ? Infinity
+        : RVOMath.absSq(this.velocity.minus(cutoffVec.scale(t).plus(leftCutoff)))
+
+      const distSqLeft = tLeft < 0.0
+        ? Infinity
+        : RVOMath.absSq(this.velocity.minus(leftLegDirection.scale(tLeft).plus(leftCutoff)))
+
+      const distSqRight = tRight < 0.0
+        ? Infinity
+        : RVOMath.absSq(this.velocity.minus(rightLegDirection.scale(tRight).plus(rightCutoff)))
 
       if (distSqCutoff <= distSqLeft && distSqCutoff <= distSqRight) {
         /* Project on cut-off line. */
@@ -247,24 +262,22 @@ export default class Agent {
 
     /* Create agent ORCA lines. */
     for (var i = 0; i < this.agentNeighbors.length; ++i) {
-      var other = this.agentNeighbors[i].value
+      let other = this.agentNeighbors[i].value
 
-      relativePosition = other.position.minus(this.position)
-      relativeVelocity = this.velocity.minus(other.velocity)
-      distSq = RVOMath.absSq(relativePosition)
-      combinedRadius = this.radius + other.radius
-      combinedRadiusSq = RVOMath.sqr(combinedRadius)
+      const relativePosition = other.position.minus(this.position)
+      const relativeVelocity = this.velocity.minus(other.velocity)
+      const distSq = RVOMath.absSq(relativePosition)
+      const combinedRadius = this.radius + other.radius
+      const combinedRadiusSq = RVOMath.sqr(combinedRadius)
 
       var line = new Line(); // Line
       var u; // Vector2
 
       if (distSq > combinedRadiusSq) {
         /* No collision. */
-        w = relativeVelocity.minus(relativePosition.scale(invTimeHorizon));; // Vector
-        /* Vector from cutoff center to relative velocity. */
-        wLengthSq = RVOMath.absSq(w)
-
-        dotProduct1 = w.multiply(relativePosition)
+        const w = relativeVelocity.minus(relativePosition.scale(invTimeHorizon)); // Vector
+        const wLengthSq = RVOMath.absSq(w) // Vector from cutoff center to relative velocity.
+        const dotProduct1 = w.multiply(relativePosition)
 
         if (dotProduct1 < 0.0 && RVOMath.sqr(dotProduct1) > combinedRadiusSq * wLengthSq) {
           /* Project on cut-off circle. */
@@ -275,7 +288,7 @@ export default class Agent {
           u = unitW.scale(combinedRadius * invTimeHorizon - wLength)
         } else {
           /* Project on legs. */
-          leg = Math.sqrt(distSq - combinedRadiusSq)
+          const leg = Math.sqrt(distSq - combinedRadiusSq)
 
           if (RVOMath.det(relativePosition, w) > 0.0) {
             /* Project on left leg. */
@@ -287,19 +300,18 @@ export default class Agent {
             line.direction = aux.scale(-1 / distSq)
           }
 
-          dotProduct2 = relativeVelocity.multiply(line.direction)
+          const dotProduct2 = relativeVelocity.multiply(line.direction)
 
           u = line.direction.scale(dotProduct2).minus(relativeVelocity)
         }
       } else {
         /* Collision. Project on cut-off circle of time timeStep. */
-        invTimeStep = 1.0 / this.simulator.timeStep
+        const invTimeStep = 1.0 / this.simulator.timeStep
 
         /* Vector from cutoff center to relative velocity. */
-        w = relativeVelocity.minus(relativePosition.scale(invTimeStep))
-
-        wLength = Math.abs(w)
-        unitW = w.scale(1 / wLength)
+        const w = relativeVelocity.minus(relativePosition.scale(invTimeStep))
+        const wLength = Math.abs(w)
+        const unitW = w.scale(1 / wLength)
 
         line.direction = new Vector2(unitW.y, -unitW.x)
         u = unitW.scale(combinedRadius * invTimeStep - wLength)
@@ -338,14 +350,14 @@ export default class Agent {
   }
 
   insertObstacleNeighbor (obstacle, rangeSq) {
-    nextObstacle = obstacle.nextObstacle
+    const nextObstacle = obstacle.nextObstacle
 
-    distSq = RVOMath.distSqPointLineSegment(obstacle.point, nextObstacle.point, this.position)
+    const distSq = RVOMath.distSqPointLineSegment(obstacle.point, nextObstacle.point, this.position)
 
     if (distSq < rangeSq) {
       this.obstaclNeighbors.push(new KeyValuePair(distSq, obstacle))
 
-      i = this.obstaclNeighbors.length - 1
+      let i = this.obstaclNeighbors.length - 1
       while (i != 0 && distSq < this.obstaclNeighbors[i - 1].key) {
         this.obstaclNeighbors[i] = this.obstaclNeighbors[i - 1]
         --i
@@ -466,27 +478,24 @@ export default class Agent {
       if (RVOMath.det(lines[i].direction, lines[i].point.minus(this.newVelocity)) > distance) {
         /* Result does not satisfy constraint of line i. */
         //std::vector<Line> projLines(lines.begin(), lines.begin() + numObstLines)
-        projLines = []; // new List<Line>()
-        for (var ii = 0; ii < numObstLines; ++ii) {
-          projLines.push(lines[ii])
-        }
+
+        const projLines = [];
+        for (var ii = 0; ii < numObstLines; ++ii) projLines.push(lines[ii])
 
         for (var j = numObstLines; j < i; ++j) {
-          var line = new Line()
 
-          determinant = RVOMath.det(lines[i].direction, lines[j].direction)
+          const line = new Line()
+          const determinant = RVOMath.det(lines[i].direction, lines[j].direction)
 
+          // Line i and line j are parallel.
           if (Math.abs(determinant) <= RVOMath.RVOEPSILON) {
-            /* Line i and line j are parallel. */
-            if (lines[i].direction.multiply(lines[j].direction) > 0.0) {
-              /* Line i and line j point in the same direction. */
-              continue
-            } else {
-              /* Line i and line j point in opposite direction. */
-              line.point = lines[i].point.plus(lines[j].point).scale(0.5)
-            }
+
+            // Line i and line j point in the same / opposite direction.
+            if (lines[i].direction.multiply(lines[j].direction) > 0.0) continue
+            else line.point = lines[i].point.plus(lines[j].point).scale(0.5)
+
           } else {
-            var aux = lines[i].direction.scale(RVOMath.det(lines[j].direction, lines[i].point.minus(lines[j].point)) / determinant)
+            const aux = lines[i].direction.scale(RVOMath.det(lines[j].direction, lines[i].point.minus(lines[j].point)) / determinant)
             line.point = lines[i].point.plus(aux)
           }
 
@@ -494,7 +503,7 @@ export default class Agent {
           projLines.push(line)
         }
 
-        var tempResult = this.newVelocity
+        const tempResult = this.newVelocity
         if (this.linearProgram2(projLines, radius, new Vector2(-lines[i].direction.y, lines[i].direction.x), true) < projLines.length) {
           /* This should in principle not happen.  The result is by definition
            * already in the feasible region of this linear program. If it fails,
