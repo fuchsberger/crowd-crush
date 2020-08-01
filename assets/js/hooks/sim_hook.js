@@ -50,6 +50,7 @@ export default {
     const d = this.el.dataset
 
     this.futureAgents = JSON.parse(d.futureAgents)
+    this.annMode = JSON.parse(d.annMode)
     this.simMode = JSON.parse(d.simMode)
     this.showGoals = JSON.parse(d.showGoals)
     this.showMarkers = JSON.parse(d.showMarkers)

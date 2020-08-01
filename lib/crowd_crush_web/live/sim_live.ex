@@ -33,12 +33,13 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:selected, nil)
 
         # toggles
-        |> assign(:sim?, false)   # true - use simulation markers, false: use annotated markers
-        |> assign(:show_goals?, true)       # default: false
+        |> assign(:ann?, true)            # show annotation markers
+        |> assign(:sim?, false)           # show simulation markers
+        |> assign(:show_goals?, true)     # default: false
         |> assign(:show_markers?, true)
-        |> assign(:show_obstacles?, true)   # default: false
+        |> assign(:show_obstacles?, true) # default: false
         |> assign(:show_settings?, false)
-        |> assign(:show_video?, true)      # default: false
+        |> assign(:show_video?, true)     # default: false
 
         # player control
 

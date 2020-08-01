@@ -45,12 +45,15 @@ defmodule CrowdCrushWeb.SimView do
       phx_value_setting: setting
   end
 
-  def mode(mode, active?) do
-    content_tag :button, icon(mode),
-      class: "btn btn-outline-light btn-sm#{if active?, do: " active"}",
+  def mode(mode, current_mode, title \\ nil, icon \\ nil) do
+    content_tag :button, "",
+      id: "mode-#{mode}",
+      class: "icon-#{icon || mode} btn btn-outline-light btn-sm#{if mode == current_mode, do: " active"}",
       phx_click: "set",
       phx_value_mode: mode,
-      area_pressed: mode
+      area_pressed: mode,
+      title: title,
+      phx_hook: "tooltip"
   end
 
   def toggle(property, active?, disabled \\ false) do

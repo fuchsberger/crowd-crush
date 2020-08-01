@@ -137,6 +137,12 @@
       "css": "goals",
       "code": 61732,
       "src": "fontawesome"
+    },
+    {
+      "uid": "a0e6549c693b73d4fe92b1db1824b919",
+      "css": "comparison",
+      "code": 62113,
+      "src": "fontawesome"
     }
   ]
 }
