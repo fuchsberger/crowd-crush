@@ -11,9 +11,14 @@
   phx-hook='sim'
 ></div>
 
-<div id='wrapper' phx-update='ignore' style='<%= @style %>'>
-  <div id='player'></div>
-  <canvas id='canvas' phx-click='click'>Canvas is not supported!</canvas>
+<div id='wrapper' style='<%= "top:#{@ctop}px;left:#{@cleft}px;width:#{@cwidth}px;height:#{@cheight}px;" %>'>
+  <div phx-update='ignore' style="width: 100%;height:100%;position:absolute;">
+    <div id='player' ></div>
+  </div>
+
+  <canvas id='canvas' phx-click='click' width='<%= @cwidth %>' height='<%= @cheight %>'>
+    Canvas is not supported!
+  </canvas>
 </div>
 
 <%# Control Bar %>

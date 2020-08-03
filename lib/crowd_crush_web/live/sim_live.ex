@@ -27,8 +27,11 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign_agent_goals()
         |> assign_future_agents()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
-        |> assign(:mode, "video")
-        |> assign(:style, "top:#{@top}px;left:0;width:100%;height:calc(100% - #{@top + @bot}px);")
+        |> assign(:mode, "markers")
+        |> assign(:ctop, 0)
+        |> assign(:cleft, 0)
+        |> assign(:cwidth, 0)
+        |> assign(:cheight, 0)
 
         # obstacle and marker management
         |> assign(:edit?, false)  # add or edit mode
@@ -325,7 +328,10 @@ defmodule CrowdCrushWeb.SimLive do
     top = if h < height, do: @top + (height - h) / 2, else: @top
     left = if w < width, do: (width - w) / 2, else: 0
 
-    style = "top:#{round(top)}px;left:#{round(left)}px;width:#{round(w)}px;height:#{round(h)}px;"
-    assign(socket, :style, style)
+    socket
+    |> assign(:ctop, round(top))
+    |> assign(:cleft, round(left))
+    |> assign(:cwidth, round(w))
+    |> assign(:cheight, round(h))
   end
 end
