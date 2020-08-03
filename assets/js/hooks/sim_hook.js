@@ -21,13 +21,11 @@ export default {
     this.get_data()
     resize(this.video.aspectratio, this.canvas)
 
-    // this.prepareSimulation()
+    this.prepareSimulation()
 
     this.player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
 
     const hook = this
-
-    document.getElementById('start').addEventListener('click', () => hook.prepareSimulation())
 
     window.addEventListener('keydown', e => {
       switch(e.keyCode){
@@ -42,20 +40,17 @@ export default {
   },
 
   updated() {
+    const old_time = this.player.time
     this.get_data()
+    if(this.player.time == 0 && old_time != 0) this.prepareSimulation()
     this.render_canvas()
   },
 
   get_data() {
     const d = this.el.dataset
-
+    this.mode = d.mode
     this.futureAgents = JSON.parse(d.futureAgents)
-    this.annMode = JSON.parse(d.annMode)
-    this.simMode = JSON.parse(d.simMode)
     this.showGoals = JSON.parse(d.showGoals)
-    this.showMarkers = JSON.parse(d.showMarkers)
-    this.showObstacles = JSON.parse(d.showObstacles)
-    this.showVideo = JSON.parse(d.showVideo)
     this.selected = JSON.parse(d.selected)
     this.goals = JSON.parse(d.goals)
     this.positions = JSON.parse(d.positions)
@@ -63,72 +58,41 @@ export default {
   },
 
   render_canvas(){
-    const { canvas, context } = this
-
     // draw background
-    if(this.showVideo){
-      context.clearRect(0, 0, canvas.width, canvas.height)
-    } else {
-      context.fillStyle = "white"
-      context.fillRect(0, 0, canvas.width, canvas.height)
+    if(this.mode == 'comparison'){
+      this.context.fillStyle = "white"
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     }
+    else this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
-    if (this.showObstacles) this.draw_obstacles()
-
-    if(this.showMarkers){
-      this.simMode ? this.draw_synth_agents() : this.draw_agents()
-    }
-
-    if(this.showGoals) this.draw_goals()
+    // draw markers, obstacles and goal lines.
+    if(this.mode == 'obstacles') this.draw_obstacles()
+    if(this.mode == 'markers' || this.mode == 'comparison') this.draw_agents()
+    if(this.mode == 'simulation' || this.mode == 'comparison') this.draw_synth_agents()
   },
 
   draw_agents() {
-    const ctx = this.context
+    const {context, canvas, showGoals, goals, mode, selected, positions} = this
 
-    for (const id in this.positions) {
+    for (const id in positions) {
 
-      const pos = this.positions[id]
+      const pos = positions[id]
       if(!pos) continue;
 
-      if (this.showVideo) ctx.fillStyle = this.selected == parseInt(id) ? COLORS.CYAN : COLORS.GREEN
-      else ctx.fillStyle = "black"
+      if (mode == "comparison") context.fillStyle = "black"
+      else context.fillStyle = selected == parseInt(id) ? COLORS.CYAN : COLORS.GREEN
 
-      ctx.beginPath()
-      ctx.arc(
-        this.canvas.width * pos.x,
-        this.canvas.height * pos.y,
-        5,  // radius
-        0,
-        2 * Math.PI
-      )
-      ctx.fill()
+      context.beginPath()
+      context.arc(canvas.width * pos.x, canvas.height * pos.y, 5, 0, 2 * Math.PI)
+      context.fill()
     }
-  },
 
-  draw_goals(){
-    const { canvas, context, simulator, simMode, positions, goals } = this
-    context.strokeStyle = COLORS.PURPLE
-    context.lineWidth = 1;
+    if(showGoals){
+      context.strokeStyle = COLORS.PURPLE
+      context.lineWidth = 1;
 
-    if(simMode){
-      for(const agent of simulator.agents){
-
-        // ignore goals for agents at final destination (outside screen)
-        if(agent.position.x == -666 && agent.position.y == -666) continue;
-
-        const goal = simulator.getGoal(agent.id)
-
-        context.beginPath()
-        context.moveTo(agent.position.x, agent.position.y)
-        context.lineTo(goal.x, goal.y)
-        context.stroke()
-      }
-    } else {
-
-      // console.log("ANN", positions["1"].x * canvas.width)
-      for(const id in positions){
-        if(!positions[id]) continue;
-
+      for (const id in positions) {
+        if(!positions[id]) continue
         context.beginPath()
         context.moveTo(positions[id].x * canvas.width, positions[id].y * canvas.height)
         context.lineTo(goals[id].x * canvas.width, goals[id].y * canvas.height)
@@ -155,7 +119,7 @@ export default {
 
   draw_synth_agents() {
 
-    const time = this.player.getTime()
+    const time = this.player.time
     const lastTime = this.simulator.getGlobalTime()
 
     this.simulator.setTimeStep(time - lastTime)
@@ -211,6 +175,26 @@ export default {
       this.context.arc(position.x, position.y, 5, 0, 2 * Math.PI )
       this.context.fill()
     }
+
+    if(showGoals){
+      context.strokeStyle = COLORS.PURPLE
+      context.lineWidth = 1;
+
+      for(let i = 0; i < this.simulator.agents.length; i++){
+
+        const position = this.simulator.getAgentPosition(i)
+
+        // ignore goals for agents at final destination (outside screen)
+        if(position.x == -666 && position.y == -666) continue;
+
+        const goal = this.simulator.getGoal(i)
+
+        context.beginPath()
+        context.moveTo(position.x, position.y)
+        context.lineTo(goal.x, goal.y)
+        context.stroke()
+      }
+    }
   },
 
   prepareSimulation() {
@@ -251,11 +235,5 @@ export default {
     }
 
     this.simulator.processObstacles()
-
-    // this.simulator = simulator
-
-    // this.pushEvent("toggle-video")
-    this.pushEvent("toggle-sim")
-    // this.player._player.play()
   }
 }

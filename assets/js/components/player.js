@@ -71,8 +71,4 @@ export default class Player {
     this._player.seek(time)
     this.push('jump', { time, stopped: false })
   }
-
-  getTime(){
-    return this.player.getCurrentTime()
-  }
 }

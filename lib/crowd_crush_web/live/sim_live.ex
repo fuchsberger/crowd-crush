@@ -24,7 +24,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign_agent_goals()
         |> assign_future_agents()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
-        |> assign(:mode, "play")
+        |> assign(:mode, "video")
 
         # obstacle and marker management
         |> assign(:edit?, false)  # add or edit mode
@@ -33,48 +33,23 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:selected, nil)
 
         # toggles
-        |> assign(:ann?, true)            # show annotation markers
-        |> assign(:sim?, false)           # show simulation markers
         |> assign(:show_goals?, true)     # default: false
-        |> assign(:show_markers?, true)
-        |> assign(:show_obstacles?, true) # default: false
         |> assign(:show_settings?, false)
-        |> assign(:show_video?, true)     # default: false
 
         # player control
-
         |> assign(:playing?, false)
         |> assign(:stopped?, true)}
     end
   end
 
   def handle_event("set", %{"mode" => mode}, socket) do
-    case mode do
-      "play" ->
-        {:noreply, socket
-        |> assign(:mode, mode)
-        |> assign(:selected, nil)}
-
-      "markers" ->
-        {:noreply, socket
-        |> assign(:mode, mode)
-        |> assign(:selected, nil)
-        |> assign(:sim?, false)
-        |> assign(:show_goals?, false)
-        |> assign(:show_markers?, true)
-        |> assign(:show_obstacles?, false)
-        |> assign(:show_video?, true)}
-
-      "obstacles" ->
-        {:noreply, socket
-        |> assign(:mode, mode)
-        |> assign(:selected, nil)
-        |> assign(:sim?, false)
-        |> assign(:show_goals?, false)
-        |> assign(:show_markers?, false)
-        |> assign(:show_obstacles?, true)
-        |> assign(:show_video?, true)}
-    end
+    {:noreply, socket
+    |> assign(:mode, mode)
+    |> assign(:selected, nil)
+    |> assign(:time, 0)
+    |> assign_agent_positions()
+    |> assign(:playing?, false)
+    |> assign(:stopped?, true)}
   end
 
   # if play mode is selected, do nothing on click
@@ -220,14 +195,6 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign_agent_positions()}
   end
 
-  def handle_event("toggle-obstacles", _params, socket) do
-    {:noreply, assign(socket, :show_obstacles?, !socket.assigns.show_obstacles?)}
-  end
-
-  def handle_event("toggle-markers", _params, socket) do
-    {:noreply, assign(socket, :show_markers?, !socket.assigns.show_markers?)}
-  end
-
   def handle_event("toggle-goals", _params, socket) do
     {:noreply, assign(socket, :show_goals?, !socket.assigns.show_goals?)}
   end
@@ -242,14 +209,6 @@ defmodule CrowdCrushWeb.SimLive do
 
   def handle_event("toggle-edit", _params, socket) do
     {:noreply, assign(socket, :edit?, true)}
-  end
-
-  def handle_event("toggle-sim", _params, socket) do
-    {:noreply, assign(socket, :sim?, !socket.assigns.sim?)}
-  end
-
-  def handle_event("toggle-video", _params, socket) do
-    {:noreply, assign(socket, :show_video?, !socket.assigns.show_video?)}
   end
 
   def handle_event("validate-settings", %{"video" => params}, socket) do
