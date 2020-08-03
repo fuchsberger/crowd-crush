@@ -14,10 +14,12 @@ const PLAYER_PARAMS = {
 
 export default class Player {
   constructor(youtubeID, push) {
+    this.loaded = false
     const player = new YTPlayer(document.getElementById('player'), PLAYER_PARAMS)
 
     player.load(youtubeID)
     player.mute()
+    player.play()
 
     document.getElementById('play').addEventListener('click', () => player.play())
     document.getElementById('pause').addEventListener('click', () => player.pause())
@@ -32,6 +34,14 @@ export default class Player {
     })
 
     player.on('playing', () => {
+
+      if(!this.loaded){
+        player.pause()
+        player.seek(0)
+        this.loaded = true
+        return
+      }
+
       document.getElementById('backward').disabled = false
 
       const loop = () => {

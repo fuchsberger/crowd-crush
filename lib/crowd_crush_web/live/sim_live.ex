@@ -4,6 +4,9 @@ defmodule CrowdCrushWeb.SimLive do
   alias CrowdCrush.Simulation
   alias CrowdCrushWeb.Router.Helpers, as: Routes
 
+  @top 56
+  @bot 47
+
   def render(assigns), do: CrowdCrushWeb.SimView.render("index.html", assigns)
 
   def mount(%{"id" => youtubeID}, _session, socket) do
@@ -25,6 +28,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign_future_agents()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
         |> assign(:mode, "video")
+        |> assign(:style, "top:#{@top}px;left:0;width:100%;height:calc(100% - #{@top + @bot}px);")
 
         # obstacle and marker management
         |> assign(:edit?, false)  # add or edit mode
@@ -48,6 +52,7 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:selected, nil)
     |> assign(:time, 0)
     |> assign_agent_positions()
+    |> update_style()
     |> assign(:playing?, false)
     |> assign(:stopped?, true)}
   end
@@ -195,6 +200,13 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign_agent_positions()}
   end
 
+  def handle_event("resize", %{"width" => width, "height" => height}, socket) do
+    {:noreply, socket
+    |> assign(:height, height - @top - @bot)
+    |> assign(:width, width)
+    |> update_style()}
+  end
+
   def handle_event("toggle-goals", _params, socket) do
     {:noreply, assign(socket, :show_goals?, !socket.assigns.show_goals?)}
   end
@@ -288,5 +300,32 @@ defmodule CrowdCrushWeb.SimLive do
   defp group_markers(video) do
     markers = Enum.group_by(video.markers, & &1.agent, & Map.take(&1, [:agent, :time, :x, :y]))
     Map.put(video, :markers, markers)
+  end
+
+  defp update_style(socket) do
+    ratio = socket.assigns.video.aspectratio
+    height = socket.assigns.height
+    width = socket.assigns.width
+
+    # calculate pixel size of wrapper
+    {w, h} =
+      case socket.assigns.mode do
+        "comparison" ->
+          IO.inspect {height * ratio * 2, width}
+          if height * ratio * 2 < width,
+            do: {2 * height * ratio, height},
+            else: {width, width / 2 / ratio}
+        _ ->
+          if ratio > width / height,
+            do: {width, width / ratio},
+            else: {height * ratio, height}
+      end
+
+    # calculate left / top offset (to center wrapper)
+    top = if h < height, do: @top + (height - h) / 2, else: @top
+    left = if w < width, do: (width - w) / 2, else: 0
+
+    style = "top:#{round(top)}px;left:#{round(left)}px;width:#{round(w)}px;height:#{round(h)}px;"
+    assign(socket, :style, style)
   end
 end

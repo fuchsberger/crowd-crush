@@ -1,11 +1,8 @@
-.wrapper {
-  position:fixed;
-  top: 56px;
-  bottom:47px;
-  left: 0;
-  right: 0;
-  width:100%;
+#wrapper {
+  position: fixed;
   background-color: black;
 }
+
+canvas { width: 100%; height: 100%; position: absolute; }
 
 #modal input { min-width: 100px; }

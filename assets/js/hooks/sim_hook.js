@@ -1,6 +1,5 @@
 import { Simulator, RVOMath, Vector2 } from '../rvo'
 import Player from '../components/player'
-import { resize } from '../helpers/canvas'
 
 const COLORS = {
   CYAN: "rgba(0, 255, 208, 1)",
@@ -19,7 +18,7 @@ export default {
     this.context = canvas.getContext('2d')
 
     this.get_data()
-    resize(this.video.aspectratio, this.canvas)
+    this.pushEvent("resize", {width: window.innerWidth, height: window.innerHeight})
 
     this.prepareSimulation()
 

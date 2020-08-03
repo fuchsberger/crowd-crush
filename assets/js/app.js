@@ -16,7 +16,7 @@ if(csrf_elm){
         y: e.offsetY / el.height
       })
     },
-    params: { _csrf_token: csrf_elm.getAttribute("content") }
+    params: { _csrf_token: csrf_elm.getAttribute("content")}
   })
   liveSocket.connect()
 }

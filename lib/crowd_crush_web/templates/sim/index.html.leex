@@ -11,7 +11,7 @@
   phx-hook='sim'
 ></div>
 
-<div class='wrapper' phx-update='ignore'>
+<div id='wrapper' phx-update='ignore' style='<%= @style %>'>
   <div id='player'></div>
   <canvas id='canvas' phx-click='click'>Canvas is not supported!</canvas>
 </div>
