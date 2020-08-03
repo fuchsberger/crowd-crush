@@ -154,8 +154,6 @@ export default {
       if(agent.time > lastTime && agent.time <= time){
         // time to add next agent to simulation
 
-        console.log("add", agent)
-
         const position = new Vector2(
           left + agent.x * factor * canvas.width,
           agent.y * canvas.height

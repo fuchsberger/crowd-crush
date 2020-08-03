@@ -314,7 +314,6 @@ defmodule CrowdCrushWeb.SimLive do
     {w, h} =
       case socket.assigns.mode do
         "comparison" ->
-          IO.inspect {height * ratio * 2, width}
           if height * ratio * 2 < width,
             do: {2 * height * ratio, height},
             else: {width, width / 2 / ratio}
