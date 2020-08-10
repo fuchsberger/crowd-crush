@@ -1,6 +1,8 @@
 import { Simulator, RVOMath, Vector2 } from '../rvo'
 import Player from '../components/player'
 
+const SIM_RIGHT = false
+
 const COLORS = {
   CYAN: "rgba(0, 255, 208, 1)",
   GREEN: "rgba(0, 255, 0, 1)",
@@ -86,6 +88,7 @@ export default {
     const {context, canvas, showGoals, goals, mode, selected, positions} = this
 
     const factor = mode == 'comparison' ? 0.5 : 1
+    const left = mode == 'comparison' && !SIM_RIGHT ? 0.5 * canvas.width : 0
 
     for (const id in positions) {
 
@@ -96,7 +99,11 @@ export default {
       else context.fillStyle = selected == parseInt(id) ? COLORS.CYAN : COLORS.GREEN
 
       context.beginPath()
-      context.arc(canvas.width * factor * pos.x, canvas.height * pos.y, 5, 0, 2 * Math.PI)
+      context.arc(
+        left + canvas.width * factor * pos.x,
+        canvas.height * pos.y,
+        5, 0, 2 * Math.PI
+      )
       context.fill()
     }
 
@@ -107,8 +114,8 @@ export default {
       for (const id in positions) {
         if(!positions[id]) continue
         context.beginPath()
-        context.moveTo(positions[id].x * factor * canvas.width, positions[id].y * canvas.height)
-        context.lineTo(goals[id].x * factor * canvas.width, goals[id].y * canvas.height)
+        context.moveTo(left + positions[id].x * factor * canvas.width, positions[id].y * canvas.height)
+        context.lineTo(left + goals[id].x * factor * canvas.width, goals[id].y * canvas.height)
         context.stroke()
       }
     }
@@ -140,7 +147,7 @@ export default {
     const lastTime = simulator.getGlobalTime()
 
     const factor = mode == 'comparison' ? 0.5 : 1
-    const left = mode == 'comparison' ? 0.5 * canvas.width : 0
+    const left = mode == 'comparison' && SIM_RIGHT ? 0.5 * canvas.width : 0
 
     simulator.setTimeStep(time - lastTime)
     simulator.run()
@@ -228,7 +235,7 @@ export default {
 
     const {canvas, goals, mode, positions, video} = this
     const factor = mode == 'comparison' ? 0.5 : 1
-    const left = mode == 'comparison' ? 0.5 * canvas.width : 0
+    const left = mode == 'comparison' && SIM_RIGHT ? 0.5 * canvas.width : 0
 
     this.simulator = new Simulator(video)
 
