@@ -1,5 +1,4 @@
 const path = require('path')
-const glob = require('glob')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -16,9 +15,9 @@ module.exports = (env, options) => {
         new OptimizeCSSAssetsPlugin({})
       ]
     },
-    entry: { 'app': glob.sync('./vendor/**/*.js').concat(['./js/app.js']) },
+    entry: './js/app.js',
     output: {
-      filename: '[name].js',
+      filename: 'app.js',
       path: path.resolve(__dirname, '../priv/static/js'),
       publicPath: '/js/'
     },
@@ -33,16 +32,19 @@ module.exports = (env, options) => {
         {
           test: /\.scss$/,
           use: [
-            'style-loader',
             MiniCssExtractPlugin.loader,
             'css-loader',
             {
               loader: 'postcss-loader',
-              options: { plugins: () => ([require('autoprefixer')]) }
+              options: {
+                postcssOptions: {
+                  plugins: [require('autoprefixer')]
+                }
+              }
             },
             {
               loader: 'sass-loader',
-              options: { sassOptions: { includePaths: ['node_modules/bootstrap/scss'] } }
+              options: { sassOptions: { includePaths: ['node_modules/bootstrap/scss']}}
             }
           ]
         },
