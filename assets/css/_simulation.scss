@@ -1,11 +1,14 @@
 #wrapper {
-  position: fixed;
-  background-color: black;
+  position: absolute;
+  margin: 10px;
+  border: 1px solid black;
 }
 
-canvas {
-  border: 1px solid;
-  position: absolute;
-}
+#wrapper > div { z-index: 900; left:0; top: 0; }
+
+#player {pointer-events: none;}
+canvas { z-index: 1000; }
+
+
 
 #modal input { min-width: 100px; }

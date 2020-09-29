@@ -3,6 +3,9 @@ import Player from '../components/player'
 
 const SIM_RIGHT = false
 
+const VIDEO_X = 1920
+const VIDEO_Y = 1080
+
 const COLORS = {
   CYAN: "rgba(0, 255, 208, 1)",
   GREEN: "rgba(0, 255, 0, 1)",
@@ -22,6 +25,7 @@ export default {
     this.pushEvent("resize", {width: window.innerWidth, height: window.innerHeight})
 
     this.player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
+    this.prepareSimulation()
 
     const hook = this
 
@@ -33,11 +37,6 @@ export default {
         case 88: hook.pushEvent("toggle-cancel"); break; // S
       }
     })
-
-    window.addEventListener('resize', () => this.pushEvent("resize", {
-      width: window.innerWidth,
-      height: window.innerHeight
-    }))
 
     this.render_canvas()
   },
@@ -51,12 +50,14 @@ export default {
 
   get_data() {
     const d = this.el.dataset
+    this.flipped = JSON.parse(d.flipped)
     this.mode = d.mode
     this.futureAgents = JSON.parse(d.futureAgents)
     this.showGoals = JSON.parse(d.showGoals)
     this.selected = JSON.parse(d.selected)
     this.goals = JSON.parse(d.goals)
     this.positions = JSON.parse(d.positions)
+    this.avg_velocity = JSON.parse(d.velocity)
     this.video = JSON.parse(d.video)
   },
 
@@ -85,13 +86,9 @@ export default {
   },
 
   draw_agents() {
-    const {context, canvas, showGoals, goals, mode, selected, positions} = this
-
-    const factor = mode == 'comparison' ? 0.5 : 1
-    const left = mode == 'comparison' && !SIM_RIGHT ? 0.5 * canvas.width : 0
+    const {context, showGoals, goals, mode, selected, positions} = this
 
     for (const id in positions) {
-
       const pos = positions[id]
       if(!pos) continue;
 
@@ -99,11 +96,7 @@ export default {
       else context.fillStyle = selected == parseInt(id) ? COLORS.CYAN : COLORS.GREEN
 
       context.beginPath()
-      context.arc(
-        left + canvas.width * factor * pos.x,
-        canvas.height * pos.y,
-        5, 0, 2 * Math.PI
-      )
+      context.arc(pos[0], pos[1], 5, 0, 2 * Math.PI)
       context.fill()
     }
 
@@ -114,8 +107,8 @@ export default {
       for (const id in positions) {
         if(!positions[id]) continue
         context.beginPath()
-        context.moveTo(left + positions[id].x * factor * canvas.width, positions[id].y * canvas.height)
-        context.lineTo(left + goals[id].x * factor * canvas.width, goals[id].y * canvas.height)
+        context.moveTo(positions[id][0], positions[id][1])
+        context.lineTo(goals[id][0], goals[id][1])
         context.stroke()
       }
     }
@@ -141,42 +134,44 @@ export default {
 
   draw_synth_agents() {
 
-    const {canvas, context, futureAgents, mode, player, simulator, showGoals, video} = this
+    const {canvas, context, flipped, futureAgents, mode, player, simulator, showGoals} = this
 
     const time = player.time
     const lastTime = simulator.getGlobalTime()
 
-    const factor = mode == 'comparison' ? 0.5 : 1
-    const left = mode == 'comparison' && SIM_RIGHT ? 0.5 * canvas.width : 0
-
-    simulator.setTimeStep(time - lastTime)
+    let time_step = time - lastTime
+    simulator.setTimeStep(time_step)
     simulator.run()
 
     context.fillStyle = mode == 'comparison' ? 'black' : COLORS.GREEN
     context.lineWidth = 0.5;
+
+    time_step *= 1000
+
 
     // add new agents
     for(let i = 0; i < futureAgents.length; i++){
       const agent = futureAgents[i]
       if(agent.time > lastTime && agent.time <= time){
         // time to add next agent to simulation
+        var x = canvas.width / 2, goal_x = canvas.width / 2
 
-        const position = new Vector2(
-          left + agent.x * factor * canvas.width,
-          agent.y * canvas.height
-        )
+        if (flipped) {
+          x -= agent.x
+          goal_x -= agent.goal_y
+        } else {
+          x += agent.x
+          goal_x += agent.goal_y
+        }
+
+        const position = new Vector2(x, agent.y)
 
         const id = simulator.addAgent(position)
-        simulator.setAgentGoal(
-          id,
-          left + agent.goal_x * factor * canvas.width,
-          agent.goal_y * canvas.height
-        )
+        simulator.setAgentGoal(id, goal_x, agent.goal_y)
 
         // normalize agent's prefered velocity
         const v = RVOMath.normalize(simulator.getGoal(id).minus(position))
-
-        simulator.setAgentPrefVelocity(id, v.x * video.velocity, v.y * video.velocity)
+        simulator.setAgentPrefVelocity(id, v.x * time_step, v.y * time_step)
       }
     }
 
@@ -184,6 +179,10 @@ export default {
     for(let i = 0; i < simulator.agents.length; i++){
 
       const position = simulator.getAgentPosition(i)
+
+      // normalize agent's prefered velocity
+      const v = RVOMath.normalize(simulator.getGoal(i).minus(position))
+      simulator.setAgentPrefVelocity(i, v.x * time_step, v.y * time_step)
 
       // ignore agents at final destination (outside screen)
       if(position.x == -666 && position.y == -666) continue
@@ -233,36 +232,47 @@ export default {
 
   prepareSimulation() {
 
-    const {canvas, goals, mode, positions, video} = this
-    const factor = mode == 'comparison' ? 0.5 : 1
-    const left = mode == 'comparison' && SIM_RIGHT ? 0.5 * canvas.width : 0
+    const {canvas, el, goals, flipped, positions, avg_velocity, video} = this
 
-    this.simulator = new Simulator(video)
+    this.simulator = new Simulator()
+
+    const data = el.dataset
+    const minDist = JSON.parse(data.minDistance) * Math.min(VIDEO_X, VIDEO_Y)
+
+    this.simulator.setAgentDefaults(
+      100,  // maxNeighbors
+      avg_velocity, // maxSpeed
+      minDist * 3, // neighborDist
+      minDist * 0.8, // radius
+      600, // time horizon
+      600, // time horizon obstacles
+      avg_velocity, // velocityX
+      avg_velocity, // velocityY
+    )
 
     // add agents to simulation
     for (const i in positions) {
 
       // ignore agents that are not present at start
-      if(!positions[i]) continue;
+      if (!positions[i]) continue;
 
-      const id = this.simulator.addAgent(new Vector2(
-        left + positions[i].x * factor * canvas.width,
-        positions[i].y * canvas.height
-      ))
+      var x = canvas.width / 2, goal_x = canvas.width / 2
 
-      this.simulator.setAgentGoal(
-        id,
-        left + goals[i].x * factor * canvas.width,
-        goals[i].y * canvas.height
-      )
+      if (flipped) {
+        x -= positions[i][0]
+        goal_x -= goals[i][0]
+      } else {
+        x += positions[i][0]
+        goal_x += goals[i][0]
+      }
+
+      const position = new Vector2(x, positions[i][1])
+      const id = this.simulator.addAgent(position)
+      this.simulator.setAgentGoal(id, goal_x, goals[i][1])
 
       // normalize agent's prefered velocity
-      let v = RVOMath.normalize(this.simulator.getGoal(id).minus(this.simulator.getAgentPosition(id)))
-
-      this.simulator.setAgentPrefVelocity(
-        id,
-        v.x * this.video.velocity * randomize(),
-        v.y * this.video.velocity * randomize())
+      const v = RVOMath.normalize(this.simulator.getGoal(id).minus(position))
+      this.simulator.setAgentPrefVelocity(id, v.x, v.y)
     }
 
     // add obstacles to simulation
@@ -276,6 +286,4 @@ export default {
     this.simulator.processObstacles()
   }
 }
-
-const randomize = (min = 0.8, max = 1.2) => Math.floor(Math.random() * (max - min + 1) ) + min
 

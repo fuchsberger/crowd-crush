@@ -1,24 +1,25 @@
 <div
   id='data'
-  data-positions="<%= Jason.encode!(@agent_positions) %>"
-  data-goals='<%= Jason.encode!(@agent_goals) %>'
+  data-positions="<%= Jason.encode!(@positions) %>"
+  data-goals='<%= Jason.encode!(@goals) %>'
+  data-flipped="<%= @flipped? %>"
   data-future-agents='<%= Jason.encode!(@future_agents) %>'
   data-mode='<%= @mode %>'
   data-show-goals="<%= @show_goals? %>"
   data-show-settings="<%= @show_settings? %>"
   data-selected="<%= Jason.encode!(@selected) %>"
+  data-min-distance="<%= @min_distance %>"
+  data-velocity="<%= @velocity %>"
   data-video="<%= encode_video(@video) %>"
   phx-hook='sim'
 ></div>
 
-<div id='wrapper' style='<%= "top:#{@ctop}px;left:#{@cleft}px;width:#{@cwidth}px;height:#{@cheight}px;" %>'>
-  <div phx-update='ignore' style="width: 100%;height:100%;position:absolute;">
-    <div id='player' ></div>
+<div id='wrapper' style='<%= "width:#{@width}px; height:#{@height}px;" %>'>
+  <div class='position-absolute w-100 h-100' phx-update='ignore' style='visibility:<%= if @mode == "comparison", do: "hidden", else: "visible" %>;'>
+    <div id='player'></div>
   </div>
 
-  <canvas id='canvas' phx-click='click' width='<%= @cwidth %>' height='<%= @cheight %>'>
-    Canvas is not supported!
-  </canvas>
+  <canvas id='canvas' class='position-absolute' phx-click='click' width='<%= @cwidth %>' height='<%= @cheight %>' style='left:<%= @x_gap %>px; right:<%= @x_gap %>px; top:<%= @y_gap %>px; bottom:<%= @y_gap %>px;'>Canvas is not supported!</canvas>
 </div>
 
 <%# Control Bar %>

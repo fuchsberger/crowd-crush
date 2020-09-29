@@ -4,8 +4,13 @@ defmodule CrowdCrushWeb.SimLive do
   alias CrowdCrush.Simulation
   alias CrowdCrushWeb.Router.Helpers, as: Routes
 
+  require Logger
+
   @top 56
   @bot 47
+
+  @width 1280
+  @height 720
 
   def render(assigns), do: CrowdCrushWeb.SimView.render("index.html", assigns)
 
@@ -18,20 +23,22 @@ defmodule CrowdCrushWeb.SimLive do
         |> push_redirect(to: Routes.live_path(socket, CrowdCrushWeb.VideoLive))}
 
       video ->
-
         {:ok, socket
+        |> assign(:video, video)
+        |> assign(:mode, "comparison")
+
+        # canvas settings
+        |> assign(:width, @width)
+        |> assign(:height, @height)
+        |> update_canvas()
+
         # simulation related
         |> assign(:time, 0.0)
-        |> assign(:video, group_markers(video))
-        |> assign_agent_positions()
-        |> assign_agent_goals()
-        |> assign_future_agents()
+        |> assign(:flipped?, false)
+        |> update_agents()
+        |> update_positions()
+        |> update_sim_params()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
-        |> assign(:mode, "markers")
-        |> assign(:ctop, 0)
-        |> assign(:cleft, 0)
-        |> assign(:cwidth, 0)
-        |> assign(:cheight, 0)
 
         # obstacle and marker management
         |> assign(:edit?, false)  # add or edit mode
@@ -40,7 +47,7 @@ defmodule CrowdCrushWeb.SimLive do
         |> assign(:selected, nil)
 
         # toggles
-        |> assign(:show_goals?, true)     # default: false
+        |> assign(:show_goals?, false)     # default: false
         |> assign(:show_settings?, false)
 
         # player control
@@ -52,10 +59,11 @@ defmodule CrowdCrushWeb.SimLive do
   def handle_event("set", %{"mode" => mode}, socket) do
     {:noreply, socket
     |> assign(:mode, mode)
-    |> assign(:selected, nil)
+    |> update_canvas()
     |> assign(:time, 0)
-    |> assign_agent_positions()
-    |> update_style()
+    |> update_agents()
+    |> update_positions()
+    |> assign(:selected, nil)
     |> assign(:playing?, false)
     |> assign(:stopped?, true)}
   end
@@ -90,9 +98,10 @@ defmodule CrowdCrushWeb.SimLive do
       }) do
         {:ok, _marker} ->
           {:noreply, socket
-          |> assign(:video, Simulation.load_markers(socket.assigns.video) |> group_markers())
-          |> assign_agent_goals()
-          |> assign_agent_positions()}
+          |> assign(:video, Simulation.load_markers(socket.assigns.video))
+          |> update_agents()
+          |> update_positions()
+          |> update_sim_params()}
 
         {:error, _reason} ->
           {:noreply, socket}
@@ -165,7 +174,7 @@ defmodule CrowdCrushWeb.SimLive do
 
         {:noreply, socket
         |> assign(:video, Simulation.get_video_by_youtube_id(socket.assigns.video.youtubeID))
-        |> assign_agent_positions()
+        |> update_positions()
         |> assign(:selected, nil)}
 
       {id, "obstacles"} ->
@@ -192,7 +201,7 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:playing?, true)
     |> assign(:stopped?, false)
     |> assign(:time, time)
-    |> assign_agent_positions()}
+    |> update_positions()}
   end
 
   def handle_event("jump", %{"time" => time, "stopped" => stopped}, socket) do
@@ -200,14 +209,7 @@ defmodule CrowdCrushWeb.SimLive do
     |> assign(:playing?, false)
     |> assign(:stopped?, stopped)
     |> assign(:time, time)
-    |> assign_agent_positions()}
-  end
-
-  def handle_event("resize", %{"width" => width, "height" => height}, socket) do
-    {:noreply, socket
-    |> assign(:height, height - @top - @bot)
-    |> assign(:width, width)
-    |> update_style()}
+    |> update_positions()}
   end
 
   def handle_event("toggle-goals", _params, socket) do
@@ -243,51 +245,149 @@ defmodule CrowdCrushWeb.SimLive do
     end
   end
 
-  defp assign_agent_goals(%{ assigns: %{ video: %{ markers: markers }}} = socket) do
-    goals = Enum.into(markers, %{}, fn {id, m} -> {id, Map.take(List.last(m), [:x, :y])} end)
-    assign(socket, :agent_goals, goals)
+  defp update_canvas(socket) do
+    # if comparsion is activated, fit two videos next to each other
+    r = if socket.assigns.mode == "comparison",
+      do: 2 * socket.assigns.video.aspectratio,
+      else: socket.assigns.video.aspectratio
+
+    # calculate pixel size of canvas (set longer side to 100%, scale short side)
+    {w, h} = if r > @width / @height,
+      do: {@width, round(@width / r)},
+      else: {round(@height * r), @height}
+
+    socket
+    |> assign(:x_gap, round((@width - w) / 2))
+    |> assign(:y_gap, round((@height - h) / 2))
+    |> assign(:cwidth, w)
+    |> assign(:cheight, h)
   end
 
-  defp assign_agent_positions(%{assigns: %{video: %{markers: markers}, time: time}} = socket) do
+  def update_agents(socket) do
+    comparison? = socket.assigns.mode == "comparison"
 
+    agents =
+      socket.assigns.video.markers
+      |> Enum.group_by(& &1.agent, & %{
+        time: &1.time,
+        x: abs(socket.assigns.cwidth, &1.x, comparison?, socket.assigns.flipped?),
+        y: socket.assigns.cheight * &1.y,
+      })
+
+    assign(socket, :agents, agents)
+  end
+
+  defp abs(length, x, comparison?, flipped?) do
+    case {comparison?, flipped?} do
+      {true, true} -> round(length/2 + x * length/2)
+      {true, false} -> round(x * length/2)
+      {false, _} -> round(x * length)
+    end
+  end
+
+  def update_positions(socket) do
+    cond do
+      Enum.member?(["comparison", "markers"], socket.assigns.mode) ->
+        positions =
+          socket.assigns.agents
+          |> positions(socket.assigns.time)
+          |> Enum.map(fn {_id, pos} -> (if is_nil(pos), do: nil, else: [pos.x, pos.y]) end)
+
+        assign(socket, :positions, positions)
+
+      Enum.count(socket.assigns.agents) > 0 ->
+        assign(socket, :positions, [])
+
+      true ->
+        socket
+    end
+  end
+
+  def update_sim_params(socket) do
+    goals =
+      Enum.into(socket.assigns.agents, [], fn {_, m} -> [List.last(m).x, List.last(m).y] end)
+
+    socket
+    |> assign(:future_agents, future_agents(socket.assigns.agents))
+    |> assign(:min_distance, get_min_distance(socket.assigns.positions))
+    |> assign(:velocity, get_preferred_velocity(socket.assigns.agents, 0))
+    |> assign(:goals, goals)
+  end
+
+  @doc """
+  Gets the average speed of agents (rel for x and y) at a given time by calculating how far they have traveled 5 sec later
+  """
+  defp get_preferred_velocity(agents, time) do
+    initial_positions = positions(agents, time)
+    final_positions = positions(agents, time + 5)
+
+    # only consider agents that were in the screen from start to end
+    distances =
+      agents
+      |> Enum.map(fn {id, _pos} -> id end)
+      |> Enum.reject(& is_nil(Map.get(initial_positions, &1)))
+      |> Enum.reject(& is_nil(Map.get(final_positions, &1)))
+      |> Enum.map(& dist(
+        [Map.get(initial_positions, &1).x, Map.get(initial_positions, &1).y],
+        [Map.get(final_positions, &1).x, Map.get(final_positions, &1).y]
+      ))
+
+    Enum.sum(distances) / Enum.count(distances)
+  end
+
+  def get_min_distance(positions) do
+    positions = Enum.reject(positions, & is_nil(&1))
+
+    positions
+    |> Enum.map(fn pos1 ->
+        positions
+        |> Enum.map(& dist(pos1, &1))
+        |> Enum.min()
+      end) # find distance to closest neigbor
+    |> Enum.min()
+  end
+
+  def dist([x1, y1], [x2, y2]) do
+   :math.sqrt(abs(x1 - x2) * abs(x1 - x2) + abs(y1 - y2) * abs(y1 - y2))
+  end
+
+  defp positions(agents, time) do
     time = time * 1000
 
-    positions =
-      Enum.into(markers, %{}, fn {id, markers} ->
-        # find first marker where it's time is at or after current time
-        case Enum.find_index(markers, fn %{time: t} ->  t >= time end) do
-          nil ->  # time is after last marker -> show nothing
-            {id, nil}
+    Enum.into(agents, %{}, fn {id, markers} ->
+      # find first marker where it's time is at or after current time
+      case Enum.find_index(markers, fn %{time: t} ->  t >= time end) do
+        nil ->  # time is after last marker -> show nothing
+          {id, nil}
 
-          0 ->    # time is before or at first marker
-            m = List.first(markers)
-            case time == m.time do
-              true -> {id, Map.take(m, [:x, :y])}
-              false -> {id, nil}
-            end
+        0 ->    # time is before or at first marker
+          m = List.first(markers)
+          case time == m.time do
+            true -> {id, Map.take(m, [:x, :y])}
+            false -> {id, nil}
+          end
 
-          index ->  # idx is the marker after, idx-1 the marker before -> approximate
-            m1 = Enum.at(markers, index-1)
-            m2 = Enum.at(markers, index)
-            percentage = (time - m1.time) / (m2.time - m1.time)
+        index ->  # idx is the marker after, idx-1 the marker before -> approximate
+          m1 = Enum.at(markers, index-1)
+          m2 = Enum.at(markers, index)
+          percentage = (time - m1.time) / (m2.time - m1.time)
 
-            {id, %{
-              x: m1.x + (m2.x - m1.x) * percentage,
-              y: m1.y + (m2.y - m1.y) * percentage
-            }}
-        end
-      end)
-
-    assign(socket, :agent_positions, positions)
+          {id, %{
+            x: m1.x + (m2.x - m1.x) * percentage,
+            y: m1.y + (m2.y - m1.y) * percentage
+          }}
+      end
+    end)
   end
 
   # track first and last marker and remove all that have a starting time of 0
-  defp assign_future_agents(%{assigns: %{video: %{markers: markers}}} = socket) do
-    agents = Enum.map(markers, fn {agent, markers} ->
+  defp future_agents(agents) do
+    agents
+    |> Enum.reject(fn {_k, markers} -> List.first(markers).time == 0 end)
+    |> Enum.map(fn {_id, markers} ->
       start = List.first(markers)
       goal = List.last(markers)
       %{
-        id: agent,
         time: start.time / 1000,
         x: start.x,
         y: start.y,
@@ -295,43 +395,5 @@ defmodule CrowdCrushWeb.SimLive do
         goal_y: goal.y
       }
     end)
-    |> Enum.filter(& &1.time > 0)
-
-    assign(socket, :future_agents, agents)
-  end
-
-  defp group_markers(video) do
-    markers = Enum.group_by(video.markers, & &1.agent, & Map.take(&1, [:agent, :time, :x, :y]))
-    Map.put(video, :markers, markers)
-  end
-
-  defp update_style(socket) do
-    ratio = socket.assigns.video.aspectratio
-    height = socket.assigns.height
-    width = socket.assigns.width
-
-    # calculate pixel size of wrapper
-    {w, h} =
-      case socket.assigns.mode do
-        "comparison" ->
-          {1920, 1080}
-          # if height * ratio * 2 < width,
-          #   do: {2 * height * ratio, height},
-          #   else: {width, width / 2 / ratio}
-        _ ->
-          if ratio > width / height,
-            do: {width, width / ratio},
-            else: {height * ratio, height}
-      end
-
-    # calculate left / top offset (to center wrapper)
-    top = if h < height, do: @top + (height - h) / 2, else: @top
-    left = if w < width, do: (width - w) / 2, else: 0
-
-    socket
-    |> assign(:ctop, round(top))
-    |> assign(:cleft, round(left))
-    |> assign(:cwidth, round(w))
-    |> assign(:cheight, round(h))
   end
 end
