@@ -6,11 +6,11 @@ defmodule CrowdCrushWeb.SimLive do
 
   require Logger
 
-  @top 56
-  @bot 47
-
   @width 1280
   @height 720
+
+  # squares of that size (pixel) will be used to determine agent direction and speed
+  @grid_size 50
 
   def render(assigns), do: CrowdCrushWeb.SimView.render("index.html", assigns)
 
@@ -25,17 +25,19 @@ defmodule CrowdCrushWeb.SimLive do
       video ->
         {:ok, socket
         |> assign(:video, video)
-        |> assign(:mode, "comparison")
+        |> assign(:mode, "video")
 
         # canvas settings
         |> assign(:width, @width)
         |> assign(:height, @height)
+        |> assign(:grid_size, @grid_size)
         |> update_canvas()
 
         # simulation related
         |> assign(:time, 0.0)
         |> assign(:flipped?, false)
         |> update_agents()
+        |> assign_grid_vectors()
         |> update_positions()
         |> update_sim_params()
         |> assign(:changeset, Simulation.change_sim(video, %{}))
@@ -309,7 +311,7 @@ defmodule CrowdCrushWeb.SimLive do
 
     socket
     |> assign(:future_agents, future_agents(socket.assigns.agents))
-    |> assign(:min_distance, get_min_distance(socket.assigns.positions))
+    |> assign_min_distance()
     |> assign(:velocity, get_preferred_velocity(socket.assigns.agents, 0))
     |> assign(:goals, goals)
   end
@@ -332,19 +334,89 @@ defmodule CrowdCrushWeb.SimLive do
         [Map.get(final_positions, &1).x, Map.get(final_positions, &1).y]
       ))
 
-    Enum.sum(distances) / Enum.count(distances)
+      Logger.warn(inspect(distances))
+
+    case Enum.count(distances) > 0 do
+      true -> Enum.sum(distances) / Enum.count(distances)
+      false -> 0
+    end
   end
 
-  def get_min_distance(positions) do
-    positions = Enum.reject(positions, & is_nil(&1))
-
-    positions
-    |> Enum.map(fn pos1 ->
-        positions
-        |> Enum.map(& dist(pos1, &1))
+  def assign_min_distance(socket) do
+    min_distance =
+      if Enum.count(socket.assigns.positions) > 0 do
+        socket.assigns.positions
+        |> Enum.map(fn pos1 ->
+          socket.assigns.positions
+            |> Enum.map(& dist(pos1, &1))
+            |> Enum.min()
+          end) # find distance to closest neigbor
         |> Enum.min()
-      end) # find distance to closest neigbor
-    |> Enum.min()
+        else
+        5
+      end
+
+    assign(socket, :min_distance, min_distance)
+  end
+
+  def assign_grid_vectors(socket) do
+    %{agents: agents, cwidth: width, cheight: height} = socket.assigns
+
+    # for each cell find markers that start in that cell and look at their next target
+    grid_vectors =
+      Enum.map(0..div(height, @grid_size), fn y ->
+        Enum.map(0..div(width, @grid_size), fn x ->
+          grid_markers =
+            agents
+            # go through each agent and find all markers
+            |> Enum.map(fn {_id, markers} ->
+              # convert into {x, y, dist, angle}
+              Enum.map(0..(Enum.count(markers) - 2), fn idx ->
+                current = Enum.at(markers, idx)
+                next = Enum.at(markers, idx+1)
+                {
+                  current.x,
+                  current.y,
+                  next.x,
+                  next.y
+                }
+              end)
+              # filter all agent's markers to only include those that start in that cell
+              |> Enum.filter(fn {marker_x, marker_y, _x2, _y2} ->
+                marker_x >= x * @grid_size
+                && marker_x < (x+1) * @grid_size
+                && marker_y >= y * @grid_size
+                && marker_y < (y+1) * @grid_size
+              end)
+            end)
+            |> Enum.reject(& &1 == [])
+            |> List.flatten()
+
+          x_diff =
+            if Enum.count(grid_markers) > 0 do
+              grid_markers
+              |> Enum.map(fn {x1, _y, x2, _y2} -> x2 - x1 end)
+              |> Enum.sum()
+              |> Kernel./(Enum.count(grid_markers))
+            else
+              0
+            end
+
+          y_diff =
+            if Enum.count(grid_markers) > 0 do
+              grid_markers
+              |> Enum.map(fn {_x1, y1, _x2, y2} -> y2 - y1 end)
+              |> Enum.sum()
+              |> Kernel./(Enum.count(grid_markers))
+            else
+              0
+            end
+
+          # return averaged x and y diff (represents vector)
+          [x_diff, y_diff]
+        end)
+      end)
+    assign(socket, :grid_vectors, grid_vectors)
   end
 
   def dist([x1, y1], [x2, y2]) do

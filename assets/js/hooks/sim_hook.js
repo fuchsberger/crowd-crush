@@ -1,8 +1,6 @@
 import { Simulator, RVOMath, Vector2 } from '../rvo'
 import Player from '../components/player'
 
-const SIM_RIGHT = false
-
 const VIDEO_X = 1920
 const VIDEO_Y = 1080
 
@@ -22,7 +20,6 @@ export default {
     this.canvas = document.getElementById('canvas')
     this.context = canvas.getContext('2d')
     this.get_data()
-    this.pushEvent("resize", {width: window.innerWidth, height: window.innerHeight})
 
     this.player = new Player(this.video.youtubeID, (event, data) => this.pushEvent(event, data))
     this.prepareSimulation()
@@ -50,6 +47,8 @@ export default {
 
   get_data() {
     const d = this.el.dataset
+    this.gridSize = JSON.parse(d.gridSize)
+    this.gridVectors = JSON.parse(d.gridVectors)
     this.flipped = JSON.parse(d.flipped)
     this.mode = d.mode
     this.futureAgents = JSON.parse(d.futureAgents)
@@ -79,10 +78,28 @@ export default {
     }
     else context.clearRect(0, 0, canvas.width, canvas.height)
 
-    // draw markers, obstacles and goal lines.
-    if(mode == 'obstacles') this.draw_obstacles()
-    if(mode == 'markers' || mode == 'comparison') this.draw_agents()
-    if(this.simulator && (mode == 'simulation' || mode == 'comparison')) this.draw_synth_agents()
+    // draw correct elements
+    switch (mode) {
+      case 'grid':
+        this.draw_grid();
+        break
+
+      case 'obstacles':
+        this.draw_obstacles();
+        break
+
+      case 'markers':
+        this.draw_agents();
+        break
+
+      case 'sim':
+        this.draw_synth_agents()
+        break
+
+      case 'comparison':
+        this.draw_agents()
+        this.draw_synth_agents()
+    }
   },
 
   draw_agents() {
@@ -112,6 +129,56 @@ export default {
         context.stroke()
       }
     }
+  },
+
+  draw_grid() {
+    this.context.lineWidth = 0.5;
+    this.context.strokeStyle = COLORS.GREEN
+    this.context.beginPath()
+
+    // draw horizontal lines
+    for (let y = 0; y < this.gridVectors.length; y++) {
+      this.context.moveTo(0, y * this.gridSize)
+      this.context.lineTo(this.canvas.width, y * this.gridSize)
+    }
+
+    // draw vertical lines
+    for (let x = 0; x < this.gridVectors[0].length; x++) {
+      this.context.moveTo(x * this.gridSize, 0)
+      this.context.lineTo(x * this.gridSize, this.canvas.width)
+    }
+    this.context.stroke()
+
+    // draw avg vectors
+    this.context.lineWidth = 1
+    this.context.beginPath()
+    for (let y = 0; y < this.gridVectors.length; y ++) {
+      for (let x = 0; x < this.gridVectors[0].length; x ++) {
+        let centerX = x * this.gridSize + this.gridSize / 2
+        let centerY = y * this.gridSize + this.gridSize / 2
+
+        if (this.gridVectors[y][x][0] != 0 && this.gridVectors[y][x][1] != 0) {
+          this.drawArrow(
+            centerX, centerY,
+            centerX + this.gridVectors[y][x][0] * 5, centerY + this.gridVectors[y][x][1] * 5
+          )
+        }
+      }
+    }
+    this.context.stroke()
+  },
+
+  drawArrow(fromx, fromy, tox, toy) {
+    let context = this.context
+    var headlen = 10; // length of head in pixels
+    var dx = tox - fromx;
+    var dy = toy - fromy;
+    var angle = Math.atan2(dy, dx);
+    context.moveTo(fromx, fromy);
+    context.lineTo(tox, toy);
+    context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    context.moveTo(tox, toy);
+    context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
   },
 
   draw_obstacles() {

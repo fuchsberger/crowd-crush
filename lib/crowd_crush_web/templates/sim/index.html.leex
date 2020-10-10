@@ -2,6 +2,8 @@
   id='data'
   data-positions="<%= Jason.encode!(@positions) %>"
   data-goals='<%= Jason.encode!(@goals) %>'
+  data-grid-size='<%= @grid_size %>'
+  data-grid-vectors='<%= Jason.encode!(@grid_vectors) %>'
   data-flipped="<%= @flipped? %>"
   data-future-agents='<%= Jason.encode!(@future_agents) %>'
   data-mode='<%= @mode %>'
@@ -79,8 +81,9 @@
         <% disabled? = @time != 0 %>
         <%= btn_mode "video", @mode, disabled? %>
         <%= btn_mode "markers", @mode, disabled? %>
+        <%= btn_mode "grid", @mode, disabled? %>
         <%= btn_mode "obstacles", @mode, disabled? %>
-        <%= btn_mode "simulation", @mode, disabled? %>
+        <%= btn_mode "sim", @mode, disabled? %>
         <%= btn_mode "comparison", @mode, disabled? %>
       </div>
       <div class="btn-group" role="group" aria-label="Toggle Elements">

@@ -143,6 +143,12 @@
       "css": "comparison",
       "code": 62113,
       "src": "fontawesome"
+    },
+    {
+      "uid": "o1c30odwfvgcvi5b4jsg95sur8v6ghsp",
+      "css": "grid",
+      "code": 59397,
+      "src": "modernpics"
     }
   ]
 }
