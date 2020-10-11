@@ -1,8 +1,4 @@
-#wrapper {
-  position: absolute;
-  margin: 10px;
-  border: 1px solid black;
-}
+#wrapper { position: absolute; margin: 10px; }
 
 #wrapper > div { z-index: 900; left:0; top: 0; }
 
