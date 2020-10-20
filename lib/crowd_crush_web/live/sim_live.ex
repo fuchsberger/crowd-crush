@@ -23,6 +23,8 @@ defmodule CrowdCrushWeb.SimLive do
         |> push_redirect(to: Routes.live_path(socket, CrowdCrushWeb.VideoLive))}
 
       video ->
+
+        Logger.warn(inspect(min_distance()))
         {:ok, socket
         |> assign(:video, video)
         |> assign(:mode, "comparison")
@@ -342,6 +344,26 @@ defmodule CrowdCrushWeb.SimLive do
 
     assign(socket, :min_distance, min_distance)
   end
+
+  @doc """
+  Computes the distance between the two closest points in a list.
+  Returns nil if list is empty or all points overlap.
+  """
+  @spec min_distance(list[tuple()]) :: float() | nil
+  def min_distance(list \\ [{2, 2}, {1, 1}, {2, 1}, {3, 1}]) do
+    list
+    |> Enum.map(fn {x1, y1} ->
+        list
+        |> Enum.reject(fn {x2, y2} -> x1 == x2 && y1 == y2 end)
+        |> Enum.map(fn {x2, y2} -> dist(x1, y1, x2, y2) end)
+        |> Enum.min()
+      end)
+    |> Enum.min()
+  end
+
+  # Computes the distance between two points.
+  defp dist(x1, y1, x2, y2), do: :math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))
+
 
   def assign_grid(socket) do
     %{agents: agents, cwidth: width, cheight: height, mode: mode} = socket.assigns

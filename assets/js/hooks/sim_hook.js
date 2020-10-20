@@ -312,37 +312,35 @@ export default {
 
       // if agent at the border, teleport away
       const x_low = this.mode == "comparison" ? this.canvas.width / 2 : 0
-      if (position.x <= x_low + 15 || position.x >= this.canvas.width - 15 || position.y <= 15 || position.y >= this.canvas.height - 15) {
+      if (position.x <= x_low + 10 || position.x >= this.canvas.width - 10 || position.y <= 10 || position.y >= this.canvas.height - 10) {
 
         this.simulator.setAgentPosition(id, -666, -666)
         this.simulator.setAgentGoal(id, -666, -666)
         this.simulator.setAgentPrefVelocity(id, 0, 0)
         return
       }
-    } else {
-
-
-      if (position.distance(goal) < position.distance(local_goal)) {
-        // if global goal is close than use global
-        local_goal = goal
-      } else if (position.distance(local_goal) > 10) {
-        // if there is a strong local drag exclusively use local
-        local_goal = local_goal
-      } else if (position.distance(local_goal) == 0) {
-        // if there is no local goal stand idle
-        local_goal = local_goal
-      } else {
-        // combine local and global goal
-        let scalefactor = position.distance(local_goal) / position.distance(goal)
-
-        if (scalefactor >= 1) local_goal = goal
-        else local_goal = goal.scale(scalefactor).plus(local_goal.scale(1-scalefactor))
-      }
-
-      // normalize agent's prefered velocity
-      const v = RVOMath.normalize(local_goal.minus(position))
-      this.simulator.setAgentPrefVelocity(id, v.x * time_step, v.y * time_step)
     }
+    else if (position.distance(goal) < position.distance(local_goal)) {
+      // if global goal is close than use global
+      local_goal = goal
+    } else if (position.distance(local_goal) > 10) {
+      // if there is a strong local drag exclusively use local
+      local_goal = local_goal
+    } else if (position.distance(local_goal) == 0) {
+      // if there is no local goal stand idle
+      local_goal = local_goal
+    } else {
+      // combine local and global goal
+      let scalefactor = position.distance(local_goal) / position.distance(goal)
+
+      if (scalefactor >= 1) local_goal = goal
+      else local_goal = goal.scale(scalefactor).plus(local_goal.scale(1-scalefactor))
+    }
+
+    // normalize agent's prefered velocity
+    const v = RVOMath.normalize(local_goal.minus(position))
+    this.simulator.setAgentPrefVelocity(id, v.x * time_step, v.y * time_step)
+
   },
 
   prepareSimulation() {
@@ -357,10 +355,10 @@ export default {
     this.simulator.setAgentDefaults(
       100,  // maxNeighbors
       avg_velocity * 1.2, // maxSpeed
-      c ? minDist * 10 : minDist * 20, // neighborDist
+      c ? minDist * 3 : minDist * 6, // neighborDist
       c ? minDist : minDist * 2, // radius
-      3000, // time horizon
-      3000, // time horizon obstacles
+      1000, // time horizon
+      1000, // time horizon obstacles
       avg_velocity, // velocityX
       avg_velocity, // velocityY
     )
